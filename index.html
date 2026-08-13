@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FOCAL LAB — 안경원 전문 마케팅</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
+<style>
+  :root{
+    --ink:#211D19;
+    --ink-soft:#6E665B;
+    --paper:#F0EEE9;
+    --paper-alt:#E3DCCE;
+    --card:#FAF8F3;
+    --gold:#B9893B;
+    --gold-deep:#8C6526;
+    --focus-blue:#2A5DAA;
+    --focus-blue-deep:#1B3E77;
+    --carrot:#D35F2B;
+    --line:rgba(33,29,25,.14);
+    --line-strong:rgba(33,29,25,.26);
+    --shadow:0 2px 0 rgba(33,29,25,.06);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Pretendard Variable','Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.6;
+  }
+  .display{font-family:'Black Han Sans','Pretendard Variable',sans-serif; letter-spacing:.01em;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  img,svg{display:block; max-width:100%;}
+  a{color:inherit;}
+  .wrap{max-width:1120px; margin:0 auto; padding:0 32px;}
+  section{padding:112px 0;}
+  h2.section-title{
+    font-size:clamp(28px,3.4vw,42px);
+    line-height:1.25;
+    margin:0 0 14px;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--focus-blue-deep);
+    margin:0 0 16px;
+  }
+  .eyebrow::before{content:''; width:16px; height:1px; background:var(--focus-blue-deep);}
+  .lede{font-size:16.5px; color:var(--ink-soft); max-width:560px; margin:0 0 48px;}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:14px 26px; border-radius:3px;
+    font-size:15px; font-weight:600; cursor:pointer;
+    border:1px solid var(--ink); text-decoration:none;
+    transition:transform .15s ease, background .2s ease, color .2s ease;
+  }
+  .btn-primary{background:var(--ink); color:var(--paper);}
+  .btn-primary:hover{background:var(--focus-blue-deep); border-color:var(--focus-blue-deep); transform:translateY(-1px);}
+  .btn-ghost{background:transparent; color:var(--ink); border-color:var(--line-strong);}
+  .btn-ghost:hover{border-color:var(--ink); transform:translateY(-1px);}
+
+  /* ---------- NAV ---------- */
+  header.nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(238,241,240,.88); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    max-width:1120px; margin:0 auto; padding:0 32px;
+    height:72px; display:flex; align-items:center; justify-content:space-between;
+  }
+  .logo{display:flex; align-items:center; gap:10px; font-weight:700; font-size:18px; text-decoration:none; color:var(--ink);}
+  .logo-mark{width:30px; height:30px;}
+  .logo small{font-family:'IBM Plex Mono',monospace; font-weight:500; font-size:10.5px; letter-spacing:.1em; color:var(--ink-soft); display:block; margin-top:1px;}
+  nav.links{display:flex; gap:30px; font-size:14.5px; font-weight:500;}
+  nav.links a{text-decoration:none; color:var(--ink-soft); border-bottom:1px solid transparent; padding-bottom:2px; transition:color .15s, border-color .15s;}
+  nav.links a:hover{color:var(--ink); border-color:var(--gold);}
+  .nav-cta{display:flex; align-items:center; gap:18px;}
+  @media (max-width:860px){ nav.links{display:none;} }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative; overflow:hidden;
+    padding:96px 0 88px;
+    border-bottom:1px solid var(--line);
+  }
+  .hero-grid{
+    display:grid; grid-template-columns:1.15fr .85fr; gap:56px; align-items:center;
+  }
+  .hero h1{
+    font-family:'Pretendard Variable','Pretendard',sans-serif;
+    font-weight:700;
+    letter-spacing:.005em;
+    font-size:clamp(38px,5vw,58px);
+    line-height:1.28;
+    margin:0 0 24px;
+  }
+  .blur-in{
+    display:block;
+    filter:blur(14px);
+    opacity:0;
+    animation:sharpen 1.4s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .blur-in.d2{animation-delay:.28s;}
+  @keyframes sharpen{
+    0%{filter:blur(14px); opacity:0; transform:translateY(6px);}
+    100%{filter:blur(0); opacity:1; transform:translateY(0);}
+  }
+  .hero .lede{margin-bottom:36px;}
+  .hero-cta{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:34px;}
+  .hero-trust{
+    font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--ink-soft);
+    border-top:1px solid var(--line); padding-top:18px; max-width:520px;
+  }
+  .store-search{
+    background:var(--card); border:1px solid var(--line); border-radius:4px;
+    padding:20px 22px; margin-bottom:26px; max-width:520px;
+  }
+  .store-search-label{font-size:11px; letter-spacing:.1em; color:var(--focus-blue-deep); margin-bottom:12px; text-transform:uppercase;}
+  .store-search-form{display:flex; gap:10px;}
+  .store-search-form input{
+    flex:1; padding:12px 14px; border:1px solid var(--line-strong); border-radius:3px;
+    background:var(--paper); font-family:inherit; font-size:14.5px; color:var(--ink);
+  }
+  .store-search-form input:focus{outline:none; border-color:var(--focus-blue);}
+  .store-search-form .btn{padding:12px 20px; font-size:14px; white-space:nowrap;}
+  @media (max-width:480px){ .store-search-form{flex-direction:column;} }
+
+  /* ---------- PLACE DIAGNOSE ---------- */
+  .diagnose-section{background:var(--paper-alt); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .diagnose-form{display:flex; gap:10px; max-width:560px; margin:36px 0 8px;}
+  .diagnose-form input{
+    flex:1; padding:16px 18px; border:1px solid var(--line-strong); border-radius:3px;
+    background:var(--card); font-family:inherit; font-size:15.5px; color:var(--ink);
+  }
+  .diagnose-form input:focus{outline:none; border-color:var(--focus-blue);}
+  .diagnose-form .btn{padding:16px 28px; font-size:15px; white-space:nowrap;}
+  .diagnose-hint{font-size:12.5px; color:var(--ink-soft); margin:0 0 8px;}
+  @media (max-width:560px){ .diagnose-form{flex-direction:column;} }
+
+  .diagnose-result{
+    display:none; margin-top:40px; border:1px solid var(--line); border-radius:4px;
+    background:var(--card); overflow:hidden;
+  }
+  .diagnose-result.show{display:grid; grid-template-columns:280px 1fr;}
+  .dr-rank{
+    padding:34px 28px; border-right:1px solid var(--line);
+    display:flex; flex-direction:column; justify-content:center; align-items:flex-start;
+    background:var(--ink); color:var(--paper);
+  }
+  .dr-rank .k{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.12em; color:#9FD1FF; text-transform:uppercase; margin-bottom:14px;}
+  .dr-rank .store{font-size:14.5px; color:rgba(238,241,240,.72); margin-bottom:4px;}
+  .dr-rank .num{font-family:'Black Han Sans',sans-serif; font-size:56px; line-height:1; color:#fff;}
+  .dr-rank .num span{font-size:20px; font-family:'IBM Plex Mono',monospace; color:rgba(238,241,240,.6); margin-left:6px;}
+  .dr-rank .score{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--gold); margin-top:16px;}
+  .dr-metrics{padding:30px 32px;}
+  .dr-metric{margin-bottom:18px;}
+  .dr-metric:last-child{margin-bottom:0;}
+  .dr-metric-top{display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:7px;}
+  .dr-metric-top .v{font-family:'IBM Plex Mono',monospace; color:var(--focus-blue-deep);}
+  .dr-bar{height:6px; background:var(--paper-alt); border-radius:3px; overflow:hidden;}
+  .dr-bar-fill{height:100%; background:var(--focus-blue); border-radius:3px; width:0%; transition:width 1s cubic-bezier(.2,.7,.2,1);}
+  .dr-note{font-size:12.5px; color:var(--ink-soft); padding:16px 32px; border-top:1px solid var(--line); grid-column:1 / -1;}
+  .dr-cta{padding:0 32px 26px; grid-column:1 / -1;}
+  @media (max-width:700px){ .diagnose-result.show{grid-template-columns:1fr;} .dr-rank{border-right:none; border-bottom:1px solid var(--line);} }
+
+  /* chart decoration */
+  .chart{
+    position:relative; height:420px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:34px 30px;
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .chart::before{
+    content:'ACUITY / 시력측정';
+    position:absolute; top:14px; right:18px;
+    font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.12em; color:var(--ink-soft); opacity:.6;
+  }
+  .chart-row{display:flex; align-items:baseline; gap:14px; color:var(--ink); opacity:.88;}
+  .chart-row .val{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--focus-blue-deep); width:34px; flex-shrink:0;}
+  .chart-row .glyph{font-family:'Black Han Sans',sans-serif; letter-spacing:.06em;}
+  .chart-row:nth-child(1) .glyph{font-size:52px;}
+  .chart-row:nth-child(2) .glyph{font-size:40px;}
+  .chart-row:nth-child(3) .glyph{font-size:31px;}
+  .chart-row:nth-child(4) .glyph{font-size:23px;}
+  .chart-row:nth-child(5) .glyph{font-size:17px;}
+  .chart-row:nth-child(6) .glyph{font-size:12px; color:var(--ink-soft);}
+
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr;}
+    .chart{height:auto;}
+  }
+
+  /* ---------- WHY ---------- */
+  .why-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); margin-top:56px;}
+  .why-card{background:var(--card); padding:34px 30px;}
+  .why-tag{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.12em; color:var(--gold-deep); margin-bottom:18px;}
+  .why-card h3{font-size:19px; margin:0 0 12px; line-height:1.4;}
+  .why-card p{font-size:14.5px; color:var(--ink-soft); margin:0;}
+  @media (max-width:800px){ .why-grid{grid-template-columns:1fr;} }
+
+  /* ---------- CHANNELS TABLE ---------- */
+  .channels-table{width:100%; border-collapse:collapse; margin-top:44px; font-size:15px;}
+  .channels-table th{
+    text-align:left; font-family:'IBM Plex Mono',monospace; font-weight:500; font-size:11.5px;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft);
+    padding:0 18px 14px; border-bottom:1px solid var(--line-strong);
+  }
+  .channels-table td{padding:20px 18px; border-bottom:1px solid var(--line); vertical-align:top;}
+  .channels-table tr:hover td{background:rgba(20,33,54,.025);}
+  .ch-name{display:flex; align-items:center; gap:10px; font-weight:700; white-space:nowrap;}
+  .ch-dot{width:8px; height:8px; border-radius:50%; flex-shrink:0;}
+  .ch-group{font-size:12px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace;}
+  .ch-who{color:var(--ink-soft); font-size:13.5px;}
+  .group-row td{padding:26px 18px 8px; border-bottom:none; font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.12em; color:var(--focus-blue-deep); text-transform:uppercase;}
+
+  /* ---------- CHECKUP ---------- */
+  .checkup-section{background:var(--ink); color:var(--paper);}
+  .checkup-section .eyebrow{color:#9FD1FF;}
+  .checkup-section .eyebrow::before{background:#9FD1FF;}
+  .checkup-section .lede{color:rgba(238,241,240,.68);}
+  .checkup-box{
+    display:grid; grid-template-columns:1fr 1fr; gap:0;
+    border:1px solid rgba(238,241,240,.18); border-radius:4px; overflow:hidden; margin-top:16px;
+  }
+  .checkup-list{padding:36px; border-right:1px solid rgba(238,241,240,.18);}
+  .checkup-item{
+    display:flex; align-items:flex-start; gap:12px; padding:13px 0;
+    border-bottom:1px solid rgba(238,241,240,.1); cursor:pointer;
+  }
+  .checkup-item:last-child{border-bottom:none;}
+  .checkup-item input{margin-top:4px; width:16px; height:16px; accent-color:var(--gold);}
+  .checkup-item label{font-size:14.5px; cursor:pointer; line-height:1.5;}
+  .checkup-result{padding:36px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;}
+  .gauge-label{font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.14em; color:rgba(238,241,240,.55); margin-bottom:10px; text-transform:uppercase;}
+  .gauge-value{font-family:'Black Han Sans',sans-serif; font-size:64px; line-height:1; color:#fff; margin-bottom:6px;}
+  #gaugeSample{
+    font-size:22px; font-weight:700; margin:14px 0 18px;
+    transition:filter .35s ease;
+  }
+  .gauge-status{font-size:14px; color:rgba(238,241,240,.7); max-width:280px; margin-bottom:22px;}
+  @media (max-width:760px){ .checkup-box{grid-template-columns:1fr;} .checkup-list{border-right:none; border-bottom:1px solid rgba(238,241,240,.18);} }
+
+  /* ---------- PROCESS ---------- */
+  .process-row{display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-top:52px;}
+  .rx-card{
+    background:var(--card); border:1px solid var(--line); border-radius:4px; padding:26px 22px;
+    position:relative;
+  }
+  .rx-card::before{
+    content:attr(data-step);
+    font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--gold-deep);
+    display:block; margin-bottom:16px; letter-spacing:.08em;
+  }
+  .rx-card h3{font-size:18px; margin:0 0 10px;}
+  .rx-card p{font-size:13.5px; color:var(--ink-soft); margin:0;}
+  .rx-arrow{position:absolute; right:-16px; top:50%; transform:translateY(-50%); color:var(--line-strong); font-size:18px; z-index:2;}
+  @media (max-width:900px){ .process-row{grid-template-columns:1fr; } .rx-arrow{display:none;} }
+
+  /* ---------- RESULTS ---------- */
+  .results-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:48px;}
+  .result-card{background:var(--card); border:1px solid var(--line); border-radius:4px; padding:30px 26px;}
+  .result-metric{font-family:'Black Han Sans',sans-serif; font-size:34px; color:var(--focus-blue-deep); margin-bottom:10px;}
+  .result-card h4{font-size:15.5px; margin:0 0 8px;}
+  .result-card p{font-size:13.5px; color:var(--ink-soft); margin:0;}
+  @media (max-width:800px){ .results-grid{grid-template-columns:1fr;} }
+
+  /* ---------- CONTACT ---------- */
+  .contact-section{background:var(--paper-alt); border-top:1px solid var(--line);}
+  .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:start; margin-top:12px;}
+  .contact-form{display:flex; flex-direction:column; gap:14px;}
+  .contact-form input, .contact-form textarea{
+    width:100%; padding:14px 16px; border:1px solid var(--line-strong); border-radius:3px;
+    background:var(--card); font-family:inherit; font-size:14.5px; color:var(--ink);
+  }
+  .contact-form input:focus, .contact-form textarea:focus{outline:none; border-color:var(--focus-blue);}
+  .contact-form textarea{resize:vertical; min-height:96px;}
+  .contact-note{font-size:13px; color:var(--ink-soft); margin-top:4px;}
+  .contact-side p{font-size:14.5px; color:var(--ink-soft);}
+  .contact-side .info-row{display:flex; gap:12px; padding:12px 0; border-top:1px solid var(--line); font-size:14px;}
+  .contact-side .info-row .k{font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--ink-soft); width:80px; flex-shrink:0; padding-top:2px;}
+  @media (max-width:860px){ .contact-grid{grid-template-columns:1fr; gap:40px;} }
+
+  footer{padding:40px 0; border-top:1px solid var(--line);}
+  .footer-inner{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; font-size:13px; color:var(--ink-soft);}
+
+  [data-reveal]{opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease;}
+  [data-reveal].in{opacity:1; transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="logo" href="#top">
+      <svg class="logo-mark" viewBox="0 0 30 30" fill="none">
+        <circle cx="8" cy="16" r="6.4" stroke="#142136" stroke-width="2"/>
+        <circle cx="22" cy="16" r="6.4" stroke="#142136" stroke-width="2"/>
+        <path d="M14.4 14.6 C15.5 12.4 16 12.4 15.6 14.6" stroke="#142136" stroke-width="2" fill="none"/>
+        <path d="M1.6 15.4 L2.6 10.4" stroke="#142136" stroke-width="2"/>
+        <path d="M28.4 15.4 L27.4 10.4" stroke="#142136" stroke-width="2"/>
+      </svg>
+      <span>FOCAL LAB<small>안경원 전문 마케팅</small></span>
+    </a>
+    <nav class="links">
+      <a href="#why">왜 포컬랩인가</a>
+      <a href="#channels">서비스</a>
+      <a href="#checkup">자가진단</a>
+      <a href="#process">프로세스</a>
+      <a href="#contact">문의하기</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-primary" href="#place-diagnose" style="padding:10px 20px; font-size:14px;">무료 진단받기</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">안경원 전문 마케팅 · 안경사 × 안경마케터 출신</div>
+      <h1>
+        <span class="blur-in">흐릿한 마케팅을,</span>
+        <span class="blur-in d2">선명한 방문으로.</span>
+      </h1>
+      <p class="lede">안경사 출신과 안경 프랜차이즈·안경 IT기업 마케팅팀 출신이 만든 마케팅 회사입니다. 온라인이든 오프라인이든, 우리 매장에 손님이 오게 만드는 방법이라면 채널을 가리지 않고 맞춤 제안합니다.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#place-diagnose">무료 자가진단 시작</a>
+        <a class="btn btn-ghost" href="#channels">서비스 살펴보기</a>
+      </div>
+      <p class="hero-trust">FIELD EXPERIENCE — 안경원 현장 운영 경험 · 안경 프랜차이즈 가맹영업 · 안경 IT기업 마케팅 실무</p>
+    </div>
+    <div class="chart" data-reveal>
+      <div class="chart-row"><span class="val">1.5</span><span class="glyph">네이버플레이스</span></div>
+      <div class="chart-row"><span class="val">1.0</span><span class="glyph">당근마켓</span></div>
+      <div class="chart-row"><span class="val">0.7</span><span class="glyph">인스타그램</span></div>
+      <div class="chart-row"><span class="val">0.5</span><span class="glyph">블로그</span></div>
+      <div class="chart-row"><span class="val">0.3</span><span class="glyph">오픈이벤트</span></div>
+      <div class="chart-row"><span class="val">0.1</span><span class="glyph">사은품기획 · 프로모션</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="place-diagnose" class="diagnose-section">
+  <div class="wrap">
+    <div class="eyebrow">FREE · 즉시 진단</div>
+    <h2 class="section-title" data-reveal>그래서, 우리 안경원은<br>지금 몇 번째일까요?</h2>
+    <p class="lede">매장명만 입력하면 10초 안에 끝납니다. "동네 + 안경원" 검색 시 네이버 플레이스에서 몇 번째로 노출되는지 포컬랩이 바로 진단해드립니다.</p>
+
+    <form class="diagnose-form" data-reveal onsubmit="return goDiagnose(event)">
+      <input type="text" id="storeQuery" placeholder="안경원 이름을 입력하세요 (예: 덕운동안경원)" autocomplete="off">
+      <button class="btn btn-primary" type="submit">진단 시작</button>
+    </form>
+    <p class="diagnose-hint">플레이스 매장명을 입력하세요. 결과는 무료입니다.</p>
+
+    <div class="diagnose-result" id="diagnoseResult">
+      <div class="dr-rank">
+        <div class="k">네이버 플레이스 예상 순위</div>
+        <div class="store" id="drStoreName">-</div>
+        <div class="num" id="drRank">-<span>번째</span></div>
+        <div class="score" id="drScore">종합 진단 0 / 100점</div>
+      </div>
+      <div class="dr-metrics">
+        <div class="dr-metric">
+          <div class="dr-metric-top"><span>대표사진 · 기본정보 최적화</span><span class="v" id="m1v">0%</span></div>
+          <div class="dr-bar"><div class="dr-bar-fill" id="m1"></div></div>
+        </div>
+        <div class="dr-metric">
+          <div class="dr-metric-top"><span>리뷰 누적 · 응답률</span><span class="v" id="m2v">0%</span></div>
+          <div class="dr-bar"><div class="dr-bar-fill" id="m2"></div></div>
+        </div>
+        <div class="dr-metric">
+          <div class="dr-metric-top"><span>키워드 매칭도</span><span class="v" id="m3v">0%</span></div>
+          <div class="dr-bar"><div class="dr-bar-fill" id="m3"></div></div>
+        </div>
+        <div class="dr-metric">
+          <div class="dr-metric-top"><span>소식 · 예약 연동</span><span class="v" id="m4v">0%</span></div>
+          <div class="dr-bar"><div class="dr-bar-fill" id="m4"></div></div>
+        </div>
+      </div>
+      <div class="dr-note">* '네이버 플레이스 예상 순위'는 네이버 지역검색 API 연동 시 실제 상위 5개 결과 기준 데이터입니다(연동 전에는 간이 추정치). 나머지 세부 지표는 입력하신 매장명 기반의 간이 추정 지표이며, 실제 노출 순위는 검색 시점·기기·지역에 따라 달라질 수 있습니다.</div>
+      <div class="dr-cta"><a class="btn btn-primary" href="#contact">정확한 진단 상담받기</a></div>
+    </div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap">
+    <div class="eyebrow">왜 포컬랩인가</div>
+    <h2 class="section-title" data-reveal>대행사 용어가 아니라,<br>안경원의 언어로 말합니다.</h2>
+    <p class="lede">일반 마케팅 대행사는 안경원을 모릅니다. 저희는 안경원 안에서 일해봤고, 안경 업계 마케팅팀에서 일했습니다. 그 차이가 결과를 만듭니다.</p>
+    <div class="why-grid">
+      <div class="why-card" data-reveal>
+        <div class="why-tag">EXPERIENCE — 현장</div>
+        <h3>안경사의 시선으로 봅니다</h3>
+        <p>시력검사부터 조제, 손님 응대까지 안경원 현장을 압니다. 손님이 실제로 안경원 문을 여는 이유부터 시작합니다.</p>
+      </div>
+      <div class="why-card" data-reveal>
+        <div class="why-tag">INSIGHT — 업계</div>
+        <h3>안경 업계 마케팅 노하우</h3>
+        <p>안경 프랜차이즈 가맹영업과 안경 IT기업 마케팅을 직접 담당했습니다. 안경원 매출 구조를 이해하고 제안합니다.</p>
+      </div>
+      <div class="why-card" data-reveal>
+        <div class="why-tag">LANGUAGE — 소통</div>
+        <h3>원장님이 이해할 수 있게</h3>
+        <p>어려운 용어 대신 표와 숫자로 설명합니다. 무엇을, 왜 하는지 원장님이 직접 판단할 수 있도록 제안합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="channels" style="background:var(--paper-alt); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <div class="eyebrow">핵심 상품</div>
+    <h2 class="section-title" data-reveal>우리 매장에 손님이 오게<br>만드는 모든 방법</h2>
+    <p class="lede">온라인과 오프라인을 나누지 않습니다. 우리 안경원에 맞는 채널을 찾아 맞춤 제안합니다.</p>
+
+    <table class="channels-table" data-reveal>
+      <thead>
+        <tr><th>채널</th><th>무엇을 하나요</th><th>이런 원장님께</th></tr>
+      </thead>
+      <tbody>
+        <tr class="group-row"><td colspan="3">온라인 채널</td></tr>
+        <tr><td class="ch-name"><span class="ch-dot" style="background:var(--focus-blue);"></span>네이버 플레이스</td><td>검색 상위 노출, 리뷰·예약 세팅</td><td class="ch-who">검색해도 우리 매장이 안 나온다면</td></tr>
+        <tr><td class="ch-name"><span class="ch-dot" style="background:var(--carrot);"></span>당근마켓 · 당근단골</td><td>동네 손님 확보, 단골 관리 세팅</td><td class="ch-who">동네 손님을 놓치고 있다면</td></tr>
+        <tr><td class="ch-name"><span class="ch-dot" style="background:var(--gold);"></span>블로그</td><td>검색 유입을 위한 후기·콘텐츠 발행</td><td class="ch-who">후기가 쌓이지 않는다면</td></tr>
+        <tr><td class="ch-name"><span class="ch-dot" style="background:var(--focus-blue);"></span>인스타그램</td><td>매장 감성, 신상 프레임 홍보</td><td class="ch-who">젊은 손님을 늘리고 싶다면</td></tr>
+        <tr class="group-row"><td colspan="3">현장 · 프로모션</td></tr>
+        <tr><td class="ch-name"><span class="ch-dot" style="background:var(--gold);"></span>오픈 이벤트</td><td>오픈 초기 화제성·방문 확보 기획</td><td class="ch-who">곧 오픈 예정이라면</td></tr>
+        <tr><td class="ch-name"><span class="ch-dot" style="background:var(--carrot);"></span>시즌 프로모션</td><td>시기별 방문을 유도하는 기획</td><td class="ch-who">방문이 뜸해지는 시기라면</td></tr>
+        <tr><td class="ch-name"><span class="ch-dot" style="background:var(--focus-blue);"></span>사은품 기획</td><td>재방문·소개를 부르는 구성 설계</td><td class="ch-who">손님이 한 번만 오고 만다면</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="checkup" class="checkup-section">
+  <div class="wrap">
+    <div class="eyebrow">자가진단</div>
+    <h2 class="section-title" data-reveal><span id="checkupName">우리 안경원</span>,<br>지금 시력은 몇 인가요?</h2>
+    <p class="lede">해당하는 항목을 체크해보세요. 체크가 많을수록 마케팅 시력이 흐려집니다. 포컬랩이 이 자리에서 바로 진단해드립니다.</p>
+
+    <div class="checkup-box" data-reveal>
+      <div class="checkup-list">
+        <div class="checkup-item"><input type="checkbox" id="q1" class="cq"><label for="q1">네이버에 검색해도 우리 매장이 잘 안 보인다</label></div>
+        <div class="checkup-item"><input type="checkbox" id="q2" class="cq"><label for="q2">최근 3개월간 새로 올린 블로그 글이 없다</label></div>
+        <div class="checkup-item"><input type="checkbox" id="q3" class="cq"><label for="q3">인스타그램 팔로워·반응이 늘지 않는다</label></div>
+        <div class="checkup-item"><input type="checkbox" id="q4" class="cq"><label for="q4">당근마켓 단골을 따로 관리하고 있지 않다</label></div>
+        <div class="checkup-item"><input type="checkbox" id="q5" class="cq"><label for="q5">최근 진행한 프로모션이나 사은품 기획이 없다</label></div>
+        <div class="checkup-item"><input type="checkbox" id="q6" class="cq"><label for="q6">리뷰에 답글을 달지 못하고 있다</label></div>
+      </div>
+      <div class="checkup-result">
+        <div class="gauge-label">마케팅 시력</div>
+        <div class="gauge-value"><span id="gaugeNum">1.5</span></div>
+        <div id="gaugeSample" class="mono">우리 안경원</div>
+        <div class="gauge-status" id="gaugeStatus">체크 항목이 없습니다. 지금 시력을 그대로 유지하세요.</div>
+        <a class="btn btn-primary" href="#contact" style="border-color:#fff;">진단 결과로 상담 신청하기</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="process">
+  <div class="wrap">
+    <div class="eyebrow">진행 프로세스</div>
+    <h2 class="section-title" data-reveal>진단부터 관리까지,<br>하나의 처방으로</h2>
+    <p class="lede">채널을 흩뿌리지 않습니다. 진단 결과를 바탕으로 하나의 처방전을 만들고, 그대로 실행·관리합니다.</p>
+
+    <div class="process-row">
+      <div class="rx-card" data-step="STEP 01" data-reveal>
+        <h3>진단</h3>
+        <p>네이버·당근·블로그·인스타 등 현재 채널 상태와 매장 현황을 점검합니다.</p>
+        <span class="rx-arrow">→</span>
+      </div>
+      <div class="rx-card" data-step="STEP 02" data-reveal>
+        <h3>처방</h3>
+        <p>매장에 맞는 채널과 우선순위를 정한 맞춤 마케팅 전략을 설계합니다.</p>
+        <span class="rx-arrow">→</span>
+      </div>
+      <div class="rx-card" data-step="STEP 03" data-reveal>
+        <h3>실행</h3>
+        <p>콘텐츠 제작, 광고 세팅, 이벤트·사은품 기획을 직접 실행합니다.</p>
+        <span class="rx-arrow">→</span>
+      </div>
+      <div class="rx-card" data-step="STEP 04" data-reveal>
+        <h3>관리</h3>
+        <p>방문·재방문 데이터를 확인하며 다음 처방을 조정합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--paper-alt); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <div class="eyebrow">도입 효과</div>
+    <h2 class="section-title" data-reveal>이렇게 달라집니다</h2>
+    <p class="lede">숫자를 부풀리지 않습니다. 안경원 마케팅에서 실제로 달라지는 지점만 말씀드립니다.</p>
+    <div class="results-grid">
+      <div class="result-card" data-reveal>
+        <div class="result-metric">01</div>
+        <h4>검색되는 매장</h4>
+        <p>네이버 플레이스와 블로그가 정리되면, 손님이 찾아서 오는 매장이 됩니다.</p>
+      </div>
+      <div class="result-card" data-reveal>
+        <div class="result-metric">02</div>
+        <h4>이유 있는 재방문</h4>
+        <p>사은품·프로모션 기획으로 한 번 온 손님이 다시 올 이유를 만듭니다.</p>
+      </div>
+      <div class="result-card" data-reveal>
+        <div class="result-metric">03</div>
+        <h4>흩어지지 않는 관리</h4>
+        <p>채널마다 따로 관리하지 않고, 하나의 처방전으로 묶어 운영합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="contact-section">
+  <div class="wrap">
+    <div class="eyebrow">문의하기</div>
+    <h2 class="section-title" data-reveal>지금, 흐린 마케팅을<br>선명하게 만드세요</h2>
+    <div class="contact-grid">
+      <form class="contact-form" data-reveal onsubmit="event.preventDefault(); this.querySelector('.contact-note').textContent='문의가 접수되었습니다. 빠르게 연락드리겠습니다.';">
+        <input type="text" placeholder="안경원 이름" required>
+        <input type="text" placeholder="담당자 성함" required>
+        <input type="tel" placeholder="연락처" required>
+        <textarea placeholder="어떤 부분이 궁금하신가요?"></textarea>
+        <button class="btn btn-primary" type="submit" style="align-self:flex-start;">무료 진단 신청하기</button>
+        <p class="contact-note">신청 후 1~2영업일 내 연락드립니다.</p>
+      </form>
+      <div class="contact-side" data-reveal>
+        <p>가맹 영업, 기업 제휴, 개별 안경원 마케팅 모두 상담 가능합니다. 현재 상황만 알려주시면 맞는 채널부터 제안드립니다.</p>
+        <div class="info-row"><span class="k mono">EMAIL</span><span>contact@focal-lab.co.kr</span></div>
+        <div class="info-row"><span class="k mono">CALL</span><span>02-000-0000</span></div>
+        <div class="info-row"><span class="k mono">HOURS</span><span>평일 10:00 – 19:00</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-inner">
+    <span>© 2026 FOCAL LAB. 안경원 전문 마케팅.</span>
+    <span class="mono">안경사 × 안경마케터가 만든 마케팅 회사</span>
+  </div>
+</footer>
+
+<script>
+  function hashStr(s){
+    let h = 0;
+    for(let i=0; i<s.length; i++){
+      h = (h * 31 + s.charCodeAt(i)) >>> 0;
+    }
+    return h;
+  }
+
+  // 네이버 오픈API 연동 전까지 사용하는 간이 추정 로직 (API 실패 시 fallback)
+  function mockResult(name){
+    const h = hashStr(name);
+    return {
+      rank: (h % 14) + 1,
+      rankLabel: ((h % 14) + 1) + '번째',
+      isEstimate: true,
+      m1: 40 + (h % 55),
+      m2: 35 + ((h >> 3) % 60),
+      m3: 30 + ((h >> 6) % 65),
+      m4: 25 + ((h >> 9) % 60)
+    };
+  }
+
+  function renderResult(name, r){
+    document.getElementById('drStoreName').textContent = name;
+    document.getElementById('drRank').innerHTML = r.rankLabel + (r.isEstimate ? '' : '<span>· 상위 5위 중</span>');
+    const score = Math.round((r.m1 + r.m2 + r.m3 + r.m4) / 4);
+    document.getElementById('drScore').textContent =
+      (r.isEstimate ? '간이 추정 ' : '종합 진단 ') + score + ' / 100점';
+
+    const bars = [['m1',r.m1],['m2',r.m2],['m3',r.m3],['m4',r.m4]];
+    bars.forEach(([id,val])=>{
+      document.getElementById(id+'v').textContent = val + '%';
+      document.getElementById(id).style.width = '0%';
+    });
+
+    const panel = document.getElementById('diagnoseResult');
+    panel.classList.add('show');
+
+    requestAnimationFrame(()=>{
+      setTimeout(()=>{
+        bars.forEach(([id,val])=>{
+          document.getElementById(id).style.width = val + '%';
+        });
+      }, 60);
+    });
+
+    panel.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  async function goDiagnose(e){
+    e.preventDefault();
+    const input = document.getElementById('storeQuery');
+    const name = input.value.trim();
+    if(!name){ input.focus(); return false; }
+
+    // 1) 실서비스 배포 후에는 /api/place-rank 가 네이버 지역검색 API를 호출해 실제 순위를 돌려줍니다.
+    // 2) 아직 백엔드가 연결되지 않았거나(정적 미리보기) API 호출이 실패하면 간이 추정값으로 대체합니다.
+    try {
+      const res = await fetch('/api/place-rank?query=' + encodeURIComponent(name));
+      if(!res.ok) throw new Error('API 응답 오류');
+      const data = await res.json();
+      const h = hashStr(name); // 리뷰수 등 API가 주지 않는 항목은 여전히 간이 추정
+      renderResult(name, {
+        rank: data.rank,
+        rankLabel: data.rank ? (data.rank + '번째') : '5위 밖',
+        isEstimate: false,
+        m1: 40 + (h % 55),
+        m2: 35 + ((h >> 3) % 60),
+        m3: 30 + ((h >> 6) % 65),
+        m4: 25 + ((h >> 9) % 60)
+      });
+    } catch (err){
+      renderResult(name, mockResult(name));
+    }
+    return false;
+  }
+
+  const boxes = document.querySelectorAll('.cq');
+  const acuity = [1.5,1.0,0.7,0.5,0.3,0.1,0.1];
+  const statusMsg = [
+    '체크 항목이 없습니다. 지금 시력을 그대로 유지하세요.',
+    '약간의 흐림이 시작됩니다. 가벼운 처방으로 충분합니다.',
+    '흐림이 눈에 띕니다. 채널별 점검이 필요한 시점입니다.',
+    '방문 감소로 이어질 수 있는 흐림입니다.',
+    '여러 채널이 동시에 흐려지고 있습니다.',
+    '마케팅 시력이 상당히 낮습니다. 처방이 필요합니다.',
+    '심각한 흐림입니다. 지금 바로 진단을 받아보세요.'
+  ];
+  const gaugeNum = document.getElementById('gaugeNum');
+  const gaugeSample = document.getElementById('gaugeSample');
+  const gaugeStatus = document.getElementById('gaugeStatus');
+  function updateGauge(){
+    const checked = document.querySelectorAll('.cq:checked').length;
+    const val = acuity[checked];
+    gaugeNum.textContent = val.toFixed(1);
+    gaugeSample.style.filter = 'blur(' + ((1.5-val)*9) + 'px)';
+    gaugeStatus.textContent = statusMsg[checked];
+  }
+  boxes.forEach(b => b.addEventListener('change', updateGauge));
+
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); } });
+  }, {threshold:.14});
+  document.querySelectorAll('[data-reveal]').forEach(el=>io.observe(el));
+</script>
+
+</body>
+</html>
