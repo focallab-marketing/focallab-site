@@ -133,82 +133,73 @@
   .store-search-form .btn{padding:12px 20px; font-size:14px; white-space:nowrap;}
   @media (max-width:480px){ .store-search-form{flex-direction:column;} }
 
-  /* ---------- PLACE DIAGNOSE ---------- */
+  /* ---------- PLACE DIAGNOSE (자가진단 퀴즈) ---------- */
   .diagnose-section{background:var(--paper-alt); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
-  .diagnose-form{display:flex; gap:10px; max-width:560px; margin:36px 0 8px;}
-  .diagnose-form input{
-    flex:1; padding:16px 18px; border:1px solid var(--line-strong); border-radius:3px;
-    background:var(--card); font-family:inherit; font-size:15.5px; color:var(--ink);
-  }
-  .diagnose-form input:focus{outline:none; border-color:var(--focus-blue);}
-  .diagnose-form .btn{padding:16px 28px; font-size:15px; white-space:nowrap;}
-  .diagnose-hint{font-size:12.5px; color:var(--ink-soft); margin:0 0 8px;}
-  @media (max-width:560px){ .diagnose-form{flex-direction:column;} }
 
-  .diagnose-result{
-    display:none; margin-top:40px; border:1px solid var(--line); border-radius:4px;
-    background:var(--card); overflow:hidden;
+  /* 퀴즈 카드 */
+  .quiz{
+    max-width:620px; margin:40px 0 0;
+    background:var(--card); border:1px solid var(--line); border-radius:6px;
+    padding:30px 32px 34px;
   }
-  .diagnose-result.show{display:grid; grid-template-columns:280px 1fr;}
-  .dr-rank{
-    padding:34px 28px; border-right:1px solid var(--line);
-    display:flex; flex-direction:column; justify-content:center; align-items:flex-start;
-    background:var(--ink); color:var(--paper);
+  .quiz-progress{height:6px; background:var(--paper-alt); border-radius:4px; overflow:hidden; margin-bottom:12px;}
+  .quiz-progress-fill{height:100%; width:0%; background:var(--focus-blue); border-radius:4px; transition:width .4s cubic-bezier(.2,.7,.2,1);}
+  .quiz-step-label{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.1em; color:var(--focus-blue-deep); margin-bottom:22px;}
+  .quiz-q h3{font-size:clamp(19px,2.4vw,24px); line-height:1.4; margin:0 0 8px; font-weight:700;}
+  .quiz-q .quiz-sub{font-size:13.5px; color:var(--ink-soft); margin:0 0 18px;}
+  .quiz-input{
+    width:100%; padding:15px 16px; border:1px solid var(--line-strong); border-radius:4px;
+    background:var(--paper); font-family:inherit; font-size:15.5px; color:var(--ink); margin-bottom:18px;
   }
-  .dr-rank .k{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.12em; color:#9FD1FF; text-transform:uppercase; margin-bottom:14px;}
-  .dr-rank .store{font-size:14.5px; color:rgba(238,241,240,.72); margin-bottom:4px;}
-  .dr-rank .num{font-family:'Black Han Sans',sans-serif; font-size:56px; line-height:1; color:#fff;}
-  .dr-rank .num span{font-size:20px; font-family:'IBM Plex Mono',monospace; color:rgba(238,241,240,.6); margin-left:6px;}
-  .dr-rank .score{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--gold); margin-top:16px;}
-  .dr-metrics{padding:30px 32px;}
-  .dr-metric{margin-bottom:18px;}
-  .dr-metric:last-child{margin-bottom:0;}
-  .dr-metric-top{display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:7px;}
-  .dr-metric-top .v{font-family:'IBM Plex Mono',monospace; color:var(--focus-blue-deep);}
-  .dr-bar{height:6px; background:var(--paper-alt); border-radius:3px; overflow:hidden;}
-  .dr-bar-fill{height:100%; background:var(--focus-blue); border-radius:3px; width:0%; transition:width 1s cubic-bezier(.2,.7,.2,1);}
-  .dr-note{font-size:12.5px; color:var(--ink-soft); padding:16px 32px; border-top:1px solid var(--line); grid-column:1 / -1;}
-  .dr-cta{padding:0 32px 26px; grid-column:1 / -1;}
-  .dr-rank .num{font-family:'Black Han Sans',sans-serif; font-size:34px; line-height:1.15; color:#fff;}
-  .dr-rank .num.big{font-size:56px; line-height:1;}
-  .dr-rank .num .sub{display:block; font-size:13px; font-family:'IBM Plex Mono',monospace; color:rgba(238,241,240,.6); margin-top:8px; letter-spacing:.02em;}
-  .dr-comp-head{font-size:12px; letter-spacing:.08em; color:var(--focus-blue-deep); text-transform:uppercase; margin-bottom:12px;}
-  .dr-comp-list{list-style:none; counter-reset:comp; margin:0 0 18px; padding:0;}
-  .dr-comp-list li{
-    counter-increment:comp; position:relative; padding:9px 0 9px 34px;
-    border-bottom:1px solid var(--line); font-size:14px;
+  .quiz-input:focus{outline:none; border-color:var(--focus-blue);}
+  .quiz-opts{display:flex; flex-direction:column; gap:11px; margin-top:20px;}
+  .quiz-opt{
+    text-align:left; padding:17px 20px; border:1px solid var(--line-strong); border-radius:5px;
+    background:var(--paper); font-family:inherit; font-size:15.5px; font-weight:500; color:var(--ink);
+    cursor:pointer; transition:border-color .15s, background .15s, transform .12s;
   }
-  .dr-comp-list li:last-child{border-bottom:none;}
-  .dr-comp-list li::before{
-    content:counter(comp); position:absolute; left:0; top:8px;
-    width:22px; height:22px; border-radius:50%;
-    background:var(--paper-alt); color:var(--ink);
-    font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600;
-    display:flex; align-items:center; justify-content:center;
+  .quiz-opt:hover{border-color:var(--focus-blue); background:#fff; transform:translateX(3px);}
+  .quiz-opt:active{transform:scale(.99);}
+  .quiz-next{margin-top:4px;}
+
+  /* 결과 카드 */
+  .result2{
+    max-width:620px; margin:40px 0 0;
+    border:1px solid var(--line); border-radius:6px; overflow:hidden; background:var(--card);
+    animation:r2in .5s ease;
   }
-  .dr-comp-list li.is-you::before{background:var(--focus-blue); color:#fff;}
-  .dr-comp-list li.is-you{font-weight:600; color:var(--focus-blue-deep);}
-  .dr-comp-list li .cat{display:block; font-size:11.5px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; margin-top:2px;}
-  .dr-comp-list li .youtag{margin-left:8px; font-size:11px; background:var(--focus-blue); color:#fff; padding:1px 8px; border-radius:20px; font-family:'IBM Plex Mono',monospace;}
-  .dr-diag-msg{font-size:14px; line-height:1.7; color:var(--ink); background:var(--paper); border-left:3px solid var(--gold); padding:14px 16px; border-radius:0 3px 3px 0; margin:0;}
-  .dr-loading{padding:40px 32px; text-align:center; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; font-size:13px; grid-column:1 / -1;}
-  .dr-links{display:flex; flex-direction:column; gap:10px; margin:14px 0 4px;}
-  .dr-links a{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:14px 18px; border:1px solid var(--line-strong); border-radius:4px;
-    background:var(--paper); text-decoration:none; color:var(--ink);
-    font-size:14.5px; font-weight:600; transition:border-color .15s, transform .15s, background .2s;
+  @keyframes r2in{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+  .r2-head{background:var(--ink); color:var(--paper); padding:34px 32px 30px; text-align:center;}
+  .r2-store{font-size:15px; color:rgba(238,241,240,.7); margin-bottom:18px;}
+  .r2-label{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.1em; color:#9FD1FF; text-transform:uppercase; margin-bottom:10px;}
+  .r2-big{font-family:'Black Han Sans',sans-serif; font-size:64px; line-height:1; color:#fff;}
+  .r2-big .r2-unit{font-family:'IBM Plex Mono',monospace; font-size:20px; color:rgba(238,241,240,.65); margin-left:8px;}
+  .r2-sub{font-size:13.5px; color:rgba(238,241,240,.7); margin-top:14px;}
+  .r2-body{padding:28px 32px 4px;}
+  .r2-score-row{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:9px;}
+  .r2-score-txt{font-size:14px; font-weight:600;}
+  .r2-score-val{font-family:'Black Han Sans',sans-serif; font-size:26px; color:var(--focus-blue-deep);}
+  .r2-score-max{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--ink-soft); margin-left:5px;}
+  .r2-gauge{height:9px; background:var(--paper-alt); border-radius:5px; overflow:hidden;}
+  .r2-gauge-fill{height:100%; width:0%; border-radius:5px; transition:width 1.1s cubic-bezier(.2,.7,.2,1);}
+  .r2-grade{font-size:14px; line-height:1.7; color:var(--ink); margin:16px 0 0; padding:14px 16px; background:var(--paper); border-left:3px solid var(--gold); border-radius:0 3px 3px 0;}
+  .r2-items-head{font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--focus-blue-deep); margin:26px 0 14px;}
+  .r2-items{display:flex; flex-direction:column; gap:12px;}
+  .r2-item{display:flex; align-items:flex-start; gap:12px; font-size:14px; line-height:1.55;}
+  .r2-item .ic{
+    flex-shrink:0; width:24px; height:24px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; margin-top:1px;
   }
-  .dr-links a:hover{border-color:var(--focus-blue); background:#fff; transform:translateY(-1px);}
-  .dr-links a .sub{display:block; font-size:12px; font-weight:400; color:var(--ink-soft); margin-top:2px;}
-  .dr-links a .go{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--focus-blue-deep); white-space:nowrap; margin-left:14px;}
-  .dr-links a.map .go{color:var(--carrot);}
-  .dr-check{list-style:none; margin:12px 0 0; padding:0;}
-  .dr-check li{font-size:13.5px; line-height:1.7; color:var(--ink); padding:8px 0 8px 20px; position:relative; border-bottom:1px dashed var(--line);}
-  .dr-check li:last-child{border-bottom:none;}
-  .dr-check li::before{content:'—'; position:absolute; left:0; color:var(--gold); font-weight:700;}
-  .dr-check li b{color:var(--focus-blue-deep);}
-  @media (max-width:700px){ .diagnose-result.show{grid-template-columns:1fr;} .dr-rank{border-right:none; border-bottom:1px solid var(--line);} }
+  .r2-item.good .ic{background:rgba(42,93,170,.14); color:var(--focus-blue-deep);}
+  .r2-item.warn .ic{background:rgba(185,137,59,.18); color:var(--gold-deep);}
+  .r2-item.bad .ic{background:rgba(211,95,43,.16); color:var(--carrot);}
+  .r2-item .txt b{display:block; margin-bottom:1px;}
+  .r2-item .txt span{color:var(--ink-soft); font-size:13px;}
+  .r2-coach{margin:24px 0 4px; padding:18px 20px; background:var(--paper-alt); border-radius:5px; font-size:14px; line-height:1.7;}
+  .r2-coach b{color:var(--focus-blue-deep);}
+  .r2-note{font-size:12px; color:var(--ink-soft); line-height:1.6; padding:18px 32px; border-top:1px solid var(--line); margin-top:20px;}
+  .r2-cta{display:flex; gap:12px; flex-wrap:wrap; padding:0 32px 28px;}
+  @media (max-width:560px){ .quiz,.result2{padding-left:22px; padding-right:22px;} .r2-body,.r2-head,.r2-note,.r2-cta{padding-left:22px; padding-right:22px;} .r2-big{font-size:52px;} }
 
   /* chart decoration */
   .chart{
@@ -391,36 +382,98 @@
 
 <section id="place-diagnose" class="diagnose-section">
   <div class="wrap">
-    <div class="eyebrow">FREE · 즉시 진단</div>
-    <h2 class="section-title" data-reveal>그래서, 우리 안경원은<br>지금 검색되고 있을까요?</h2>
-    <p class="lede">우리 동네를 입력해보세요. 손님이 실제로 검색하는 "동네 + 안경원" 화면을 그대로 열어, 우리 매장이 상위에 보이는지 10초 만에 직접 확인할 수 있습니다.</p>
+    <div class="eyebrow">FREE · 30초 진단</div>
+    <h2 class="section-title" data-reveal>우리 안경원,<br>손님을 얼마나 놓치고 있을까요?</h2>
+    <p class="lede">5개 질문에 답만 하면 됩니다. 우리 매장의 온라인 노출 상태를 진단하고, 지금 놓치고 있는 검색 손님이 얼마나 되는지 알려드립니다.</p>
 
-    <form class="diagnose-form" data-reveal onsubmit="return goDiagnose(event)">
-      <input type="text" id="storeQuery" placeholder="우리 동네를 입력하세요 (예: 역삼동, 덕운동, 포항 북구)" autocomplete="off">
-      <button class="btn btn-primary" type="submit">진단 시작</button>
-    </form>
-    <p class="diagnose-hint">동네 이름만 넣으면 "○○ 안경원"으로 검색해 실제 노출 화면을 열어드립니다. 매장명을 넣어도 됩니다.</p>
+    <div class="quiz" id="quiz" data-reveal>
+      <!-- 진행바 -->
+      <div class="quiz-progress"><div class="quiz-progress-fill" id="quizProgress"></div></div>
+      <div class="quiz-step-label" id="quizStepLabel">질문 1 / 5</div>
 
-    <div class="diagnose-result" id="diagnoseResult">
-      <div class="dr-rank">
-        <div class="k">네이버 플레이스 노출 진단</div>
-        <div class="store" id="drStoreName">-</div>
-        <div class="num" id="drRank">지금<br>확인하기</div>
-        <div class="score" id="drScore">실제 검색 화면으로</div>
+      <!-- 질문들이 여기 순서대로 나타남 -->
+      <div class="quiz-q" id="q-0">
+        <h3>매장명을 어떻게 부를까요?</h3>
+        <p class="quiz-sub">진단 결과에 표시할 이름이에요. (선택)</p>
+        <input type="text" id="storeName" class="quiz-input" placeholder="예: 역삼포컬안경원" autocomplete="off">
+        <button class="btn btn-primary quiz-next" onclick="nextStep()">시작하기 →</button>
       </div>
-      <div class="dr-metrics">
-        <div class="dr-comp-head">STEP 1 — 실제 검색 화면 열기</div>
-        <p class="dr-diag-msg" id="drDiagMsg">아래 버튼을 누르면 손님이 실제로 보는 네이버 검색 결과가 새 창에 열립니다. 우리 매장이 위쪽(상위 5개 안)에 보이는지 직접 확인해보세요.</p>
-        <div class="dr-links" id="drLinks"></div>
-        <div class="dr-comp-head" style="margin-top:22px;">STEP 2 — 스스로 진단하기</div>
-        <ul class="dr-check" id="drCheck">
-          <li><b>상위 1~3위에 보인다</b> → 노출은 잘 되고 있습니다. 다만 리뷰·소식 관리를 놓으면 밀립니다.</li>
-          <li><b>스크롤해야 겨우 보인다</b> → 손님 대부분은 위쪽만 봅니다. 상위 진입 여지가 큽니다.</li>
-          <li><b>아무리 찾아도 없다</b> → 지금 이 순간 손님은 경쟁 매장으로 갑니다. 가장 시급합니다.</li>
-        </ul>
+
+      <div class="quiz-q" id="q-1" hidden>
+        <h3>네이버에 "우리 동네 + 안경원"을 검색하면,<br>우리 매장이 첫 화면에 보이나요?</h3>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="answer(1,2)">위쪽에 잘 보인다</button>
+          <button class="quiz-opt" onclick="answer(1,1)">한참 내려야 보인다</button>
+          <button class="quiz-opt" onclick="answer(1,0)">아무리 찾아도 안 보인다</button>
+          <button class="quiz-opt" onclick="answer(1,0)">확인해본 적 없다</button>
+        </div>
       </div>
-      <div class="dr-note" id="drNote">* 네이버 실제 검색 결과를 그대로 열어 보여드립니다. 순위는 검색 위치·기기·시점에 따라 달라질 수 있습니다. 정확한 순위 추적·리뷰·유입 분석과 개선 방법은 포컬랩 무료 상담에서 확인하실 수 있습니다.</div>
-      <div class="dr-cta"><a class="btn btn-primary" href="#contact">이 결과로 무료 상담받기</a></div>
+
+      <div class="quiz-q" id="q-2" hidden>
+        <h3>최근 3개월 안에<br>새로 올라온 방문자 리뷰가 있나요?</h3>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="answer(2,2)">꾸준히 쌓이고 있다</button>
+          <button class="quiz-opt" onclick="answer(2,1)">가끔 한두 개 올라온다</button>
+          <button class="quiz-opt" onclick="answer(2,0)">거의 없다 / 안 쌓인다</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="q-3" hidden>
+        <h3>플레이스에 대표사진·소식(이벤트)을<br>정기적으로 올리고 있나요?</h3>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="answer(3,2)">사진도 많고 소식도 자주 올린다</button>
+          <button class="quiz-opt" onclick="answer(3,1)">사진만 몇 장 있다</button>
+          <button class="quiz-opt" onclick="answer(3,0)">등록만 해두고 방치 중이다</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="q-4" hidden>
+        <h3>블로그·인스타·당근 같은 채널로<br>매장을 알리고 있나요?</h3>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="answer(4,2)">2개 이상 꾸준히 운영한다</button>
+          <button class="quiz-opt" onclick="answer(4,1)">1개 정도 가끔 한다</button>
+          <button class="quiz-opt" onclick="answer(4,0)">거의 안 한다</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="q-5" hidden>
+        <h3>한 번 온 손님이 다시 오도록<br>사은품·프로모션을 기획하고 있나요?</h3>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="answer(5,2)">정기적으로 기획한다</button>
+          <button class="quiz-opt" onclick="answer(5,1)">생각날 때 가끔 한다</button>
+          <button class="quiz-opt" onclick="answer(5,0)">따로 하지 않는다</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 결과 화면 -->
+    <div class="result2" id="result2" hidden>
+      <div class="r2-head">
+        <div class="r2-store" id="r2Store">우리 안경원</div>
+        <div class="r2-label">현재 놓치고 있는 검색 손님</div>
+        <div class="r2-big"><span id="r2Miss">0</span><span class="r2-unit">명 / 월</span></div>
+        <div class="r2-sub" id="r2SubMsg">추정치입니다</div>
+      </div>
+
+      <div class="r2-body">
+        <div class="r2-score-row">
+          <span class="r2-score-txt">온라인 노출력</span>
+          <span class="r2-score-val"><span id="r2Score">0</span><span class="r2-score-max">/ 100</span></span>
+        </div>
+        <div class="r2-gauge"><div class="r2-gauge-fill" id="r2Gauge"></div></div>
+        <p class="r2-grade" id="r2Grade"></p>
+
+        <div class="r2-items-head">항목별 진단</div>
+        <div class="r2-items" id="r2Items"></div>
+
+        <div class="r2-coach" id="r2Coach"></div>
+      </div>
+
+      <div class="r2-note">* 놓치는 손님 수는 안경원 평균 검색 유입을 바탕으로 한 추정 범위이며, 실제 수치는 상권·매장 규모에 따라 다릅니다. 정확한 분석과 개선 방법은 포컬랩 무료 상담에서 확인하실 수 있습니다.</div>
+      <div class="r2-cta">
+        <a class="btn btn-primary" href="#contact">이 결과로 무료 상담받기</a>
+        <button class="btn btn-ghost" onclick="restartQuiz()">다시 진단하기</button>
+      </div>
     </div>
   </div>
 </section>
@@ -589,44 +642,134 @@
 <script>
   const $ = (id) => document.getElementById(id);
 
-  // 입력값으로 "지역+안경원" 검색어를 만듭니다.
-  // 이미 '안경원' '안경' 이 들어있으면 그대로 쓰고, 아니면 뒤에 ' 안경원'을 붙입니다.
-  function buildQuery(raw){
-    const q = raw.trim();
-    if(/안경/.test(q)) return q;
-    return q + ' 안경원';
+  // ---------- 자가진단 퀴즈 ----------
+  // 질문 5개, 각 0~2점. 총점 10점 만점 → 100점 환산.
+  const TOTAL_Q = 5;
+  let step = 0;              // 0=이름입력, 1~5=질문
+  const answers = {};        // {1:2, 2:0, ...}
+
+  // 각 질문의 항목 정의 (결과 항목별 진단에 사용)
+  const ITEMS = {
+    1: { label: '네이버 플레이스 상위 노출',  bad: '검색 시 우리 매장이 손님 눈에 안 띕니다.', warn: '노출은 되지만 상위권 진입 여지가 큽니다.', good: '검색 상위에 잘 노출되고 있습니다.' },
+    2: { label: '방문자 리뷰 관리',           bad: '리뷰가 안 쌓여 신뢰·순위가 함께 약해집니다.', warn: '리뷰가 간헐적이라 꾸준함이 필요합니다.', good: '리뷰가 꾸준히 쌓이고 있습니다.' },
+    3: { label: '대표사진·소식 관리',         bad: '방치된 플레이스는 손님에게 "닫힌 곳"처럼 보입니다.', warn: '사진은 있으나 소식 업데이트가 필요합니다.', good: '사진·소식이 활발히 관리되고 있습니다.' },
+    4: { label: '블로그·SNS·당근 채널',       bad: '검색 유입 통로가 플레이스 하나뿐입니다.', warn: '채널이 하나뿐이라 확장 여지가 있습니다.', good: '여러 채널로 매장을 알리고 있습니다.' },
+    5: { label: '재방문·프로모션 기획',       bad: '한 번 온 손님이 다시 올 이유가 없습니다.', warn: '프로모션이 비정기적입니다.', good: '재방문 유도가 잘 설계돼 있습니다.' },
+  };
+
+  function showStep(n){
+    for(let i=0;i<=TOTAL_Q;i++){
+      const el = $('q-'+i);
+      if(el) el.hidden = (i !== n);
+    }
+    // 진행바 (질문 단계만 카운트)
+    const qNum = Math.max(1, n);
+    $('quizProgress').style.width = ((n) / TOTAL_Q * 100) + '%';
+    $('quizStepLabel').textContent = n === 0 ? '시작' : ('질문 ' + n + ' / ' + TOTAL_Q);
   }
 
-  // 실제 네이버 검색 화면으로 연결되는 링크를 만들어 보여줍니다. (API 불필요)
-  function goDiagnose(e){
-    e.preventDefault();
-    const input = $('storeQuery');
-    const raw = input.value.trim();
-    if(!raw){ input.focus(); return false; }
-
-    const query = buildQuery(raw);
-    const enc = encodeURIComponent(query);
-
-    // 1) 네이버 통합검색(플레이스 목록이 그대로 뜸)  2) 네이버 지도(지도 위 순서)
-    const searchUrl = 'https://search.naver.com/search.naver?query=' + enc;
-    const mapUrl = 'https://map.naver.com/p/search/' + enc;
-
-    $('drStoreName').textContent = '"' + query + '" 검색';
-
-    // 링크 버튼 두 개 생성
-    $('drLinks').innerHTML =
-      '<a href="' + searchUrl + '" target="_blank" rel="noopener">' +
-        '<span>네이버 검색 결과 열기<span class="sub">손님이 실제로 보는 플레이스 목록</span></span>' +
-        '<span class="go">새 창 ↗</span></a>' +
-      '<a class="map" href="' + mapUrl + '" target="_blank" rel="noopener">' +
-        '<span>네이버 지도에서 보기<span class="sub">지도 위 노출 순서 확인</span></span>' +
-        '<span class="go">새 창 ↗</span></a>';
-
-    const panel = $('diagnoseResult');
-    panel.classList.add('show');
-    panel.scrollIntoView({behavior:'smooth', block:'center'});
-    return false;
+  function nextStep(){          // 이름 입력 → 첫 질문
+    step = 1;
+    showStep(1);
   }
+
+  function answer(qNo, score){  // 선택지 클릭
+    answers[qNo] = score;
+    if(qNo < TOTAL_Q){
+      step = qNo + 1;
+      showStep(step);
+    } else {
+      finish();
+    }
+  }
+
+  function restartQuiz(){
+    step = 0;
+    for(const k in answers) delete answers[k];
+    $('result2').hidden = true;
+    $('quiz').hidden = false;
+    showStep(0);
+    $('quiz').scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  function finish(){
+    // 총점 계산 (0~10) → 100점 환산
+    let raw = 0;
+    for(let i=1;i<=TOTAL_Q;i++) raw += (answers[i] ?? 0);
+    const score = Math.round(raw / (TOTAL_Q*2) * 100);
+
+    // 놓치는 손님 수 (추정 범위): 부족할수록 크게.
+    // 만점이면 거의 0, 0점이면 월 40~55명 수준으로 범위 제시.
+    const deficit = (TOTAL_Q*2) - raw;               // 0~10
+    const missLow = deficit * 4;                      // 0~40
+    const missHigh = deficit * 5 + 5;                 // 5~55
+    const missCenter = Math.round((missLow + missHigh)/2);
+
+    // 이름
+    const nameInput = $('storeName').value.trim();
+    const store = nameInput || '우리 안경원';
+    $('r2Store').textContent = store;
+
+    // 큰 숫자 (놓치는 손님)
+    if(deficit === 0){
+      $('r2Miss').textContent = '거의 0';
+      $('r2SubMsg').textContent = '지금처럼 관리하면 손님을 놓치지 않습니다';
+    } else {
+      $('r2Miss').textContent = '약 ' + missLow + '~' + missHigh;
+      $('r2SubMsg').textContent = '지금 상태로는 매달 이만큼의 검색 손님을 놓칠 수 있습니다 (추정)';
+    }
+
+    // 점수 게이지
+    $('r2Score').textContent = score;
+    const gauge = $('r2Gauge');
+    const color = score >= 70 ? 'var(--focus-blue)' : (score >= 40 ? 'var(--gold)' : 'var(--carrot)');
+    gauge.style.background = color;
+    setTimeout(()=>{ gauge.style.width = score + '%'; }, 80);
+
+    // 등급 한 줄 (코칭형 톤)
+    let grade;
+    if(score >= 70)      grade = '기본기가 탄탄합니다. 지금의 노출을 유지하고 한 단계 끌어올리는 관리만 더하면 됩니다.';
+    else if(score >= 40) grade = '기회가 많이 남아 있습니다. 몇 가지만 손보면 검색 유입이 눈에 띄게 달라질 수 있습니다.';
+    else                 grade = '온라인에서 우리 매장을 만나는 손님이 매우 적은 상태입니다. 지금이 시작하기 가장 좋은 시점입니다.';
+    $('r2Grade').textContent = grade;
+
+    // 항목별 진단
+    const box = $('r2Items');
+    box.innerHTML = '';
+    for(let i=1;i<=TOTAL_Q;i++){
+      const s = answers[i] ?? 0;
+      const it = ITEMS[i];
+      const cls = s === 2 ? 'good' : (s === 1 ? 'warn' : 'bad');
+      const icon = s === 2 ? '✓' : (s === 1 ? '!' : '✕');
+      const desc = s === 2 ? it.good : (s === 1 ? it.warn : it.bad);
+      const div = document.createElement('div');
+      div.className = 'r2-item ' + cls;
+      div.innerHTML = '<span class="ic">' + icon + '</span>' +
+        '<span class="txt"><b>' + it.label + '</b><span>' + desc + '</span></span>';
+      box.appendChild(div);
+    }
+
+    // 코칭 문구: 가장 부족한 항목 위주로
+    const weak = [];
+    for(let i=1;i<=TOTAL_Q;i++){ if((answers[i] ?? 0) === 0) weak.push(ITEMS[i].label); }
+    let coach;
+    if(weak.length === 0){
+      coach = '<b>' + store + '</b>은(는) 이미 잘 관리되고 있습니다. 포컬랩은 여기서 한 단계 더 나아가, 상위 노출을 <b>유지·강화</b>하는 방법을 제안드립니다.';
+    } else {
+      const top = weak.slice(0,2).join(', ');
+      coach = '<b>' + store + '</b>에서 가장 먼저 손봐야 할 곳은 <b>' + top + '</b>입니다. 포컬랩은 안경원 현장을 아는 팀이 이 부분부터 순서대로 정리해, 검색으로 찾아오는 손님을 늘려드립니다.';
+    }
+    $('r2Coach').innerHTML = coach;
+
+    // 전환
+    $('quiz').hidden = true;
+    const r = $('result2');
+    r.hidden = false;
+    r.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  // 초기화
+  showStep(0);
 
   const boxes = document.querySelectorAll('.cq');
   const acuity = [1.5,1.0,0.7,0.5,0.3,0.1,0.1];
