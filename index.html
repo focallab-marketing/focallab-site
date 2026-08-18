@@ -6,7 +6,7 @@
 <title>FOCAL LAB — 안경원 전문 마케팅</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
 <style>
   :root{
@@ -276,7 +276,17 @@
   }
   .r2-input::placeholder{color:rgba(238,241,240,.45);}
   .r2-input:focus{outline:none; border-color:#9FD1FF; background:rgba(255,255,255,.1);}
-  .r2-form .btn{margin-top:4px; padding:15px; font-size:15.5px;}
+  .r2-form #applyBtn{
+    margin-top:8px; padding:18px; font-size:17px; font-weight:800;
+    background:#03C75A; border:none; color:#fff; border-radius:8px;
+    box-shadow:0 4px 16px rgba(3,199,90,.4);
+    transition:transform .15s, box-shadow .15s, background .15s;
+    animation:applyPulse 2s ease-in-out infinite;
+  }
+  .r2-form #applyBtn:hover{background:#02b350; transform:translateY(-2px); box-shadow:0 6px 22px rgba(3,199,90,.55);}
+  .r2-form #applyBtn:active{transform:translateY(0);}
+  .r2-form #applyBtn:disabled{background:var(--ink-soft); box-shadow:none; animation:none; cursor:default;}
+  @keyframes applyPulse{0%,100%{box-shadow:0 4px 16px rgba(3,199,90,.4);} 50%{box-shadow:0 4px 22px rgba(3,199,90,.65);}}
   .r2-form-msg{font-size:13px; color:#FFB199; margin:4px 0 0; text-align:center; min-height:0;}
   .r2-done{display:flex; align-items:center; gap:14px; padding:8px 4px;}
   .r2-done-ic{
@@ -305,7 +315,7 @@
   }
   .chart-row{display:flex; align-items:baseline; gap:14px; color:var(--ink); opacity:.88;}
   .chart-row .val{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--focus-blue-deep); width:34px; flex-shrink:0;}
-  .chart-row .glyph{font-family:'Black Han Sans',sans-serif; letter-spacing:.06em;}
+  .chart-row .glyph{font-family:'Do Hyeon','Black Han Sans',sans-serif; letter-spacing:.04em; font-weight:400;}
   .chart-row:nth-child(1) .glyph{font-size:52px;}
   .chart-row:nth-child(2) .glyph{font-size:40px;}
   .chart-row:nth-child(3) .glyph{font-size:31px;}
