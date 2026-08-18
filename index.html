@@ -146,13 +146,67 @@
   .quiz-progress-fill{height:100%; width:0%; background:var(--focus-blue); border-radius:4px; transition:width .4s cubic-bezier(.2,.7,.2,1);}
   .quiz-step-label{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.1em; color:var(--focus-blue-deep); margin-bottom:22px;}
   .quiz-q h3{font-size:clamp(19px,2.4vw,24px); line-height:1.4; margin:0 0 8px; font-weight:700;}
-  .quiz-q .quiz-sub{font-size:13.5px; color:var(--ink-soft); margin:0 0 18px;}
-  .quiz-input{
-    width:100%; padding:15px 16px; border:1px solid var(--line-strong); border-radius:4px;
-    background:var(--paper); font-family:inherit; font-size:15.5px; color:var(--ink); margin-bottom:18px;
+
+  .search-mock{
+    display:flex; align-items:center; gap:0;
+    border:2px solid #03C75A; border-radius:10px; overflow:hidden;
+    background:#fff; margin:20px 0 4px; max-width:420px;
+    box-shadow:0 2px 8px rgba(3,199,90,.12);
   }
-  .quiz-input:focus{outline:none; border-color:var(--focus-blue);}
+  .search-mock .sm-logo{
+    font-family:'Black Han Sans',sans-serif; font-size:22px; color:#03C75A;
+    padding:0 14px; letter-spacing:-.02em;
+  }
+  .search-mock .sm-query{
+    flex:1; padding:14px 8px; font-size:16px; color:var(--ink); font-weight:500;
+    border-left:1px solid var(--line);
+  }
+  .search-mock .sm-btn{
+    background:#03C75A; color:#fff; padding:14px 18px; font-size:16px;
+    display:flex; align-items:center;
+  }
   .quiz-opts{display:flex; flex-direction:column; gap:11px; margin-top:20px;}
+
+  /* 리뷰 목업 */
+  .review-mock{display:flex; flex-direction:column; gap:10px; margin:20px 0 4px; max-width:460px;}
+  .rv-card{background:var(--paper); border:1px solid var(--line); border-radius:10px; padding:13px 15px;}
+  .rv-top{display:flex; align-items:center; gap:8px; margin-bottom:7px;}
+  .rv-avatar{width:24px; height:24px; border-radius:50%; background:var(--paper-alt); color:var(--ink-soft); font-size:12px; display:flex; align-items:center; justify-content:center; font-weight:600;}
+  .rv-name{font-size:13px; font-weight:600; color:var(--ink);}
+  .rv-stars{margin-left:auto; color:#FFB800; font-size:13px; letter-spacing:1px;}
+  .rv-text{font-size:13px; color:var(--ink-soft); margin:0; line-height:1.5;}
+
+  /* 플레이스 사진 목업 */
+  .photo-mock{display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin:20px 0 4px; max-width:400px;}
+  .photo-mock .ph{
+    aspect-ratio:1; border-radius:8px; background:var(--paper-alt); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-size:24px;
+  }
+  .photo-mock .ph.big{grid-row:span 2; grid-column:span 2; font-size:44px;}
+  .photo-mock .ph.more{background:var(--ink); color:#fff; font-family:'IBM Plex Mono',monospace; font-size:15px; font-weight:600;}
+
+  /* 채널 배지 목업 */
+  .channel-mock{display:flex; gap:12px; margin:22px 0 4px; flex-wrap:wrap;}
+  .ch-badge{
+    width:62px; height:62px; border-radius:16px; display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:14px; color:#fff; letter-spacing:-.01em;
+    box-shadow:0 3px 8px rgba(33,29,25,.14);
+  }
+  .ch-badge.blog{background:#03C75A;}
+  .ch-badge.insta{background:linear-gradient(45deg,#FEDA75,#FA7E1E,#D62976,#962FBF); font-style:italic;}
+  .ch-badge.carrot{background:#FF7E36;}
+
+  /* 프로모션 티켓 목업 */
+  .promo-mock{margin:20px 0 4px; max-width:420px;}
+  .pm-ticket{
+    position:relative; display:flex; align-items:center; gap:14px;
+    background:linear-gradient(90deg,#FFF7EC,#FBEFD9); border:1px dashed var(--gold);
+    border-radius:12px; padding:16px 20px;
+  }
+  .pm-icon{font-size:30px;}
+  .pm-text{display:flex; flex-direction:column; gap:3px;}
+  .pm-text b{font-size:14.5px; color:var(--ink);}
+  .pm-text span{font-size:12.5px; color:var(--gold-deep);}
   .quiz-opt{
     text-align:left; padding:17px 20px; border:1px solid var(--line-strong); border-radius:5px;
     background:var(--paper); font-family:inherit; font-size:15.5px; font-weight:500; color:var(--ink);
@@ -172,15 +226,11 @@
   .r2-head{background:var(--ink); color:var(--paper); padding:34px 32px 30px; text-align:center;}
   .r2-store{font-size:15px; color:rgba(238,241,240,.7); margin-bottom:18px;}
   .r2-label{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.1em; color:#9FD1FF; text-transform:uppercase; margin-bottom:10px;}
-  .r2-big{font-family:'Black Han Sans',sans-serif; font-size:64px; line-height:1; color:#fff;}
-  .r2-big .r2-unit{font-family:'IBM Plex Mono',monospace; font-size:20px; color:rgba(238,241,240,.65); margin-left:8px;}
+  .r2-big-score{font-family:'Black Han Sans',sans-serif; font-size:64px; line-height:1; color:#fff;}
+  .r2-big-score .r2-unit{font-family:'IBM Plex Mono',monospace; font-size:20px; color:rgba(238,241,240,.65); margin-left:8px;}
   .r2-sub{font-size:13.5px; color:rgba(238,241,240,.7); margin-top:14px;}
   .r2-body{padding:28px 32px 4px;}
-  .r2-score-row{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:9px;}
-  .r2-score-txt{font-size:14px; font-weight:600;}
-  .r2-score-val{font-family:'Black Han Sans',sans-serif; font-size:26px; color:var(--focus-blue-deep);}
-  .r2-score-max{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--ink-soft); margin-left:5px;}
-  .r2-gauge{height:9px; background:var(--paper-alt); border-radius:5px; overflow:hidden;}
+  .r2-gauge{height:9px; background:var(--paper-alt); border-radius:5px; overflow:hidden; margin-top:4px;}
   .r2-gauge-fill{height:100%; width:0%; border-radius:5px; transition:width 1.1s cubic-bezier(.2,.7,.2,1);}
   .r2-grade{font-size:14px; line-height:1.7; color:var(--ink); margin:16px 0 0; padding:14px 16px; background:var(--paper); border-left:3px solid var(--gold); border-radius:0 3px 3px 0;}
   .r2-items-head{font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--focus-blue-deep); margin:26px 0 14px;}
@@ -197,8 +247,46 @@
   .r2-item .txt span{color:var(--ink-soft); font-size:13px;}
   .r2-coach{margin:24px 0 4px; padding:18px 20px; background:var(--paper-alt); border-radius:5px; font-size:14px; line-height:1.7;}
   .r2-coach b{color:var(--focus-blue-deep);}
+
+  /* 놓치는 손님 강조 블록 */
+  .r2-miss-box{
+    margin:26px 0 4px; padding:26px 24px; text-align:center;
+    background:linear-gradient(180deg,#FBEEE7,#F6E1D6);
+    border:1px solid rgba(211,95,43,.28); border-radius:10px;
+  }
+  .r2-miss-label{font-size:14px; font-weight:600; color:var(--carrot-deep,#B8471E); margin-bottom:12px;}
+  .r2-miss-big{font-family:'Black Han Sans',sans-serif; font-size:56px; line-height:1; color:var(--carrot,#D35F2B);}
+  .r2-miss-big .r2-miss-unit{font-family:'IBM Plex Mono',monospace; font-size:19px; color:var(--carrot-deep,#B8471E); margin-left:8px;}
+  .r2-miss-desc{font-size:14px; line-height:1.7; color:var(--ink); margin:14px 0 0;}
+  .r2-miss-desc b{color:var(--carrot-deep,#B8471E);}
   .r2-note{font-size:12px; color:var(--ink-soft); line-height:1.6; padding:18px 32px; border-top:1px solid var(--line); margin-top:20px;}
-  .r2-cta{display:flex; gap:12px; flex-wrap:wrap; padding:0 32px 28px;}
+
+  /* 상담 신청 폼 */
+  .r2-apply{margin:0 32px 8px; padding:24px; background:var(--ink); border-radius:12px; color:var(--paper);}
+  .r2-apply-head{font-size:18px; font-weight:700; color:#fff; margin-bottom:16px; text-align:center;}
+  .r2-summary{background:rgba(255,255,255,.07); border-radius:8px; padding:14px 16px; margin-bottom:16px; font-size:13px; line-height:1.7;}
+  .r2-summary .sm-row{display:flex; justify-content:space-between; gap:12px; color:rgba(238,241,240,.85);}
+  .r2-summary .sm-row + .sm-row{margin-top:5px; padding-top:5px; border-top:1px solid rgba(255,255,255,.08);}
+  .r2-summary .sm-row b{color:#9FD1FF; font-weight:600;}
+  .r2-apply-guide{font-size:13px; line-height:1.6; color:rgba(238,241,240,.8); margin:0 0 16px; text-align:center;}
+  .r2-form{display:flex; flex-direction:column; gap:10px;}
+  .r2-input{
+    width:100%; padding:14px 16px; border:1px solid rgba(255,255,255,.18); border-radius:7px;
+    background:rgba(255,255,255,.06); color:#fff; font-family:inherit; font-size:15px;
+  }
+  .r2-input::placeholder{color:rgba(238,241,240,.45);}
+  .r2-input:focus{outline:none; border-color:#9FD1FF; background:rgba(255,255,255,.1);}
+  .r2-form .btn{margin-top:4px; padding:15px; font-size:15.5px;}
+  .r2-form-msg{font-size:13px; color:#FFB199; margin:4px 0 0; text-align:center; min-height:0;}
+  .r2-done{display:flex; align-items:center; gap:14px; padding:8px 4px;}
+  .r2-done-ic{
+    flex-shrink:0; width:44px; height:44px; border-radius:50%; background:#03C75A; color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700;
+  }
+  .r2-done-txt b{display:block; color:#fff; font-size:15.5px; margin-bottom:3px;}
+  .r2-done-txt span{font-size:13px; color:rgba(238,241,240,.75);}
+  .r2-cta{display:flex; gap:12px; flex-wrap:wrap; padding:16px 32px 28px; justify-content:center;}
+  @media (max-width:560px){ .r2-apply{margin-left:16px; margin-right:16px;} }
   @media (max-width:560px){ .quiz,.result2{padding-left:22px; padding-right:22px;} .r2-body,.r2-head,.r2-note,.r2-cta{padding-left:22px; padding-right:22px;} .r2-big{font-size:52px;} }
 
   /* chart decoration */
@@ -383,7 +471,7 @@
 <section id="place-diagnose" class="diagnose-section">
   <div class="wrap">
     <div class="eyebrow">FREE · 30초 진단</div>
-    <h2 class="section-title" data-reveal>우리 안경원,<br>손님을 얼마나 놓치고 있을까요?</h2>
+    <h2 class="section-title" data-reveal>우리 매장,<br>마케팅 점수는 몇 점일까요?</h2>
     <p class="lede">5개 질문에 답만 하면 됩니다. 우리 매장의 온라인 노출 상태를 진단하고, 지금 놓치고 있는 검색 손님이 얼마나 되는지 알려드립니다.</p>
 
     <div class="quiz" id="quiz" data-reveal>
@@ -391,16 +479,14 @@
       <div class="quiz-progress"><div class="quiz-progress-fill" id="quizProgress"></div></div>
       <div class="quiz-step-label" id="quizStepLabel">질문 1 / 5</div>
 
-      <!-- 질문들이 여기 순서대로 나타남 -->
-      <div class="quiz-q" id="q-0">
-        <h3>매장명을 어떻게 부를까요?</h3>
-        <p class="quiz-sub">진단 결과에 표시할 이름이에요. (선택)</p>
-        <input type="text" id="storeName" class="quiz-input" placeholder="예: 역삼포컬안경원" autocomplete="off">
-        <button class="btn btn-primary quiz-next" onclick="nextStep()">시작하기 →</button>
-      </div>
-
-      <div class="quiz-q" id="q-1" hidden>
-        <h3>네이버에 "우리 동네 + 안경원"을 검색하면,<br>우리 매장이 첫 화면에 보이나요?</h3>
+      <div class="quiz-q" id="q-1">
+        <h3>이렇게 검색했을 때,<br>우리 매장이 첫 화면에 보이나요?</h3>
+        <!-- 네이버 검색창 느낌의 목업 (실제 로고/이미지 미사용) -->
+        <div class="search-mock" aria-hidden="true">
+          <span class="sm-logo">N</span>
+          <span class="sm-query">우리동네 안경원</span>
+          <span class="sm-btn">🔍</span>
+        </div>
         <div class="quiz-opts">
           <button class="quiz-opt" onclick="answer(1,2)">위쪽에 잘 보인다</button>
           <button class="quiz-opt" onclick="answer(1,1)">한참 내려야 보인다</button>
@@ -411,6 +497,16 @@
 
       <div class="quiz-q" id="q-2" hidden>
         <h3>최근 3개월 안에<br>새로 올라온 방문자 리뷰가 있나요?</h3>
+        <div class="review-mock" aria-hidden="true">
+          <div class="rv-card">
+            <div class="rv-top"><span class="rv-avatar">김</span><span class="rv-name">김O현</span><span class="rv-stars">★★★★★</span></div>
+            <p class="rv-text">시력검사 꼼꼼하게 봐주시고 안경도 예쁘게 잘 맞춰주셨어요!</p>
+          </div>
+          <div class="rv-card">
+            <div class="rv-top"><span class="rv-avatar">이</span><span class="rv-name">이O수</span><span class="rv-stars">★★★★★</span></div>
+            <p class="rv-text">친절하고 설명도 자세해서 믿음이 갔습니다. 재방문 의사 있어요~</p>
+          </div>
+        </div>
         <div class="quiz-opts">
           <button class="quiz-opt" onclick="answer(2,2)">꾸준히 쌓이고 있다</button>
           <button class="quiz-opt" onclick="answer(2,1)">가끔 한두 개 올라온다</button>
@@ -420,6 +516,13 @@
 
       <div class="quiz-q" id="q-3" hidden>
         <h3>플레이스에 대표사진·소식(이벤트)을<br>정기적으로 올리고 있나요?</h3>
+        <div class="photo-mock" aria-hidden="true">
+          <div class="ph big">👓</div>
+          <div class="ph">🏪</div>
+          <div class="ph">🕶️</div>
+          <div class="ph">📷</div>
+          <div class="ph more">+12</div>
+        </div>
         <div class="quiz-opts">
           <button class="quiz-opt" onclick="answer(3,2)">사진도 많고 소식도 자주 올린다</button>
           <button class="quiz-opt" onclick="answer(3,1)">사진만 몇 장 있다</button>
@@ -429,6 +532,11 @@
 
       <div class="quiz-q" id="q-4" hidden>
         <h3>블로그·인스타·당근 같은 채널로<br>매장을 알리고 있나요?</h3>
+        <div class="channel-mock" aria-hidden="true">
+          <span class="ch-badge blog">Blog</span>
+          <span class="ch-badge insta">insta</span>
+          <span class="ch-badge carrot">당근</span>
+        </div>
         <div class="quiz-opts">
           <button class="quiz-opt" onclick="answer(4,2)">2개 이상 꾸준히 운영한다</button>
           <button class="quiz-opt" onclick="answer(4,1)">1개 정도 가끔 한다</button>
@@ -438,6 +546,13 @@
 
       <div class="quiz-q" id="q-5" hidden>
         <h3>한 번 온 손님이 다시 오도록<br>사은품·프로모션을 기획하고 있나요?</h3>
+        <div class="promo-mock" aria-hidden="true">
+          <div class="pm-ticket">
+            <span class="pm-icon">🎁</span>
+            <span class="pm-text"><b>안경 구매 시 안경닦이 증정</b><span>재방문 고객 렌즈 10% 할인</span></span>
+            <span class="pm-cut"></span>
+          </div>
+        </div>
         <div class="quiz-opts">
           <button class="quiz-opt" onclick="answer(5,2)">정기적으로 기획한다</button>
           <button class="quiz-opt" onclick="answer(5,1)">생각날 때 가끔 한다</button>
@@ -450,16 +565,12 @@
     <div class="result2" id="result2" hidden>
       <div class="r2-head">
         <div class="r2-store" id="r2Store">우리 안경원</div>
-        <div class="r2-label">현재 놓치고 있는 검색 손님</div>
-        <div class="r2-big"><span id="r2Miss">0</span><span class="r2-unit">명 / 월</span></div>
-        <div class="r2-sub" id="r2SubMsg">추정치입니다</div>
+        <div class="r2-label">온라인 마케팅 진단 결과</div>
+        <div class="r2-big-score"><span id="r2Score">0</span><span class="r2-unit">점 / 100</span></div>
+        <div class="r2-sub" id="r2SubMsg">우리 매장 마케팅 점수</div>
       </div>
 
       <div class="r2-body">
-        <div class="r2-score-row">
-          <span class="r2-score-txt">온라인 노출력</span>
-          <span class="r2-score-val"><span id="r2Score">0</span><span class="r2-score-max">/ 100</span></span>
-        </div>
         <div class="r2-gauge"><div class="r2-gauge-fill" id="r2Gauge"></div></div>
         <p class="r2-grade" id="r2Grade"></p>
 
@@ -467,11 +578,35 @@
         <div class="r2-items" id="r2Items"></div>
 
         <div class="r2-coach" id="r2Coach"></div>
+
+        <!-- 놓치는 손님 강조 블록 (상담 버튼 바로 위) -->
+        <div class="r2-miss-box" id="r2MissBox">
+          <div class="r2-miss-label">지금, 관리를 안 해서 놓치고 있는 손님</div>
+          <div class="r2-miss-big"><span id="r2Miss">0</span><span class="r2-miss-unit">명 / 월</span></div>
+          <p class="r2-miss-desc" id="r2MissDesc"></p>
+        </div>
       </div>
 
-      <div class="r2-note">* 놓치는 손님 수는 안경원 평균 검색 유입을 바탕으로 한 추정 범위이며, 실제 수치는 상권·매장 규모에 따라 다릅니다. 정확한 분석과 개선 방법은 포컬랩 무료 상담에서 확인하실 수 있습니다.</div>
+      <div class="r2-note">* 놓치는 손님 수는 안경원 평균 검색 유입을 바탕으로 한 추정치이며, 실제 수치는 상권·매장 규모에 따라 다릅니다. 정확한 분석과 개선 방법은 포컬랩 무료 상담에서 확인하실 수 있습니다.</div>
+
+      <!-- 상담 신청 (진단 요약 + 이름/전화 폼) -->
+      <div class="r2-apply" id="r2Apply">
+        <div class="r2-apply-head">이 결과로 무료 상담받기</div>
+        <div class="r2-summary" id="r2Summary"></div>
+        <p class="r2-apply-guide">위 진단 내용으로 상담을 요청합니다. 아래에 연락처만 남겨주시면 포컬랩이 직접 연락드립니다.</p>
+        <div class="r2-form" id="r2Form">
+          <input type="text" id="applyName" class="r2-input" placeholder="이름" autocomplete="name">
+          <input type="tel" id="applyPhone" class="r2-input" placeholder="휴대폰 번호 (예: 01012345678)" autocomplete="tel" inputmode="numeric">
+          <button class="btn btn-primary" id="applyBtn" onclick="submitApply()">상담 신청하기</button>
+          <p class="r2-form-msg" id="applyMsg"></p>
+        </div>
+        <div class="r2-done" id="r2Done" hidden>
+          <div class="r2-done-ic">✓</div>
+          <div class="r2-done-txt"><b>상담 신청이 접수되었습니다.</b><span>빠른 시일 내에 남겨주신 번호로 연락드리겠습니다.</span></div>
+        </div>
+      </div>
+
       <div class="r2-cta">
-        <a class="btn btn-primary" href="#contact">이 결과로 무료 상담받기</a>
         <button class="btn btn-ghost" onclick="restartQuiz()">다시 진단하기</button>
       </div>
     </div>
@@ -645,7 +780,7 @@
   // ---------- 자가진단 퀴즈 ----------
   // 질문 5개, 각 0~2점. 총점 10점 만점 → 100점 환산.
   const TOTAL_Q = 5;
-  let step = 0;              // 0=이름입력, 1~5=질문
+  let step = 1;              // 1~5=질문
   const answers = {};        // {1:2, 2:0, ...}
 
   // 각 질문의 항목 정의 (결과 항목별 진단에 사용)
@@ -657,20 +792,14 @@
     5: { label: '재방문·프로모션 기획',       bad: '한 번 온 손님이 다시 올 이유가 없습니다.', warn: '프로모션이 비정기적입니다.', good: '재방문 유도가 잘 설계돼 있습니다.' },
   };
 
-  function showStep(n){
-    for(let i=0;i<=TOTAL_Q;i++){
+  function showStep(n){         // n = 1~5 (질문 번호)
+    for(let i=1;i<=TOTAL_Q;i++){
       const el = $('q-'+i);
       if(el) el.hidden = (i !== n);
     }
-    // 진행바 (질문 단계만 카운트)
-    const qNum = Math.max(1, n);
-    $('quizProgress').style.width = ((n) / TOTAL_Q * 100) + '%';
-    $('quizStepLabel').textContent = n === 0 ? '시작' : ('질문 ' + n + ' / ' + TOTAL_Q);
-  }
-
-  function nextStep(){          // 이름 입력 → 첫 질문
-    step = 1;
-    showStep(1);
+    // 진행바: 현재 질문 기준
+    $('quizProgress').style.width = ((n-1) / TOTAL_Q * 100) + '%';
+    $('quizStepLabel').textContent = '질문 ' + n + ' / ' + TOTAL_Q;
   }
 
   function answer(qNo, score){  // 선택지 클릭
@@ -679,16 +808,24 @@
       step = qNo + 1;
       showStep(step);
     } else {
+      $('quizProgress').style.width = '100%';
       finish();
     }
   }
 
   function restartQuiz(){
-    step = 0;
+    step = 1;
     for(const k in answers) delete answers[k];
     $('result2').hidden = true;
     $('quiz').hidden = false;
-    showStep(0);
+    // miss-box 색 초기화 (이전 결과 잔상 방지)
+    const mb = $('r2MissBox');
+    mb.style.background = ''; mb.style.borderColor = '';
+    // 신청 폼 초기화
+    $('applyName').value = ''; $('applyPhone').value = '';
+    $('applyBtn').disabled = false; $('applyBtn').textContent = '상담 신청하기';
+    $('r2Form').hidden = false; $('r2Done').hidden = true; $('applyMsg').textContent = '';
+    showStep(1);
     $('quiz').scrollIntoView({behavior:'smooth', block:'center'});
   }
 
@@ -698,33 +835,42 @@
     for(let i=1;i<=TOTAL_Q;i++) raw += (answers[i] ?? 0);
     const score = Math.round(raw / (TOTAL_Q*2) * 100);
 
-    // 놓치는 손님 수 (추정 범위): 부족할수록 크게.
-    // 만점이면 거의 0, 0점이면 월 40~55명 수준으로 범위 제시.
+    // 놓치는 손님 수: 부족할수록 커지되, 관리 안 하는 매장(중간 이하)이 대략 20~30명대로 나오게 조정.
+    // deficit 0~10. 기본 15명 + 부족분당 약 1.7명 → 최저 15, 최고 약 32.
     const deficit = (TOTAL_Q*2) - raw;               // 0~10
-    const missLow = deficit * 4;                      // 0~40
-    const missHigh = deficit * 5 + 5;                 // 5~55
-    const missCenter = Math.round((missLow + missHigh)/2);
-
-    // 이름
-    const nameInput = $('storeName').value.trim();
-    const store = nameInput || '우리 안경원';
-    $('r2Store').textContent = store;
-
-    // 큰 숫자 (놓치는 손님)
+    let missLow, missHigh;
     if(deficit === 0){
-      $('r2Miss').textContent = '거의 0';
-      $('r2SubMsg').textContent = '지금처럼 관리하면 손님을 놓치지 않습니다';
+      missLow = 0; missHigh = 0;
     } else {
-      $('r2Miss').textContent = '약 ' + missLow + '~' + missHigh;
-      $('r2SubMsg').textContent = '지금 상태로는 매달 이만큼의 검색 손님을 놓칠 수 있습니다 (추정)';
+      missLow  = Math.round(14 + deficit * 1.4);      // 약 15 ~ 28
+      missHigh = missLow + 8;                          // +8 폭 → 약 23 ~ 36
     }
 
-    // 점수 게이지
+    // 매장명 입력을 없앴으므로 항상 '우리 안경원'으로 표시
+    const store = '우리 안경원';
+    $('r2Store').textContent = store;
+
+    // 상단 헤더: 점수
     $('r2Score').textContent = score;
+    $('r2SubMsg').textContent = '우리 매장 온라인 마케팅 점수';
+
+    // 점수 게이지
     const gauge = $('r2Gauge');
     const color = score >= 70 ? 'var(--focus-blue)' : (score >= 40 ? 'var(--gold)' : 'var(--carrot)');
     gauge.style.background = color;
     setTimeout(()=>{ gauge.style.width = score + '%'; }, 80);
+
+    // 하단 강조 블록: 놓치는 손님 (상담 버튼 바로 위)
+    const missBox = $('r2MissBox');
+    if(deficit === 0){
+      $('r2Miss').textContent = '거의 0';
+      $('r2MissDesc').innerHTML = '지금처럼 꾸준히 관리하면 놓치는 손님이 거의 없습니다. 이 상태를 <b>유지·강화</b>하는 것이 다음 과제입니다.';
+      missBox.style.background = 'linear-gradient(180deg,#EAF1F9,#DCE8F5)';
+      missBox.style.borderColor = 'rgba(42,93,170,.28)';
+    } else {
+      $('r2Miss').textContent = '약 ' + missLow + '~' + missHigh;
+      $('r2MissDesc').innerHTML = '온라인 관리를 하지 않아, 지금 이 순간에도 검색하던 손님이 경쟁 매장으로 가고 있습니다. 매달 <b>약 ' + missLow + '~' + missHigh + '명</b>의 손님을 놓치고 있는 셈입니다.';
+    }
 
     // 등급 한 줄 (코칭형 톤)
     let grade;
@@ -761,6 +907,26 @@
     }
     $('r2Coach').innerHTML = coach;
 
+    // 진단 요약 저장 (상담 신청 시 함께 전송)
+    const missText = deficit === 0 ? '거의 0명' : ('약 ' + missLow + '~' + missHigh + '명/월');
+    const weakText = weak.length ? weak.join(', ') : '없음 (양호)';
+    lastDiag = {
+      score: score,
+      miss: missText,
+      weak: weakText,
+    };
+
+    // 요약 카드 렌더 (신청 폼 위에 보여줄 내용)
+    $('r2Summary').innerHTML =
+      '<div class="sm-row"><span>마케팅 점수</span><b>' + score + '점 / 100</b></div>' +
+      '<div class="sm-row"><span>월 예상 놓치는 손님</span><b>' + missText + '</b></div>' +
+      '<div class="sm-row"><span>개선이 필요한 항목</span><b>' + weakText + '</b></div>';
+
+    // 신청 폼 초기화 (재진단 대비)
+    $('r2Form').hidden = false;
+    $('r2Done').hidden = true;
+    $('applyMsg').textContent = '';
+
     // 전환
     $('quiz').hidden = true;
     const r = $('result2');
@@ -768,8 +934,53 @@
     r.scrollIntoView({behavior:'smooth', block:'center'});
   }
 
-  // 초기화
-  showStep(0);
+  // 진단 결과 저장용
+  let lastDiag = { score:0, miss:'', weak:'' };
+
+  // 상담 신청 → 구글폼으로 조용히 전송
+  const GFORM_ID = '1FAIpQLSeMrkeaO1jyHM0dN2rOv6rlzhTpwQaLUpeQa4u-2c8N1-osdg';
+  const GFORM_NAME_ENTRY  = 'entry.231704515';   // 이름
+  const GFORM_PHONE_ENTRY = 'entry.567912281';   // 전화번호
+
+  function submitApply(){
+    const name = $('applyName').value.trim();
+    const phone = $('applyPhone').value.trim().replace(/[^0-9]/g,'');
+    const msg = $('applyMsg');
+
+    if(!name){ msg.textContent = '이름을 입력해주세요.'; $('applyName').focus(); return; }
+    if(phone.length < 9){ msg.textContent = '연락 가능한 휴대폰 번호를 입력해주세요.'; $('applyPhone').focus(); return; }
+
+    msg.textContent = '';
+    $('applyBtn').disabled = true;
+    $('applyBtn').textContent = '신청 중…';
+
+    // 진단 결과를 이름 뒤에 함께 담아 전송 (구글폼 질문이 이름·전화 2개뿐이라, 이름 칸에 요약을 덧붙임)
+    const nameWithDiag = name + ' [진단: ' + lastDiag.score + '점, 놓치는손님 ' + lastDiag.miss + ', 개선필요: ' + lastDiag.weak + ']';
+
+    const formUrl = 'https://docs.google.com/forms/d/e/' + GFORM_ID + '/formResponse';
+    const params = new URLSearchParams();
+    params.append(GFORM_NAME_ENTRY, nameWithDiag);
+    params.append(GFORM_PHONE_ENTRY, phone);
+
+    // no-cors 로 전송 (구글폼은 응답 본문을 안 주므로 성공/실패를 직접 못 읽음 → 전송 후 완료 처리)
+    fetch(formUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type':'application/x-www-form-urlencoded'},
+      body: params.toString(),
+    }).then(()=>{
+      $('r2Form').hidden = true;
+      $('r2Done').hidden = false;
+    }).catch(()=>{
+      // no-cors 특성상 대부분 여기로 안 오지만, 혹시 네트워크 오류 시
+      msg.textContent = '전송에 실패했습니다. 잠시 후 다시 시도하거나 하단 문의로 연락 주세요.';
+      $('applyBtn').disabled = false;
+      $('applyBtn').textContent = '상담 신청하기';
+    });
+  }
+
+  // 초기화 (첫 질문부터 시작)
+  showStep(1);
 
   const boxes = document.querySelectorAll('.cq');
   const acuity = [1.5,1.0,0.7,0.5,0.3,0.1,0.1];
