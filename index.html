@@ -176,14 +176,32 @@
   .rv-stars{margin-left:auto; color:#FFB800; font-size:13px; letter-spacing:1px;}
   .rv-text{font-size:13px; color:var(--ink-soft); margin:0; line-height:1.5;}
 
-  /* 플레이스 사진 목업 */
-  .photo-mock{display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin:20px 0 4px; max-width:400px;}
-  .photo-mock .ph{
-    aspect-ratio:1; border-radius:8px; background:var(--paper-alt); border:1px solid var(--line);
-    display:flex; align-items:center; justify-content:center; font-size:24px;
+  /* 스마트플레이스 홍보 카드 목업 (실제 로고 미사용) */
+  .smartplace-mock{
+    margin:20px 0 4px; max-width:440px; border-radius:14px; overflow:hidden;
+    background:#03C75A; padding:22px 22px 20px; color:#111;
+    box-shadow:0 6px 20px rgba(3,199,90,.22);
   }
-  .photo-mock .ph.big{grid-row:span 2; grid-column:span 2; font-size:44px;}
-  .photo-mock .ph.more{background:var(--ink); color:#fff; font-family:'IBM Plex Mono',monospace; font-size:15px; font-weight:600;}
+  .sp-title{background:#fff; border-radius:10px; padding:16px 18px; font-family:'Pretendard Variable','Pretendard',sans-serif; font-weight:800; font-size:21px; line-height:1.35; color:#1a1a1a; letter-spacing:-.01em;}
+  .sp-title b{color:#03C75A;}
+  .sp-search{
+    display:flex; align-items:center; gap:0; margin-top:14px;
+    background:#fff; border:2px solid #03C75A; border-radius:8px; overflow:hidden;
+  }
+  .sp-search .sp-brand{font-family:'Pretendard Variable','Pretendard',sans-serif; font-weight:800; font-size:15px; color:#03C75A; padding:0 12px; white-space:nowrap; letter-spacing:-.02em;}
+  .sp-search .sp-query{flex:1; padding:11px 8px; font-size:13px; color:#555; border-left:1px solid #e5e5e5; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .sp-search .sp-mag{background:#03C75A; color:#fff; padding:11px 14px; font-size:14px;}
+  .sp-bottom{display:flex; align-items:flex-end; justify-content:space-between; margin-top:16px;}
+  .sp-benefits{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:7px;}
+  .sp-benefits li{font-size:13.5px; font-weight:600; color:#0a3d1f; padding-left:14px; position:relative;}
+  .sp-benefits li::before{content:'·'; position:absolute; left:2px; font-weight:800;}
+  .sp-pin{
+    width:56px; height:56px; background:#fff; border-radius:50% 50% 50% 0;
+    transform:rotate(-45deg); display:flex; align-items:center; justify-content:center;
+    box-shadow:0 3px 8px rgba(0,0,0,.15); margin-right:10px; margin-bottom:6px;
+  }
+  .sp-pin-n{transform:rotate(45deg); font-family:'Pretendard Variable','Pretendard',sans-serif; font-weight:800; font-size:26px; color:#03C75A;}
+  @media (max-width:440px){ .sp-title{font-size:18px;} .sp-search .sp-query{font-size:12px;} }
 
   /* 채널 배지 목업 */
   .channel-mock{display:flex; gap:12px; margin:22px 0 4px; flex-wrap:wrap;}
@@ -196,17 +214,22 @@
   .ch-badge.insta{background:linear-gradient(45deg,#FEDA75,#FA7E1E,#D62976,#962FBF); font-style:italic;}
   .ch-badge.carrot{background:#FF7E36;}
 
-  /* 프로모션 티켓 목업 */
-  .promo-mock{margin:20px 0 4px; max-width:420px;}
-  .pm-ticket{
-    position:relative; display:flex; align-items:center; gap:14px;
-    background:linear-gradient(90deg,#FFF7EC,#FBEFD9); border:1px dashed var(--gold);
-    border-radius:12px; padding:16px 20px;
+  /* 프로모션 이벤트 카드 목업 (3열 2행 그리드) */
+  .promo-mock{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:20px 0 4px; max-width:460px;}
+  .pm-card{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:7px;
+    padding:16px 8px; border-radius:12px; text-align:center;
+    border:1px solid transparent; transition:transform .12s;
   }
-  .pm-icon{font-size:30px;}
-  .pm-text{display:flex; flex-direction:column; gap:3px;}
-  .pm-text b{font-size:14.5px; color:var(--ink);}
-  .pm-text span{font-size:12.5px; color:var(--gold-deep);}
+  .pm-card .pm-ic{line-height:0;}
+  .pm-card .pm-ic svg{width:36px; height:36px;}
+  .pm-card .pm-name{font-size:12.5px; font-weight:700; line-height:1.3; word-break:keep-all;}
+  .pm-card.revisit{background:linear-gradient(135deg,#EAF1F9,#DCE8F5); color:var(--focus-blue-deep); border-color:rgba(42,93,170,.2);}
+  .pm-card.lens{background:linear-gradient(135deg,#E9F7EF,#D6EFE0); color:#1a7a45; border-color:rgba(3,199,90,.25);}
+  .pm-card.oneone{background:linear-gradient(135deg,#FBEEE7,#F6E1D6); color:#B8471E; border-color:rgba(211,95,43,.25);}
+  .pm-card.reserve{background:linear-gradient(135deg,#FBF3E0,#F6E9C8); color:var(--gold-deep); border-color:rgba(185,137,59,.28);}
+  .pm-card.birthday{background:linear-gradient(135deg,#F7EAF3,#EFD9E9); color:#9C2E7A; border-color:rgba(156,46,122,.22);}
+  .pm-card.family{background:linear-gradient(135deg,#EAF3F1,#D6E9E4); color:#1F6E63; border-color:rgba(31,110,99,.24);}
   .quiz-opt{
     text-align:left; padding:17px 20px; border:1px solid var(--line-strong); border-radius:5px;
     background:var(--paper); font-family:inherit; font-size:15.5px; font-weight:500; color:var(--ink);
@@ -526,12 +549,22 @@
 
       <div class="quiz-q" id="q-3" hidden>
         <h3>플레이스에 대표사진·소식(이벤트)을<br>정기적으로 올리고 있나요?</h3>
-        <div class="photo-mock" aria-hidden="true">
-          <div class="ph big">👓</div>
-          <div class="ph">🏪</div>
-          <div class="ph">🕶️</div>
-          <div class="ph">📷</div>
-          <div class="ph more">+12</div>
+        <div class="smartplace-mock" aria-hidden="true">
+          <div class="sp-title">스마트 플레이스,<br>안경원 마케팅의 <b>필수 전략!</b></div>
+          <div class="sp-search">
+            <span class="sp-brand">N Place</span>
+            <span class="sp-query">스마트 플레이스 최적화 방법은?</span>
+            <span class="sp-mag">🔍</span>
+          </div>
+          <div class="sp-bottom">
+            <ul class="sp-benefits">
+              <li>플레이스 상위노출</li>
+              <li>잠재고객 신뢰도 상승</li>
+              <li>방문율 증가</li>
+              <li>광고비 절감</li>
+            </ul>
+            <div class="sp-pin"><span class="sp-pin-n">N</span></div>
+          </div>
         </div>
         <div class="quiz-opts">
           <button class="quiz-opt" onclick="answer(3,2)">사진도 많고 소식도 자주 올린다</button>
@@ -557,10 +590,57 @@
       <div class="quiz-q" id="q-5" hidden>
         <h3>한 번 온 손님이 다시 오도록<br>사은품·프로모션을 기획하고 있나요?</h3>
         <div class="promo-mock" aria-hidden="true">
-          <div class="pm-ticket">
-            <span class="pm-icon">🎁</span>
-            <span class="pm-text"><b>안경 구매 시 안경닦이 증정</b><span>재방문 고객 렌즈 10% 할인</span></span>
-            <span class="pm-cut"></span>
+          <div class="pm-card revisit">
+            <span class="pm-ic"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 24a14 14 0 0 1 23.5-10.2M38 24a14 14 0 0 1-23.5 10.2" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+              <path d="M34 6v8h-8M14 42v-8h8" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="24" cy="24" r="3.5" fill="currentColor"/>
+            </svg></span>
+            <span class="pm-name">재방문 이벤트</span>
+          </div>
+          <div class="pm-card lens">
+            <span class="pm-ic"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="14" cy="28" r="8" stroke="currentColor" stroke-width="3"/>
+              <circle cx="34" cy="28" r="8" stroke="currentColor" stroke-width="3"/>
+              <path d="M22 27h4M6 25l-2-8M42 25l2-8" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+              <text x="24" y="16" font-size="12" font-weight="800" fill="currentColor" text-anchor="middle" font-family="sans-serif">%</text>
+            </svg></span>
+            <span class="pm-name">렌즈 할인</span>
+          </div>
+          <div class="pm-card oneone">
+            <span class="pm-ic"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="9" y="20" width="30" height="20" rx="2" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M7 14h34v6H7zM24 14v26" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M24 14c-4-8-12-6-9 0M24 14c4-8 12-6 9 0" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg></span>
+            <span class="pm-name">1+1 증정</span>
+          </div>
+          <div class="pm-card reserve">
+            <span class="pm-ic"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="11" width="32" height="30" rx="3" stroke="currentColor" stroke-width="3"/>
+              <path d="M8 19h32M16 7v8M32 7v8" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+              <path d="M17 29l4.5 4.5L31 25" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg></span>
+            <span class="pm-name">예약 이벤트</span>
+          </div>
+          <div class="pm-card birthday">
+            <span class="pm-ic"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 26c0-2 1.5-3 3.5-3h23c2 0 3.5 1 3.5 3v13H9V26z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M6 39h36" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+              <path d="M16 23v-6M24 23v-6M32 23v-6" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="16" cy="11" r="2.5" fill="currentColor"/>
+              <circle cx="24" cy="11" r="2.5" fill="currentColor"/>
+              <circle cx="32" cy="11" r="2.5" fill="currentColor"/>
+            </svg></span>
+            <span class="pm-name">생일 이벤트</span>
+          </div>
+          <div class="pm-card family">
+            <span class="pm-ic"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="15" cy="15" r="5" stroke="currentColor" stroke-width="3"/>
+              <circle cx="33" cy="15" r="5" stroke="currentColor" stroke-width="3"/>
+              <path d="M6 40v-3a9 9 0 0 1 18 0v3M24 40v-3a9 9 0 0 1 18 0v3" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg></span>
+            <span class="pm-name">가족 구매 할인</span>
           </div>
         </div>
         <div class="quiz-opts">
