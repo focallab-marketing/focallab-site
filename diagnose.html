@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>우리 안경원, 네이버에서 몇 위일까요? — 포컬랩</title>
+<meta name="description" content="안경원 이름만 검색하면, 실제 네이버 검색 순위와 리뷰를 인근 경쟁 매장과 비교해 무료로 진단해드립니다. 안경원 전문 마케팅 포컬랩.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --paper:#fbfbf9; --ink:#16181d; --ink-soft:#4a4f57; --ink-faint:#868b93;
+  --line:#e6e5df; --line-soft:#efeee9;
+  --focus:#1b5cff; --focus-deep:#123fbf; --focus-wash:#eef2ff; --focus-line:#d9e2ff;
+  --good:#0f9d58; --good-wash:#e9f7ef;
+  --warn:#e08600; --warn-wash:#fdf3e3;
+  --bad:#e0483d; --bad-wash:#fdecea;
+  --naver:#03c75a;
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'Pretendard Variable',-apple-system,BlinkMacSystemFont,sans-serif;
+  --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,monospace;
+  --wrap:640px;
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.6;
+  letter-spacing:-.01em;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input{font:inherit}
+a{color:inherit}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 20px}
+
+header{border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;
+  background:rgba(251,251,249,.86);backdrop-filter:blur(8px)}
+.hd{max-width:var(--wrap);margin:0 auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:baseline;gap:2px;text-decoration:none;font-weight:800;font-size:1.15rem;letter-spacing:-.02em}
+.logo .mk{font-family:var(--serif);font-style:italic;font-weight:400;font-size:1.35rem;color:var(--focus);margin-right:1px}
+.logo .sub{font-size:.72rem;font-weight:600;color:var(--ink-faint);letter-spacing:.04em;margin-left:6px;align-self:center}
+.hd-link{font-size:.82rem;color:var(--ink-faint);text-decoration:none;font-weight:600}
+.hd-link:hover{color:var(--ink)}
+
+.hero{padding:52px 0 30px;text-align:center}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:.72rem;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--focus);
+  background:var(--focus-wash);border:1px solid var(--focus-line);padding:6px 14px;border-radius:100px;margin-bottom:22px}
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--naver);box-shadow:0 0 0 3px rgba(3,199,90,.18)}
+h1.h{font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,7vw,3.1rem);line-height:1.08;
+  letter-spacing:-.02em;margin-bottom:16px;word-break:keep-all}
+h1.h em{font-style:italic;color:var(--focus)}
+.hero p{font-size:clamp(.95rem,2.4vw,1.05rem);color:var(--ink-soft);max-width:440px;margin:0 auto;word-break:keep-all}
+.hero p b{color:var(--ink);font-weight:700}
+
+/* 검색창 */
+.search{margin:30px 0 8px;background:#fff;border:1px solid var(--line);border-radius:18px;
+  padding:8px 8px 8px 8px;display:flex;gap:8px;align-items:center;
+  box-shadow:0 1px 0 var(--line-soft),0 18px 40px -30px rgba(20,24,33,.5)}
+.search input{flex:1;border:none;background:transparent;padding:12px 8px 12px 12px;font-size:1.02rem;color:var(--ink)}
+.search input:focus{outline:none}
+.search input::placeholder{color:var(--ink-faint)}
+.search button{flex:0 0 auto;border:none;border-radius:12px;padding:13px 18px;background:var(--ink);color:#fff;
+  font-weight:800;font-size:.95rem;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:background .15s,transform .12s}
+.search button:hover{background:#000;transform:translateY(-1px)}
+.search button:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.search-note{margin-top:14px;font-size:.82rem;color:var(--ink-faint);text-align:center}
+
+/* 로딩 */
+.loading{display:none;padding:48px 0;text-align:center}
+.loading.on{display:block}
+.spin{width:38px;height:38px;margin:0 auto 16px;border:3px solid var(--line);
+  border-top-color:var(--focus);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loading .msg{font-size:.9rem;color:var(--ink-soft);font-weight:600;min-height:20px;transition:opacity .3s}
+
+/* 후보 목록 */
+.candidates{display:none;padding:8px 0 40px}
+.candidates.on{display:block;animation:up .4s both}
+.cand-head{text-align:center;margin-bottom:20px}
+.cand-head .lbl{font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--focus);margin-bottom:8px}
+.cand-head h2{font-family:var(--serif);font-weight:400;font-size:1.6rem;letter-spacing:-.01em}
+.cand-head h2 em{font-style:italic;color:var(--focus)}
+.cand-head p{font-size:.88rem;color:var(--ink-soft);margin-top:6px}
+.cand{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:#fff;border:1px solid var(--line);
+  border-radius:16px;padding:16px 18px;margin-bottom:10px;cursor:pointer;transition:border-color .15s,transform .12s,box-shadow .15s}
+.cand:hover{border-color:var(--focus);transform:translateY(-1px);box-shadow:0 10px 30px -20px rgba(27,92,255,.5)}
+.cand .mark{width:44px;height:44px;flex:0 0 auto;border-radius:12px;background:var(--naver);color:#fff;
+  font-weight:900;font-family:Arial,sans-serif;font-size:1.3rem;display:flex;align-items:center;justify-content:center}
+.cand .info{flex:1;min-width:0}
+.cand .nm{font-weight:800;font-size:1rem;letter-spacing:-.01em}
+.cand .tags{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:4px}
+.cand .cat{font-size:.72rem;font-weight:700;color:var(--focus-deep);background:var(--focus-wash);padding:2px 8px;border-radius:6px}
+.cand .addr{font-size:.82rem;color:var(--ink-faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cand .rv{font-size:.8rem;color:var(--ink-faint);white-space:nowrap}
+.cand .rv b{color:var(--ink-soft);font-family:var(--mono);font-weight:700}
+.cand .arrow{flex:0 0 auto;color:var(--ink-faint)}
+.cand-back{display:block;margin:6px auto 0;background:none;border:none;color:var(--ink-faint);font-size:.85rem;font-weight:600;cursor:pointer;padding:8px}
+.cand-back:hover{color:var(--ink)}
+
+/* 결과 */
+.result{display:none;padding:26px 0 70px}
+.result.on{display:block;animation:up .5s cubic-bezier(.2,.9,.3,1) both}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:14px}
+.sec-label{font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px}
+
+.store{display:flex;align-items:center;gap:14px}
+.store .mark{width:52px;height:52px;flex:0 0 auto;border-radius:14px;background:var(--naver);color:#fff;
+  font-weight:900;font-family:Arial,sans-serif;font-size:1.5rem;display:flex;align-items:center;justify-content:center}
+.store .nm{font-size:1.2rem;font-weight:800;letter-spacing:-.02em;line-height:1.25}
+.store .meta{font-size:.82rem;color:var(--ink-faint);margin-top:2px}
+.store .rankpill{margin-top:7px;display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;
+  background:var(--focus-wash);color:var(--focus-deep);border:1px solid var(--focus-line);padding:3px 10px;border-radius:100px}
+
+.score-card{text-align:center;padding:34px 22px 26px}
+.score-eyebrow{font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--focus);margin-bottom:8px}
+.score-big{font-family:var(--mono);font-weight:700;font-size:clamp(4rem,18vw,6rem);line-height:.9;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.score-big .of{font-size:.3em;color:var(--ink-faint);font-weight:600;margin-left:2px}
+.score-card.lv-bad .score-big{color:var(--bad)} .score-card.lv-bad .score-eyebrow{color:var(--bad)}
+.score-card.lv-warn .score-big{color:var(--warn)} .score-card.lv-warn .score-eyebrow{color:var(--warn)}
+.score-card.lv-good .score-big{color:var(--good)} .score-card.lv-good .score-eyebrow{color:var(--good)}
+.score-grade{margin-top:12px;font-size:1.05rem;font-weight:800;letter-spacing:-.02em}
+.score-desc{margin-top:8px;font-size:.9rem;color:var(--ink-soft);max-width:420px;margin-left:auto;margin-right:auto;word-break:keep-all}
+.score-bar{height:8px;border-radius:100px;background:var(--line-soft);margin-top:20px;overflow:hidden}
+.score-bar>i{display:block;height:100%;border-radius:100px;width:0;background:var(--focus);transition:width 1.6s cubic-bezier(.2,1,.4,1)}
+.lv-bad .score-bar>i{background:var(--bad)} .lv-warn .score-bar>i{background:var(--warn)} .lv-good .score-bar>i{background:var(--good)}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+@media(max-width:560px){.cols{grid-template-columns:1fr}}
+.col{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px}
+.col h4{display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px}
+.col.good h4{color:var(--good)} .col.bad h4{color:var(--bad)}
+.col h4 .ic{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:900}
+.col.good h4 .ic{background:var(--good-wash);color:var(--good)} .col.bad h4 .ic{background:var(--bad-wash);color:var(--bad)}
+.col ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+.col li{display:flex;gap:10px;font-size:.9rem;color:var(--ink-soft);line-height:1.5}
+.col li .mk{flex:0 0 auto;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:900;margin-top:2px}
+.col.good li .mk{background:var(--good-wash);color:var(--good)} .col.bad li .mk{background:var(--bad-wash);color:var(--bad)}
+.col li b{color:var(--ink);font-weight:800}
+.col li .val{display:block;font-size:.78rem;color:var(--ink-faint);margin-top:1px}
+
+.rank-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+.rank-head .t{font-size:.9rem;font-weight:800}
+.rank-head .n{font-size:.78rem;color:var(--ink-faint)}
+.rrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line-soft);text-decoration:none;color:inherit}
+.rrow:first-child{border-top:none}
+.rrow .rk{width:22px;text-align:center;font-family:var(--mono);font-weight:700;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+.rrow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.94rem;color:var(--ink-soft)}
+.rrow .rv{font-family:var(--mono);font-size:.86rem;color:var(--ink-soft);white-space:nowrap;font-variant-numeric:tabular-nums}
+.rrow .rv b{color:var(--ink);font-weight:700}
+.rrow.me{background:var(--focus-wash);border:1px solid var(--focus-line);border-radius:10px;padding:11px 12px;margin:6px 0}
+.rrow.me .rk,.rrow.me .nm{color:var(--focus-deep);font-weight:800}
+.rrow.me .rv b{color:var(--focus-deep)}
+.rrow:not(.me):hover{background:var(--line-soft);border-radius:8px}
+.rank-foot{margin-top:12px;font-size:.76rem;color:var(--ink-faint);line-height:1.55}
+#map{height:300px;border-radius:14px;margin-top:14px;border:1px solid var(--line);overflow:hidden;background:var(--line-soft)}
+
+.lead{background:linear-gradient(180deg,var(--focus-wash),#fff);border:1px solid var(--focus-line)}
+.lead h3{font-family:var(--serif);font-weight:400;font-size:1.5rem;letter-spacing:-.01em;margin-bottom:8px;word-break:keep-all}
+.lead h3 em{font-style:italic;color:var(--focus)}
+.lead p{font-size:.9rem;color:var(--ink-soft);margin-bottom:18px;word-break:keep-all}
+.lead p b{color:var(--ink);font-weight:700}
+.lead .fields{display:grid;grid-template-columns:1fr 1.3fr;gap:10px}
+@media(max-width:480px){.lead .fields{grid-template-columns:1fr}}
+.lead input{border:1.5px solid var(--line);border-radius:11px;padding:13px 14px;font-size:.95rem;background:#fff}
+.lead input:focus{outline:none;border-color:var(--focus)}
+.lead .submit{width:100%;margin-top:10px;border:none;border-radius:11px;padding:14px;background:var(--focus);color:#fff;font-weight:800;font-size:.98rem;cursor:pointer;transition:background .15s,transform .12s}
+.lead .submit:hover{background:var(--focus-deep);transform:translateY(-1px)}
+.lead .submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.lead .micro{margin-top:10px;font-size:.76rem;color:var(--ink-faint);text-align:center}
+.lead-done{display:none;text-align:center;padding:12px 0}
+.lead-done.on{display:block}
+.lead-done .ic{width:52px;height:52px;margin:0 auto 12px;border-radius:50%;background:var(--good);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:900}
+.lead-done h4{font-weight:800;font-size:1.1rem;margin-bottom:6px}
+.lead-done p{font-size:.9rem;color:var(--ink-soft)}
+
+.fallback{display:none;padding:40px 0 70px;text-align:center}
+.fallback.on{display:block;animation:up .5s both}
+.fallback .card{padding:34px 24px}
+.fallback h3{font-family:var(--serif);font-weight:400;font-size:1.5rem;margin-bottom:10px;word-break:keep-all}
+.fallback p{font-size:.9rem;color:var(--ink-soft);margin-bottom:8px;word-break:keep-all}
+.btn-line{max-width:240px;margin:18px auto 0;border:none;border-radius:12px;padding:14px;background:var(--ink);color:#fff;font-weight:800;cursor:pointer;width:100%}
+.btn-line:hover{background:#000}
+
+footer{border-top:1px solid var(--line);padding:26px 0;text-align:center;font-size:.78rem;color:var(--ink-faint)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd">
+    <a href="#" class="logo"><span class="mk">f</span><span>포컬랩</span><span class="sub">FOCAL&nbsp;LAB</span></a>
+    <a href="#" class="hd-link">서비스 소개 →</a>
+  </div>
+</header>
+
+<!-- STEP 1: 검색 -->
+<section class="hero" id="heroSec">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span>무료 · 실시간 진단</span>
+    <h1 class="h">우리 안경원, 네이버에서<br><em>몇 위</em>일까요?</h1>
+    <p><b>안경원 이름만</b> 검색하면 실제 순위와 리뷰를 인근 매장과 비교해 알려드립니다.</p>
+
+    <form class="search" id="searchForm" onsubmit="return doSearch(event)">
+      <input id="q" type="text" placeholder="네이버 플레이스 매장명 (예: 아이템안경원)" autocomplete="off" required>
+      <button id="searchBtn" type="submit">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        매장 검색
+      </button>
+    </form>
+    <div class="search-note">매장명을 입력하면 후보 매장을 찾아드려요. 정확한 상호로 검색하면 잘 나와요.</div>
+  </div>
+</section>
+
+<!-- 로딩 -->
+<section class="loading" id="loading">
+  <div class="wrap">
+    <div class="spin"></div>
+    <div class="msg" id="loadMsg">검색 중...</div>
+  </div>
+</section>
+
+<!-- STEP 2: 후보 목록 -->
+<section class="candidates" id="candidates">
+  <div class="wrap">
+    <div class="cand-head">
+      <div class="lbl">SELECT YOUR STORE</div>
+      <h2>어떤 매장이 <em>본인 매장</em>인가요?</h2>
+      <p id="candSub"></p>
+    </div>
+    <div id="candList"></div>
+    <button class="cand-back" onclick="resetAll()">← 다시 검색하기</button>
+  </div>
+</section>
+
+<!-- STEP 3: 결과 -->
+<section class="result" id="result">
+  <div class="wrap">
+    <div class="card store" id="storeCard">
+      <div class="mark">N</div>
+      <div>
+        <div class="nm" id="rName">매장명</div>
+        <div class="meta" id="rMeta">카테고리 · 주소</div>
+        <span class="rankpill" id="rRankPill" style="display:none"></span>
+      </div>
+    </div>
+
+    <div class="card score-card" id="scoreCard">
+      <div class="score-eyebrow">종합 진단 점수</div>
+      <div class="score-big"><span id="rScore">0</span><span class="of">/ 100</span></div>
+      <div class="score-grade" id="rGrade">분석 중</div>
+      <div class="score-desc" id="rDesc"></div>
+      <div class="score-bar"><i id="rBar"></i></div>
+    </div>
+
+    <div class="cols">
+      <div class="col good"><h4><span class="ic">✓</span>잘하고 있어요</h4><ul id="rGood"></ul></div>
+      <div class="col bad"><h4><span class="ic">!</span>보완이 필요해요</h4><ul id="rBad"></ul></div>
+    </div>
+
+    <div class="card">
+      <div class="rank-head">
+        <span class="t" id="rankTitle">지역 검색 순위</span>
+        <span class="n" id="rankSub"></span>
+      </div>
+      <div id="rankList"></div>
+      <div class="rank-foot">매장명을 누르면 그 매장의 네이버 리뷰 페이지가 열립니다. 리뷰 수는 네이버 플레이스 실측값입니다.</div>
+      <div id="map"></div>
+    </div>
+
+    <div class="card lead" id="leadCard">
+      <div id="leadForm">
+        <div class="sec-label">전문가 심층 진단 · 무료</div>
+        <h3>자동으로 못 잡는 부분,<br><em>포컬랩이 직접</em> 봐드릴게요</h3>
+        <p>소개글 전략, 리뷰 품질, 키워드 노출, 블로그 영향력까지 — <b>안경원명과 연락처</b>만 남겨주시면 담당자가 직접 분석해 알려드립니다.</p>
+        <form onsubmit="return submitLead(event)">
+          <div class="fields">
+            <input id="leadStore" type="text" placeholder="안경원명" required maxlength="40">
+            <input id="leadPhone" type="tel" placeholder="연락처 (문자 가능 번호)" required maxlength="20">
+          </div>
+          <button class="submit" id="leadBtn" type="submit">심층 진단 신청하기 →</button>
+          <div class="micro">무료 · 영업시간 내 답변 · 원치 않으시면 받지 않으셔도 됩니다</div>
+        </form>
+      </div>
+      <div class="lead-done" id="leadDone">
+        <div class="ic">✓</div>
+        <h4>신청 완료!</h4>
+        <p>담당자가 영업시간 내 연락드릴게요.</p>
+      </div>
+    </div>
+
+    <button class="cand-back" onclick="resetAll()" style="margin-top:6px">← 다른 매장 검색하기</button>
+  </div>
+</section>
+
+<!-- 폴백 -->
+<section class="fallback" id="fallback">
+  <div class="wrap">
+    <div class="card">
+      <h3 id="fbTitle">매장을 찾지 못했어요</h3>
+      <p id="fbMsg">신규 등록 매장이거나 상호가 조금 다를 수 있어요.</p>
+      <p>정확한 <b>네이버 플레이스 상호</b>로 다시 검색해보세요.</p>
+      <button class="btn-line" onclick="resetAll()">다시 검색하기</button>
+    </div>
+  </div>
+</section>
+
+<footer><div>© 2026 포컬랩 · 안경원 전문 네이버 마케팅</div></footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ============ 설정 ============ */
+const API = 'https://api.focallab.co.kr';   // 진단 서버
+const SHEET_ENDPOINT = '';   // (선택) 리드 저장 구글 Apps Script
+const KAKAO_URL = '';        // (선택) 카카오 채널
+
+/* ============ 유틸 ============ */
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function isMobile(){return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||innerWidth<=768;}
+function placeLink(id){return id?(isMobile()
+  ?'https://m.place.naver.com/place/'+id+'/review/visitor'
+  :'https://map.naver.com/p/entry/place/'+id):'';}
+function norm(s){return String(s||'').replace(/\s/g,'');}
+function meMatch(name,mine){return name&&mine&&norm(name).includes(norm(mine));}
+
+/* 주소에서 "동" 추출 → 진단 키워드 만들기 */
+function extractDong(address){
+  if(!address)return null;
+  // "OO동" 우선 (행정동/법정동)
+  let m=address.match(/([가-힣]+\d?동)(?![가-힣])/);
+  if(m)return m[1];
+  // "OO읍/면"
+  m=address.match(/([가-힣]+[읍면])(?![가-힣])/);
+  if(m)return m[1];
+  // "OO구" 폴백
+  m=address.match(/([가-힣]+구)(?![가-힣])/);
+  if(m)return m[1];
+  // "OO시" 폴백
+  m=address.match(/([가-힣]+시)(?![가-힣])/);
+  return m?m[1]:null;
+}
+function buildQuery(cand){
+  const dong=extractDong(cand.address);
+  return dong?(dong+' 안경원'):(cand.name);
+}
+
+/* ============ 로딩 메시지 ============ */
+let loadTimer=null;
+function startLoad(msgs){
+  const el=document.getElementById('loadMsg');let i=0;el.textContent=msgs[0];
+  loadTimer=setInterval(()=>{i=(i+1)%msgs.length;el.style.opacity=0;
+    setTimeout(()=>{el.textContent=msgs[i];el.style.opacity=1;},250);},1600);
+}
+function stopLoad(){clearInterval(loadTimer);}
+
+const SECTIONS=['heroSec','loading','candidates','result','fallback'];
+function show(id){SECTIONS.forEach(x=>{const el=document.getElementById(x);
+  if(x==='heroSec')el.style.display=(id==='heroSec')?'':'none';
+  else el.classList.toggle('on',x===id);});}
+function resetAll(){show('heroSec');const q=document.getElementById('q');q.value='';q.focus();
+  window.scrollTo({top:0,behavior:'smooth'});}
+
+/* ============ STEP 1: 검색 ============ */
+async function doSearch(e){
+  e.preventDefault();
+  const q=document.getElementById('q').value.trim();
+  if(!q)return false;
+  const btn=document.getElementById('searchBtn');btn.disabled=true;
+  show('loading');startLoad(['매장 검색 중...','네이버 플레이스 조회 중...','후보 매장 정리 중...']);
+  document.getElementById('loading').scrollIntoView({behavior:'smooth',block:'center'});
+  try{
+    const res=await fetch(API+'/api/search?query='+encodeURIComponent(q));
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    if(!data.success||!data.candidates||!data.candidates.length)throw new Error('no results');
+    renderCandidates(data.candidates,q);
+  }catch(err){
+    console.error(err);
+    document.getElementById('fbTitle').textContent='매장을 찾지 못했어요';
+    document.getElementById('fbMsg').textContent='"'+q+'"(으)로 검색된 매장이 없어요. 상호가 조금 다를 수 있어요.';
+    show('fallback');document.getElementById('fallback').scrollIntoView({behavior:'smooth',block:'center'});
+  }finally{stopLoad();btn.disabled=false;}
+  return false;
+}
+
+/* ============ STEP 2: 후보 목록 ============ */
+function renderCandidates(list,q){
+  document.getElementById('candSub').textContent=list.length+'곳을 찾았어요. 본인 매장을 눌러주세요.';
+  const box=document.getElementById('candList');box.innerHTML='';
+  list.forEach(c=>{
+    const el=document.createElement('button');el.type='button';el.className='cand';
+    el.onclick=()=>startDiagnose(c);
+    el.innerHTML=
+      '<span class="mark">N</span>'+
+      '<span class="info">'+
+        '<span class="nm">'+esc(c.name)+'</span>'+
+        '<span class="tags">'+
+          (c.category?'<span class="cat">'+esc(c.category)+'</span>':'')+
+          '<span class="addr">'+esc(c.address||'')+'</span>'+
+          (c.reviews?'<span class="rv">리뷰 <b>'+c.reviews.toLocaleString()+'</b></span>':'')+
+        '</span>'+
+      '</span>'+
+      '<span class="arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>';
+    box.appendChild(el);
+  });
+  show('candidates');
+  document.getElementById('candidates').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ============ STEP 3: 진단 ============ */
+async function startDiagnose(cand){
+  const query=buildQuery(cand);        // 주소에서 동 추출 → "OO동 안경원"
+  const store=cand.name;
+  show('loading');
+  startLoad([''+cand.name+' 진단 시작...','인근 매장 순위 확인 중...','경쟁 매장 리뷰 집계 중...','진단 결과 정리 중...']);
+  document.getElementById('loading').scrollIntoView({behavior:'smooth',block:'center'});
+  try{
+    const url=API+'/api/diagnose?query='+encodeURIComponent(query)+'&store='+encodeURIComponent(store);
+    const res=await fetch(url);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    if(!data.success)throw new Error(data.error||'fail');
+    // 진단 결과에 검색어를 넣어줌(응답에도 있지만 보강)
+    data.result.query=data.result.query||query;
+    data.result.myStore=data.result.myStore||store;
+    render(data.result,cand);
+  }catch(err){
+    console.error(err);
+    document.getElementById('fbTitle').textContent='진단에 실패했어요';
+    document.getElementById('fbMsg').textContent='일시적인 문제일 수 있어요. 잠시 후 다시 시도해주세요.';
+    show('fallback');document.getElementById('fallback').scrollIntoView({behavior:'smooth',block:'center'});
+  }finally{stopLoad();}
+}
+
+function render(r,cand){
+  const stores=r.topStores||[];
+  const me=stores.find(s=>meMatch(s.name,r.myStore))||stores.find(s=>s.rank===r.myRank)||stores[0]||{};
+  const myReviews=(r.myDetail&&r.myDetail.reviews)||me.reviews||(cand&&cand.reviews)||0;
+
+  document.getElementById('rName').textContent=me.name||r.myStore||(cand&&cand.name)||'-';
+  const meta=[];if(me.category||cand&&cand.category)meta.push(me.category||cand.category);
+  if(me.address||cand&&cand.address)meta.push(me.address||cand.address);
+  document.getElementById('rMeta').textContent=meta.join(' · ')||'네이버 플레이스';
+  const pill=document.getElementById('rRankPill');
+  if(r.myRank){pill.style.display='';pill.innerHTML='📍 "'+esc(r.query||'')+'" 검색 <b style="margin-left:2px">'+r.myRank+'위</b> / '+r.totalInArea+'곳';}
+  else pill.style.display='none';
+
+  const peers=stores.filter(s=>!meMatch(s.name,r.myStore)&&s.reviews>0).map(s=>s.reviews).sort((a,b)=>a-b);
+  const median=peers.length?peers[Math.floor(peers.length/2)]:0;
+
+  const reviewScore=Math.min(50,Math.round(myReviews/300*50));
+  let rankScore=0;
+  if(r.myRank&&r.totalInArea)rankScore=Math.round((1-(r.myRank-1)/r.totalInArea)*30);
+  const bookScore=(r.myDetail&&r.myDetail.hasBooking)?10:0;
+  const descLen=(r.myDetail&&r.myDetail.descLength)||0;
+  const descScore=descLen>=100?10:descLen>0?5:0;
+  const score=Math.max(0,Math.min(100,reviewScore+rankScore+bookScore+descScore));
+
+  const card=document.getElementById('scoreCard');
+  card.classList.remove('lv-bad','lv-warn','lv-good');
+  card.classList.add(score>=70?'lv-good':score>=45?'lv-warn':'lv-bad');
+
+  const el=document.getElementById('rScore');const dur=1400,t0=performance.now();
+  (function tick(now){const p=Math.min((now-t0)/dur,1);el.textContent=Math.round(score*(1-Math.pow(1-p,3)));
+    if(p<1)requestAnimationFrame(tick);else el.textContent=score;})(t0);
+  setTimeout(()=>{document.getElementById('rBar').style.width=score+'%';},100);
+
+  const g=document.getElementById('rGrade'),d=document.getElementById('rDesc');
+  if(score>=70){g.textContent='관리가 잘 되고 있어요';
+    d.textContent='기본기가 탄탄합니다. 리뷰와 콘텐츠를 꾸준히 채우면 상위권을 지킬 수 있어요.';}
+  else if(score>=45){g.textContent='절반은 잡혀 있어요';
+    d.textContent='운영은 되고 있지만 몇 가지가 점수를 깎고 있어요. 아래 보완 항목부터 채우면 빠르게 오릅니다.';}
+  else{g.textContent='개선이 필요해요';
+    d.textContent='핵심 항목이 부족해 노출과 문의 전환에서 손해를 보고 있어요. 기본부터 잡으면 크게 개선됩니다.';}
+
+  const good=[],bad=[];
+  if(myReviews>0){
+    if(median&&myReviews>=median)good.push({t:'리뷰 수 우위',v:'현재 '+myReviews.toLocaleString()+'개 · 인근 중간값 '+median.toLocaleString()+'개'});
+    else if(median)bad.push({t:'리뷰 수 부족',v:'현재 '+myReviews.toLocaleString()+'개 · 인근 중간값 '+median.toLocaleString()+'개'});
+    else good.push({t:'리뷰 확보 중',v:'현재 '+myReviews.toLocaleString()+'개'});
+  }else bad.push({t:'리뷰가 거의 없어요',v:'리뷰는 검색 노출의 핵심 신호입니다'});
+  if(r.myRank&&r.totalInArea){
+    if(r.myRank<=Math.max(3,Math.ceil(r.totalInArea*0.2)))good.push({t:'검색 상위 노출',v:'"'+(r.query||'')+'" '+r.myRank+'위 / '+r.totalInArea+'곳'});
+    else bad.push({t:'검색 순위 개선 여지',v:'"'+(r.query||'')+'" '+r.myRank+'위 / '+r.totalInArea+'곳'});
+  }else bad.push({t:'검색에 노출되지 않아요',v:'이 지역 상위 목록에 매장이 없습니다'});
+  if(r.myDetail&&r.myDetail.hasBooking)good.push({t:'네이버 예약 운영',v:'방문 의사 → 방문 전환 장치'});
+  else bad.push({t:'네이버 예약 미설정',v:'예약 기능은 문의를 방문으로 바꿔줍니다'});
+  if(descLen>=100)good.push({t:'매장 소개글 충실',v:'현재 '+descLen+'자'});
+  else bad.push({t:'매장 소개글 보완 필요',v:descLen>0?'현재 '+descLen+'자 — 키워드 밀도 부족':'심층 진단에서 상세 확인'});
+  fillList('rGood',good,'good');fillList('rBad',bad,'bad');
+
+  document.getElementById('rankTitle').textContent='"'+esc(r.query||'')+'" 지역 검색 순위';
+  document.getElementById('rankSub').textContent='상위 '+stores.length+'곳 · 총 '+r.totalInArea+'곳';
+  const list=document.getElementById('rankList');list.innerHTML='';
+  stores.forEach(s=>{
+    const mine=meMatch(s.name,r.myStore);const url=placeLink(s.place_id);
+    const inner='<span class="rk">'+s.rank+'</span>'+
+      '<span class="nm">'+esc(s.name)+(mine?' (내 매장)':'')+'</span>'+
+      '<span class="rv">리뷰 <b>'+(s.reviews||0).toLocaleString()+'</b></span>';
+    const node=document.createElement(url?'a':'div');
+    node.className='rrow'+(mine?' me':'');
+    if(url){node.href=url;node.target='_blank';node.rel='noopener';}
+    node.innerHTML=inner;list.appendChild(node);
+  });
+
+  drawMap(stores,r);
+
+  const ls=document.getElementById('leadStore');if(ls)ls.value=me.name||r.myStore||'';
+  document.getElementById('leadForm').style.display='';
+  document.getElementById('leadDone').classList.remove('on');
+
+  show('result');
+  document.getElementById('storeCard').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function fillList(id,items,kind){
+  const ul=document.getElementById(id);ul.innerHTML='';
+  if(!items.length){ul.innerHTML='<li style="color:var(--ink-faint)">해당 항목 없음</li>';return;}
+  items.forEach(it=>{
+    const li=document.createElement('li');
+    li.innerHTML='<span class="mk">'+(kind==='good'?'✓':'!')+'</span>'+
+      '<span><b>'+esc(it.t)+'</b>'+(it.v?'<span class="val">'+esc(it.v)+'</span>':'')+'</span>';
+    ul.appendChild(li);
+  });
+}
+
+let mapObj=null;
+function drawMap(stores,r){
+  const el=document.getElementById('map');
+  const pts=stores.filter(s=>s.lat&&s.lng);
+  if(!pts.length){el.style.display='none';return;}
+  el.style.display='';
+  if(mapObj){mapObj.remove();mapObj=null;}
+  try{
+    mapObj=L.map(el,{zoomControl:true,scrollWheelZoom:false});
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(mapObj);
+    const bounds=L.latLngBounds([]);
+    pts.forEach(s=>{
+      const mine=meMatch(s.name,r.myStore);
+      const html='<div style="width:'+(mine?28:22)+'px;height:'+(mine?28:22)+'px;border-radius:50%;'+
+        'background:'+(mine?'#1b5cff':'#fff')+';color:'+(mine?'#fff':'#16181d')+';'+
+        'border:2px solid '+(mine?'#fff':'#16181d')+';box-shadow:0 1px 4px rgba(0,0,0,.3);'+
+        'display:flex;align-items:center;justify-content:center;font-size:'+(mine?13:11)+'px;font-weight:800">'+s.rank+'</div>';
+      L.marker([s.lat,s.lng],{icon:L.divIcon({html:html,className:'',iconSize:[28,28],iconAnchor:[14,14]}),zIndexOffset:mine?1000:0})
+        .bindTooltip(s.rank+'위 '+esc(s.name)+' · 리뷰 '+(s.reviews||0).toLocaleString(),{direction:'top'}).addTo(mapObj);
+      bounds.extend([s.lat,s.lng]);
+    });
+    mapObj.fitBounds(bounds,{padding:[32,32],maxZoom:16});
+    setTimeout(()=>mapObj.invalidateSize(),200);
+  }catch(e){el.style.display='none';}
+}
+
+/* ============ 리드 ============ */
+async function submitLead(e){
+  e.preventDefault();
+  const btn=document.getElementById('leadBtn');const orig=btn.textContent;
+  btn.disabled=true;btn.textContent='전송 중...';
+  const store=document.getElementById('leadStore').value.trim();
+  const phone=document.getElementById('leadPhone').value.trim();
+  const done=()=>{document.getElementById('leadForm').style.display='none';
+    document.getElementById('leadDone').classList.add('on');};
+  if(!SHEET_ENDPOINT){done();return false;}
+  try{
+    await fetch(SHEET_ENDPOINT,{method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({source:'focallab-diagnose',storeName:store,phone:phone,timestamp:new Date().toISOString()})});
+    done();
+  }catch(err){alert('전송에 실패했어요. 잠시 후 다시 시도해주세요.');btn.disabled=false;btn.textContent=orig;}
+  return false;
+}
+</script>
+</body>
+</html>
