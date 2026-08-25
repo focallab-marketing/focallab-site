@@ -187,12 +187,47 @@ footer{border-top:1px solid var(--line);padding:26px 0;text-align:center;font-si
 </head>
 <body>
 
-<header>
-  <div class="hd">
-    <a href="#" class="logo"><span class="mk">f</span><span>포컬랩</span><span class="sub">FOCAL&nbsp;LAB</span></a>
-    <a href="#" class="hd-link">서비스 소개 →</a>
+<header class="fl-nav">
+  <div class="fl-nav-inner">
+    <a class="fl-logo" href="https://focallab-site.vercel.app">
+      <svg class="fl-logo-mark" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="8" cy="16" r="6.4" stroke="#142136" stroke-width="2"/>
+        <circle cx="22" cy="16" r="6.4" stroke="#142136" stroke-width="2"/>
+        <path d="M14.4 14.6 C15.5 12.4 16 12.4 15.6 14.6" stroke="#142136" stroke-width="2" fill="none"/>
+        <path d="M1.6 15.4 L2.6 10.4" stroke="#142136" stroke-width="2"/>
+        <path d="M28.4 15.4 L27.4 10.4" stroke="#142136" stroke-width="2"/>
+      </svg>
+      <span class="fl-logo-txt">FOCAL LAB<small>안경원 전문 마케팅</small></span>
+    </a>
+    <a class="fl-nav-link" href="https://focallab-site.vercel.app">← 서비스 소개로</a>
   </div>
 </header>
+
+<style>
+  .fl-nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(238,241,240,.88); backdrop-filter:blur(8px);
+    border-bottom:1px solid rgba(33,29,25,.14);
+    font-family:'Pretendard Variable','Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
+  }
+  .fl-nav-inner{
+    max-width:1120px; margin:0 auto; padding:0 32px;
+    height:72px; display:flex; align-items:center; justify-content:space-between;
+  }
+  .fl-logo{display:flex; align-items:center; gap:10px; font-weight:700; font-size:18px; text-decoration:none; color:#211D19;}
+  .fl-logo-mark{width:30px; height:30px; display:block;}
+  .fl-logo-txt{display:flex; flex-direction:column; line-height:1.1;}
+  .fl-logo-txt small{
+    font-family:'IBM Plex Mono',monospace; font-weight:500; font-size:10.5px;
+    letter-spacing:.1em; color:#6E665B; margin-top:2px;
+  }
+  .fl-nav-link{
+    font-size:14.5px; font-weight:500; text-decoration:none; color:#6E665B;
+    border-bottom:1px solid transparent; padding-bottom:2px; transition:color .15s, border-color .15s;
+  }
+  .fl-nav-link:hover{color:#211D19; border-color:#B9893B;}
+  @media (max-width:480px){ .fl-nav-inner{padding:0 20px;} .fl-logo-txt small{display:none;} }
+</style>
 
 <!-- STEP 1: 검색 -->
 <section class="hero" id="heroSec">
