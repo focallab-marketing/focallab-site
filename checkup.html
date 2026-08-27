@@ -191,12 +191,13 @@
   .r2-coach{margin:24px 0 4px; padding:18px 20px; background:var(--paper-alt); border-radius:5px; font-size:14px; line-height:1.7;}
   .r2-coach b{color:var(--focus-blue-deep);}
 
-  .r2-miss-box{margin:26px 0 4px; padding:26px 24px; text-align:center; background:linear-gradient(180deg,#FBEEE7,#F6E1D6); border:1px solid rgba(211,95,43,.28); border-radius:10px;}
-  .r2-miss-label{font-size:14px; font-weight:600; color:#B8471E; margin-bottom:12px;}
-  .r2-miss-big{font-family:'Black Han Sans',sans-serif; font-size:56px; line-height:1; color:var(--carrot);}
-  .r2-miss-big .r2-miss-unit{font-family:'IBM Plex Mono',monospace; font-size:19px; color:#B8471E; margin-left:8px;}
-  .r2-miss-desc{font-size:14px; line-height:1.7; color:var(--ink); margin:14px 0 0;}
-  .r2-miss-desc b{color:#B8471E;}
+  .r2-miss-box{margin:22px 0 4px; padding:32px 26px; text-align:center; background:linear-gradient(180deg,#FBEEE7,#F6E1D6); border:1.5px solid rgba(211,95,43,.32); border-radius:14px; box-shadow:0 8px 28px -18px rgba(211,95,43,.55);}
+  .r2-miss-label{display:inline-block; font-size:13px; font-weight:700; letter-spacing:.01em; color:#fff; background:var(--carrot); padding:6px 16px; border-radius:100px; margin-bottom:18px;}
+  .r2-miss-big{font-family:'Black Han Sans',sans-serif; font-size:76px; line-height:1; color:var(--carrot); letter-spacing:-.01em;}
+  .r2-miss-big .r2-miss-unit{font-family:'IBM Plex Mono',monospace; font-size:22px; color:#B8471E; margin-left:8px;}
+  .r2-miss-desc{font-size:14.5px; line-height:1.75; color:var(--ink); margin:18px auto 0; max-width:400px; word-break:keep-all;}
+  .r2-miss-desc b{color:#B8471E; font-weight:700;}
+  @media (max-width:560px){ .r2-miss-big{font-size:60px;} }
   .r2-note{font-size:12px; color:var(--ink-soft); line-height:1.6; padding:18px 32px; border-top:1px solid var(--line); margin-top:20px;}
 
   .r2-apply{margin:0 32px 8px; padding:24px; background:var(--ink); border-radius:12px; color:var(--paper);}
@@ -410,16 +411,13 @@
         <div class="r2-gauge"><div class="r2-gauge-fill" id="r2Gauge"></div></div>
         <p class="r2-grade" id="r2Grade"></p>
 
-        <div class="r2-items-head">항목별 진단</div>
-        <div class="r2-items" id="r2Items"></div>
-
-        <div class="r2-coach" id="r2Coach"></div>
-
         <div class="r2-miss-box" id="r2MissBox">
-          <div class="r2-miss-label">지금, 관리를 안 해서 놓치고 있는 손님</div>
+          <div class="r2-miss-label" id="r2MissLabel">지금, 관리를 안 해서 놓치고 있는 손님</div>
           <div class="r2-miss-big"><span id="r2Miss">0</span><span class="r2-miss-unit">명 / 월</span></div>
           <p class="r2-miss-desc" id="r2MissDesc"></p>
         </div>
+
+        <div class="r2-coach" id="r2Coach"></div>
       </div>
 
       <div class="r2-note">* 놓치는 손님 수는 안경원 평균 검색 유입을 바탕으로 한 추정치이며, 실제 수치는 상권·매장 규모에 따라 다릅니다. 정확한 분석과 개선 방법은 포컬랩 무료 상담에서 확인하실 수 있습니다.</div>
@@ -492,6 +490,7 @@
     $('quiz').hidden = false;
     const mb = $('r2MissBox');
     mb.style.background = ''; mb.style.borderColor = '';
+    $('r2MissLabel').style.background = '';
     $('applyName').value = ''; $('applyPhone').value = '';
     $('applyBtn').disabled = false; $('applyBtn').textContent = '상담 신청하기';
     $('r2Form').hidden = false; $('r2Done').hidden = true; $('applyMsg').textContent = '';
@@ -524,12 +523,21 @@
     setTimeout(()=>{ gauge.style.width = score + '%'; }, 80);
 
     const missBox = $('r2MissBox');
+    const missLabel = $('r2MissLabel');
     if(deficit === 0){
+      missLabel.textContent = '지금 상태로 놓치는 손님';
       $('r2Miss').textContent = '거의 0';
       $('r2MissDesc').innerHTML = '지금처럼 꾸준히 관리하면 놓치는 손님이 거의 없습니다. 이 상태를 <b>유지·강화</b>하는 것이 다음 과제입니다.';
       missBox.style.background = 'linear-gradient(180deg,#EAF1F9,#DCE8F5)';
-      missBox.style.borderColor = 'rgba(42,93,170,.28)';
+      missBox.style.borderColor = 'rgba(42,93,170,.32)';
+      missLabel.style.background = 'var(--focus-blue)';
+    } else if(score >= 70){
+      // 점수는 높지만 개선 여지가 남은 경우 — "더 잡을 수 있는" 손님으로 톤 조정
+      missLabel.textContent = '조금만 더 하면 잡을 수 있는 손님';
+      $('r2Miss').textContent = '약 ' + missLow + '~' + missHigh;
+      $('r2MissDesc').innerHTML = '기본기는 탄탄하지만, 아직 손이 덜 닿은 부분 때문에 매달 <b>약 ' + missLow + '~' + missHigh + '명</b>이 경쟁 매장으로 향하고 있습니다. 상위권을 굳히면 이 손님까지 데려올 수 있습니다.';
     } else {
+      missLabel.textContent = '지금, 관리를 안 해서 놓치고 있는 손님';
       $('r2Miss').textContent = '약 ' + missLow + '~' + missHigh;
       $('r2MissDesc').innerHTML = '온라인 관리를 하지 않아, 지금 이 순간에도 검색하던 손님이 경쟁 매장으로 가고 있습니다. 매달 <b>약 ' + missLow + '~' + missHigh + '명</b>의 손님을 놓치고 있는 셈입니다.';
     }
@@ -539,21 +547,6 @@
     else if(score >= 40) grade = '기회가 많이 남아 있습니다. 몇 가지만 손보면 검색 유입이 눈에 띄게 달라질 수 있습니다.';
     else                 grade = '온라인에서 우리 매장을 만나는 손님이 매우 적은 상태입니다. 지금이 시작하기 가장 좋은 시점입니다.';
     $('r2Grade').textContent = grade;
-
-    const box = $('r2Items');
-    box.innerHTML = '';
-    for(let i=1;i<=TOTAL_Q;i++){
-      const s = answers[i] ?? 0;
-      const it = ITEMS[i];
-      const cls = s === 2 ? 'good' : (s === 1 ? 'warn' : 'bad');
-      const icon = s === 2 ? '✓' : (s === 1 ? '!' : '✕');
-      const desc = s === 2 ? it.good : (s === 1 ? it.warn : it.bad);
-      const div = document.createElement('div');
-      div.className = 'r2-item ' + cls;
-      div.innerHTML = '<span class="ic">' + icon + '</span>' +
-        '<span class="txt"><b>' + it.label + '</b><span>' + desc + '</span></span>';
-      box.appendChild(div);
-    }
 
     const weak = [];
     for(let i=1;i<=TOTAL_Q;i++){ if((answers[i] ?? 0) === 0) weak.push(ITEMS[i].label); }
