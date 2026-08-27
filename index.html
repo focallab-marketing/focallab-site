@@ -1,208 +1,854 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FOCAL LAB — 안경원 전문 마케팅</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
+<style>
+:root{
+--ink:#211D19;
+--ink-soft:#6E665B;
+--paper:#F0EEE9;
+--paper-alt:#E3DCCE;
+--card:#FAF8F3;
+--gold:#B9893B;
+--gold-deep:#8C6526;
+--focus-blue:#2A5DAA;
+--focus-blue-deep:#1B3E77;
+--carrot:#D35F2B;
+--line:rgba(33,29,25,.14);
+--line-strong:rgba(33,29,25,.26);
+--shadow:0 2px 0 rgba(33,29,25,.06);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+margin:0;
+background:var(--paper);
+color:var(--ink);
+font-family:'Pretendard Variable','Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
+-webkit-font-smoothing:antialiased;
+line-height:1.6;
+}
+.display{font-family:'Black Han Sans','Pretendard Variable',sans-serif; letter-spacing:.01em;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+img,svg{display:block; max-width:100%;}
+a{color:inherit;}
+.wrap{max-width:1120px; margin:0 auto; padding:0 32px;}
+section{padding:112px 0;}
+h2.section-title{
+font-size:clamp(28px,3.4vw,42px);
+line-height:1.25;
+margin:0 0 14px;
+}
+.eyebrow{
+display:inline-flex; align-items:center; gap:8px;
+font-family:'IBM Plex Mono',monospace;
+font-size:12.5px; letter-spacing:.14em; text-transform:uppercase;
+color:var(--focus-blue-deep);
+margin:0 0 16px;
+}
+.eyebrow::before{content:''; width:16px; height:1px; background:var(--focus-blue-deep);}
+.lede{font-size:16.5px; color:var(--ink-soft); max-width:560px; margin:0 0 48px;}
+.btn{
+display:inline-flex; align-items:center; gap:8px;
+padding:14px 26px; border-radius:3px;
+font-size:15px; font-weight:600; cursor:pointer;
+border:1px solid var(--ink); text-decoration:none;
+transition:transform .15s ease, background .2s ease, color .2s ease;
+}
+.btn-primary{background:var(--ink); color:var(--paper);}
+.btn-primary:hover{background:var(--focus-blue-deep); border-color:var(--focus-blue-deep); transform:translateY(-1px);}
+.btn-ghost{background:transparent; color:var(--ink); border-color:var(--line-strong);}
+.btn-ghost:hover{border-color:var(--ink); transform:translateY(-1px);}
+
+/* ---------- NAV ---------- */
+header.nav{
+position:sticky; top:0; z-index:50;
+background:rgba(238,241,240,.88); backdrop-filter:blur(8px);
+border-bottom:1px solid var(--line);
+}
+.nav-inner{
+max-width:1120px; margin:0 auto; padding:0 32px;
+height:72px; display:flex; align-items:center; justify-content:space-between;
+}
+.logo{display:flex; align-items:center; gap:10px; font-weight:700; font-size:18px; text-decoration:none; color:var(--ink);}
+.logo-mark{width:30px; height:30px;}
+.logo small{font-family:'IBM Plex Mono',monospace; font-weight:500; font-size:10.5px; letter-spacing:.1em; color:var(--ink-soft); display:block; margin-top:1px;}
+nav.links{display:flex; gap:30px; font-size:14.5px; font-weight:500;}
+nav.links a{text-decoration:none; color:var(--ink-soft); border-bottom:1px solid transparent; padding-bottom:2px; transition:color .15s, border-color .15s;}
+nav.links a:hover{color:var(--ink); border-color:var(--gold);}
+.nav-cta{display:flex; align-items:center; gap:18px;}
+@media (max-width:860px){ nav.links{display:none;} }
+
+/* ---------- HERO ---------- */
+.hero{
+position:relative; overflow:hidden;
+padding:96px 0 88px;
+border-bottom:1px solid var(--line);
+}
+.hero-grid{
+display:grid; grid-template-columns:1.15fr .85fr; gap:56px; align-items:center;
+}
+.hero h1{
+font-family:'Pretendard Variable','Pretendard',sans-serif;
+font-weight:700;
+letter-spacing:.005em;
+font-size:clamp(38px,5vw,58px);
+line-height:1.28;
+margin:0 0 24px;
+}
+.blur-in{
+display:block;
+filter:blur(14px);
+opacity:0;
+animation:sharpen 1.4s cubic-bezier(.2,.7,.2,1) forwards;
+}
+.blur-in.d2{animation-delay:.28s;}
+@keyframes sharpen{
+0%{filter:blur(14px); opacity:0; transform:translateY(6px);}
+100%{filter:blur(0); opacity:1; transform:translateY(0);}
+}
+.hero .lede{margin-bottom:36px;}
+.hero-cta{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:34px;}
+.hero-trust{
+font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--ink-soft);
+border-top:1px solid var(--line); padding-top:18px; max-width:520px;
+}
+.store-search{
+background:var(--card); border:1px solid var(--line); border-radius:4px;
+padding:20px 22px; margin-bottom:26px; max-width:520px;
+}
+.store-search-label{font-size:11px; letter-spacing:.1em; color:var(--focus-blue-deep); margin-bottom:12px; text-transform:uppercase;}
+.store-search-form{display:flex; gap:10px;}
+.store-search-form input{
+flex:1; padding:12px 14px; border:1px solid var(--line-strong); border-radius:3px;
+background:var(--paper); font-family:inherit; font-size:14.5px; color:var(--ink);
+}
+.store-search-form input:focus{outline:none; border-color:var(--focus-blue);}
+.store-search-form .btn{padding:12px 20px; font-size:14px; white-space:nowrap;}
+@media (max-width:480px){ .store-search-form{flex-direction:column;} }
+
+/* ---------- PLACE DIAGNOSE (자가진단 퀴즈) ---------- */
+.diagnose-section{background:var(--paper-alt); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+
+/* 퀴즈 카드 */
+.quiz{
+max-width:620px; margin:40px 0 0;
+background:var(--card); border:1px solid var(--line); border-radius:6px;
+padding:30px 32px 34px;
+}
+.quiz-progress{height:6px; background:var(--paper-alt); border-radius:4px; overflow:hidden; margin-bottom:12px;}
+.quiz-progress-fill{height:100%; width:0%; background:var(--focus-blue); border-radius:4px; transition:width .4s cubic-bezier(.2,.7,.2,1);}
+.quiz-step-label{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.1em; color:var(--focus-blue-deep); margin-bottom:22px;}
+.quiz-q h3{font-size:clamp(19px,2.4vw,24px); line-height:1.4; margin:0 0 8px; font-weight:700;}
+
+.search-mock{
+display:flex; align-items:center; gap:0;
+border:2px solid #03C75A; border-radius:10px; overflow:hidden;
+background:#fff; margin:20px 0 4px; max-width:420px;
+box-shadow:0 2px 8px rgba(3,199,90,.12);
+}
+.search-mock .sm-logo{
+font-family:'Black Han Sans',sans-serif; font-size:22px; color:#03C75A;
+padding:0 14px; letter-spacing:-.02em;
+}
+.search-mock .sm-query{
+flex:1; padding:14px 8px; font-size:16px; color:var(--ink); font-weight:500;
+border-left:1px solid var(--line);
+}
+.search-mock .sm-btn{
+background:#03C75A; color:#fff; padding:14px 18px; font-size:16px;
+display:flex; align-items:center;
+}
+.quiz-opts{display:flex; flex-direction:column; gap:11px; margin-top:20px;}
+
+/* 리뷰 목업 */
+.review-mock{display:flex; flex-direction:column; gap:10px; margin:20px 0 4px; max-width:460px;}
+.rv-card{background:var(--paper); border:1px solid var(--line); border-radius:10px; padding:13px 15px;}
+.rv-top{display:flex; align-items:center; gap:8px; margin-bottom:7px;}
+.rv-avatar{width:24px; height:24px; border-radius:50%; background:var(--paper-alt); color:var(--ink-soft); font-size:12px; display:flex; align-items:center; justify-content:center; font-weight:600;}
+.rv-name{font-size:13px; font-weight:600; color:var(--ink);}
+.rv-stars{margin-left:auto; color:#FFB800; font-size:13px; letter-spacing:1px;}
+.rv-text{font-size:13px; color:var(--ink-soft); margin:0; line-height:1.5;}
+
+/* 스마트플레이스 홍보 카드 목업 (실제 로고 미사용) */
+.smartplace-mock{
+margin:20px 0 4px; max-width:440px; border-radius:14px; overflow:hidden;
+background:#03C75A; padding:22px 22px 20px; color:#111;
+box-shadow:0 6px 20px rgba(3,199,90,.22);
+}
+.sp-title{background:#fff; border-radius:10px; padding:16px 18px; font-family:'Pretendard Variable','Pretendard',sans-serif; font-weight:800; font-size:21px; line-height:1.35; color:#1a1a1a; letter-spacing:-.01em;}
+.sp-title b{color:#03C75A;}
+.sp-search{
+display:flex; align-items:center; gap:0; margin-top:14px;
+background:#fff; border:2px solid #03C75A; border-radius:8px; overflow:hidden;
+}
+.sp-search .sp-brand{font-family:'Pretendard Variable','Pretendard',sans-serif; font-weight:800; font-size:15px; color:#03C75A; padding:0 12px; white-space:nowrap; letter-spacing:-.02em;}
+.sp-search .sp-query{flex:1; padding:11px 8px; font-size:13px; color:#555; border-left:1px solid #e5e5e5; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.sp-search .sp-mag{background:#03C75A; color:#fff; padding:11px 14px; font-size:14px;}
+.sp-bottom{display:flex; align-items:flex-end; justify-content:space-between; margin-top:16px;}
+.sp-benefits{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:7px;}
+.sp-benefits li{font-size:13.5px; font-weight:600; color:#0a3d1f; padding-left:14px; position:relative;}
+.sp-benefits li::before{content:'·'; position:absolute; left:2px; font-weight:800;}
+.sp-pin{
+width:56px; height:56px; background:#fff; border-radius:50% 50% 50% 0;
+transform:rotate(-45deg); display:flex; align-items:center; justify-content:center;
+box-shadow:0 3px 8px rgba(0,0,0,.15); margin-right:10px; margin-bottom:6px;
+}
+.sp-pin-n{transform:rotate(45deg); font-family:'Pretendard Variable','Pretendard',sans-serif; font-weight:800; font-size:26px; color:#03C75A;}
+@media (max-width:440px){ .sp-title{font-size:18px;} .sp-search .sp-query{font-size:12px;} }
+
+/* 채널 배지 목업 */
+.channel-mock{display:flex; gap:12px; margin:22px 0 4px; flex-wrap:wrap;}
+.ch-badge{
+width:62px; height:62px; border-radius:16px; display:flex; align-items:center; justify-content:center;
+font-weight:700; font-size:14px; color:#fff; letter-spacing:-.01em;
+box-shadow:0 3px 8px rgba(33,29,25,.14);
+}
+.ch-badge.blog{background:#03C75A;}
+.ch-badge.insta{background:linear-gradient(45deg,#FEDA75,#FA7E1E,#D62976,#962FBF); font-style:italic;}
+.ch-badge.carrot{background:#FF7E36;}
+
+/* 프로모션 이벤트 카드 목업 (3열 2행 그리드) */
+.promo-mock{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:20px 0 4px; max-width:460px;}
+.pm-card{
+display:flex; flex-direction:column; align-items:center; justify-content:center; gap:7px;
+padding:16px 8px; border-radius:12px; text-align:center;
+border:1px solid transparent; transition:transform .12s;
+}
+.pm-card .pm-ic{line-height:0;}
+.pm-card .pm-ic svg{width:36px; height:36px;}
+.pm-card .pm-name{font-size:12.5px; font-weight:700; line-height:1.3; word-break:keep-all;}
+.pm-card.revisit{background:linear-gradient(135deg,#EAF1F9,#DCE8F5); color:var(--focus-blue-deep); border-color:rgba(42,93,170,.2);}
+.pm-card.lens{background:linear-gradient(135deg,#E9F7EF,#D6EFE0); color:#1a7a45; border-color:rgba(3,199,90,.25);}
+.pm-card.oneone{background:linear-gradient(135deg,#FBEEE7,#F6E1D6); color:#B8471E; border-color:rgba(211,95,43,.25);}
+.pm-card.reserve{background:linear-gradient(135deg,#FBF3E0,#F6E9C8); color:var(--gold-deep); border-color:rgba(185,137,59,.28);}
+.pm-card.birthday{background:linear-gradient(135deg,#F7EAF3,#EFD9E9); color:#9C2E7A; border-color:rgba(156,46,122,.22);}
+.pm-card.family{background:linear-gradient(135deg,#EAF3F1,#D6E9E4); color:#1F6E63; border-color:rgba(31,110,99,.24);}
+.quiz-opt{
+text-align:left; padding:17px 20px; border:1px solid var(--line-strong); border-radius:5px;
+background:var(--paper); font-family:inherit; font-size:15.5px; font-weight:500; color:var(--ink);
+cursor:pointer; transition:border-color .15s, background .15s, transform .12s;
+}
+.quiz-opt:hover{border-color:var(--focus-blue); background:#fff; transform:translateX(3px);}
+.quiz-opt:active{transform:scale(.99);}
+.quiz-next{margin-top:4px;}
+
+/* 결과 카드 */
+.result2{
+max-width:620px; margin:40px 0 0;
+border:1px solid var(--line); border-radius:6px; overflow:hidden; background:var(--card);
+animation:r2in .5s ease;
+}
+@keyframes r2in{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+.r2-head{background:var(--ink); color:var(--paper); padding:34px 32px 30px; text-align:center;}
+.r2-store{font-size:15px; color:rgba(238,241,240,.7); margin-bottom:18px;}
+.r2-label{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.1em; color:#9FD1FF; text-transform:uppercase; margin-bottom:10px;}
+.r2-big-score{font-family:'Black Han Sans',sans-serif; font-size:64px; line-height:1; color:#fff;}
+.r2-big-score .r2-unit{font-family:'IBM Plex Mono',monospace; font-size:20px; color:rgba(238,241,240,.65); margin-left:8px;}
+.r2-sub{font-size:13.5px; color:rgba(238,241,240,.7); margin-top:14px;}
+.r2-body{padding:28px 32px 4px;}
+.r2-gauge{height:9px; background:var(--paper-alt); border-radius:5px; overflow:hidden; margin-top:4px;}
+.r2-gauge-fill{height:100%; width:0%; border-radius:5px; transition:width 1.1s cubic-bezier(.2,.7,.2,1);}
+.r2-grade{font-size:14px; line-height:1.7; color:var(--ink); margin:16px 0 0; padding:14px 16px; background:var(--paper); border-left:3px solid var(--gold); border-radius:0 3px 3px 0;}
+.r2-items-head{font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--focus-blue-deep); margin:26px 0 14px;}
+.r2-items{display:flex; flex-direction:column; gap:12px;}
+.r2-item{display:flex; align-items:flex-start; gap:12px; font-size:14px; line-height:1.55;}
+.r2-item .ic{
+flex-shrink:0; width:24px; height:24px; border-radius:50%;
+display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; margin-top:1px;
+}
+.r2-item.good .ic{background:rgba(42,93,170,.14); color:var(--focus-blue-deep);}
+.r2-item.warn .ic{background:rgba(185,137,59,.18); color:var(--gold-deep);}
+.r2-item.bad .ic{background:rgba(211,95,43,.16); color:var(--carrot);}
+.r2-item .txt b{display:block; margin-bottom:1px;}
+.r2-item .txt span{color:var(--ink-soft); font-size:13px;}
+.r2-coach{margin:24px 0 4px; padding:18px 20px; background:var(--paper-alt); border-radius:5px; font-size:14px; line-height:1.7;}
+.r2-coach b{color:var(--focus-blue-deep);}
+
+/* 놓치는 손님 강조 블록 */
+.r2-miss-box{
+margin:26px 0 4px; padding:26px 24px; text-align:center;
+background:linear-gradient(180deg,#FBEEE7,#F6E1D6);
+border:1px solid rgba(211,95,43,.28); border-radius:10px;
+}
+.r2-miss-label{font-size:14px; font-weight:600; color:var(--carrot-deep,#B8471E); margin-bottom:12px;}
+.r2-miss-big{font-family:'Black Han Sans',sans-serif; font-size:56px; line-height:1; color:var(--carrot,#D35F2B);}
+.r2-miss-big .r2-miss-unit{font-family:'IBM Plex Mono',monospace; font-size:19px; color:var(--carrot-deep,#B8471E); margin-left:8px;}
+.r2-miss-desc{font-size:14px; line-height:1.7; color:var(--ink); margin:14px 0 0;}
+.r2-miss-desc b{color:var(--carrot-deep,#B8471E);}
+.r2-note{font-size:12px; color:var(--ink-soft); line-height:1.6; padding:18px 32px; border-top:1px solid var(--line); margin-top:20px;}
+
+/* 상담 신청 폼 */
+.r2-apply{margin:0 32px 8px; padding:24px; background:var(--ink); border-radius:12px; color:var(--paper);}
+.r2-apply-head{font-size:18px; font-weight:700; color:#fff; margin-bottom:16px; text-align:center;}
+.r2-summary{background:rgba(255,255,255,.07); border-radius:8px; padding:14px 16px; margin-bottom:16px; font-size:13px; line-height:1.7;}
+.r2-summary .sm-row{display:flex; justify-content:space-between; gap:12px; color:rgba(238,241,240,.85);}
+.r2-summary .sm-row + .sm-row{margin-top:5px; padding-top:5px; border-top:1px solid rgba(255,255,255,.08);}
+.r2-summary .sm-row b{color:#9FD1FF; font-weight:600;}
+.r2-apply-guide{font-size:13px; line-height:1.6; color:rgba(238,241,240,.8); margin:0 0 16px; text-align:center;}
+.r2-form{display:flex; flex-direction:column; gap:10px;}
+.r2-input{
+width:100%; padding:14px 16px; border:1px solid rgba(255,255,255,.18); border-radius:7px;
+background:rgba(255,255,255,.06); color:#fff; font-family:inherit; font-size:15px;
+}
+.r2-input::placeholder{color:rgba(238,241,240,.45);}
+.r2-input:focus{outline:none; border-color:#9FD1FF; background:rgba(255,255,255,.1);}
+.r2-form #applyBtn{
+margin-top:8px; padding:18px; font-size:17px; font-weight:800;
+background:#03C75A; border:none; color:#fff; border-radius:8px;
+box-shadow:0 4px 16px rgba(3,199,90,.4);
+transition:transform .15s, box-shadow .15s, background .15s;
+animation:applyPulse 2s ease-in-out infinite;
+}
+.r2-form #applyBtn:hover{background:#02b350; transform:translateY(-2px); box-shadow:0 6px 22px rgba(3,199,90,.55);}
+.r2-form #applyBtn:active{transform:translateY(0);}
+.r2-form #applyBtn:disabled{background:var(--ink-soft); box-shadow:none; animation:none; cursor:default;}
+@keyframes applyPulse{0%,100%{box-shadow:0 4px 16px rgba(3,199,90,.4);} 50%{box-shadow:0 4px 22px rgba(3,199,90,.65);}}
+.r2-form-msg{font-size:13px; color:#FFB199; margin:4px 0 0; text-align:center; min-height:0;}
+.r2-done{display:flex; align-items:center; gap:14px; padding:8px 4px;}
+[hidden]{display:none !important;}
+.r2-done-ic{
+flex-shrink:0; width:44px; height:44px; border-radius:50%; background:#03C75A; color:#fff;
+display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700;
+}
+.r2-done-txt b{display:block; color:#fff; font-size:15.5px; margin-bottom:3px;}
+.r2-done-txt span{font-size:13px; color:rgba(238,241,240,.75);}
+.r2-cta{display:flex; gap:12px; flex-wrap:wrap; padding:16px 32px 28px; justify-content:center;}
+@media (max-width:560px){ .r2-apply{margin-left:16px; margin-right:16px;} }
+@media (max-width:560px){ .quiz,.result2{padding-left:22px; padding-right:22px;} .r2-body,.r2-head,.r2-note,.r2-cta{padding-left:22px; padding-right:22px;} .r2-big{font-size:52px;} }
+
+/* chart decoration */
+.chart{
+position:relative; height:420px;
+background:var(--card);
+border:1px solid var(--line);
+border-radius:4px;
+padding:34px 30px;
+display:flex; flex-direction:column; justify-content:space-between;
+}
+.chart::before{
+content:'ACUITY / 시력측정';
+position:absolute; top:14px; right:18px;
+font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.12em; color:var(--ink-soft); opacity:.6;
+}
+.chart-row{display:flex; align-items:baseline; gap:14px; color:var(--ink); opacity:.88;}
+.chart-row .val{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--focus-blue-deep); width:34px; flex-shrink:0;}
+.chart-row .glyph{font-family:'Do Hyeon','Black Han Sans',sans-serif; letter-spacing:.04em; font-weight:400;}
+.chart-row:nth-child(1) .glyph{font-size:52px;}
+.chart-row:nth-child(2) .glyph{font-size:40px;}
+.chart-row:nth-child(3) .glyph{font-size:31px;}
+.chart-row:nth-child(4) .glyph{font-size:23px;}
+.chart-row:nth-child(5) .glyph{font-size:17px;}
+.chart-row:nth-child(6) .glyph{font-size:12px; color:var(--ink-soft);}
+
+@media (max-width:900px){
+.hero-grid{grid-template-columns:1fr;}
+.chart{height:auto;}
+}
+
+/* ---------- WHY ---------- */
+.why-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); margin-top:56px;}
+.why-card{background:var(--card); padding:34px 30px;}
+.why-tag{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.12em; color:var(--gold-deep); margin-bottom:18px;}
+.why-card h3{font-size:19px; margin:0 0 12px; line-height:1.4;}
+.why-card p{font-size:14.5px; color:var(--ink-soft); margin:0;}
+@media (max-width:800px){ .why-grid{grid-template-columns:1fr;} }
+
+/* ---------- CHANNELS TABLE ---------- */
+.channels-table{width:100%; border-collapse:collapse; margin-top:44px; font-size:15px;}
+.channels-table th{
+text-align:left; font-family:'IBM Plex Mono',monospace; font-weight:500; font-size:11.5px;
+letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft);
+padding:0 18px 14px; border-bottom:1px solid var(--line-strong);
+}
+.channels-table td{padding:20px 18px; border-bottom:1px solid var(--line); vertical-align:top;}
+.channels-table tr:hover td{background:rgba(20,33,54,.025);}
+.ch-name{display:flex; align-items:center; gap:10px; font-weight:700; white-space:nowrap;}
+.ch-dot{width:8px; height:8px; border-radius:50%; flex-shrink:0;}
+.ch-group{font-size:12px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace;}
+.ch-who{color:var(--ink-soft); font-size:13.5px;}
+.group-row td{padding:26px 18px 8px; border-bottom:none; font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.12em; color:var(--focus-blue-deep); text-transform:uppercase;}
+
+/* ---------- CHECKUP ---------- */
+.checkup-section{background:var(--ink); color:var(--paper);}
+.checkup-section .eyebrow{color:#9FD1FF;}
+.checkup-section .eyebrow::before{background:#9FD1FF;}
+.checkup-section .lede{color:rgba(238,241,240,.68);}
+.checkup-box{
+display:grid; grid-template-columns:1fr 1fr; gap:0;
+border:1px solid rgba(238,241,240,.18); border-radius:4px; overflow:hidden; margin-top:16px;
+}
+.checkup-list{padding:36px; border-right:1px solid rgba(238,241,240,.18);}
+.checkup-item{
+display:flex; align-items:flex-start; gap:12px; padding:13px 0;
+border-bottom:1px solid rgba(238,241,240,.1); cursor:pointer;
+}
+.checkup-item:last-child{border-bottom:none;}
+.checkup-item input{margin-top:4px; width:16px; height:16px; accent-color:var(--gold);}
+.checkup-item label{font-size:14.5px; cursor:pointer; line-height:1.5;}
+.checkup-result{padding:36px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;}
+.gauge-label{font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.14em; color:rgba(238,241,240,.55); margin-bottom:10px; text-transform:uppercase;}
+.gauge-value{font-family:'Black Han Sans',sans-serif; font-size:64px; line-height:1; color:#fff; margin-bottom:6px;}
+#gaugeSample{
+font-size:22px; font-weight:700; margin:14px 0 18px;
+transition:filter .35s ease;
+}
+.gauge-status{font-size:14px; color:rgba(238,241,240,.7); max-width:280px; margin-bottom:22px;}
+@media (max-width:760px){ .checkup-box{grid-template-columns:1fr;} .checkup-list{border-right:none; border-bottom:1px solid rgba(238,241,240,.18);} }
+
+/* ---------- PROCESS ---------- */
+.process-row{display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-top:52px;}
+.rx-card{
+background:var(--card); border:1px solid var(--line); border-radius:4px; padding:26px 22px;
+position:relative;
+}
+.rx-card::before{
+content:attr(data-step);
+font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--gold-deep);
+display:block; margin-bottom:16px; letter-spacing:.08em;
+}
+.rx-card h3{font-size:18px; margin:0 0 10px;}
+.rx-card p{font-size:13.5px; color:var(--ink-soft); margin:0;}
+.rx-arrow{position:absolute; right:-16px; top:50%; transform:translateY(-50%); color:var(--line-strong); font-size:18px; z-index:2;}
+@media (max-width:900px){ .process-row{grid-template-columns:1fr; } .rx-arrow{display:none;} }
+
+/* ---------- RESULTS ---------- */
+.results-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:48px;}
+.result-card{background:var(--card); border:1px solid var(--line); border-radius:4px; padding:30px 26px;}
+.result-metric{font-family:'Black Han Sans',sans-serif; font-size:34px; color:var(--focus-blue-deep); margin-bottom:10px;}
+.result-card h4{font-size:15.5px; margin:0 0 8px;}
+.result-card p{font-size:13.5px; color:var(--ink-soft); margin:0;}
+@media (max-width:800px){ .results-grid{grid-template-columns:1fr;} }
+
+/* ---------- CONTACT ---------- */
+.contact-section{background:var(--paper-alt); border-top:1px solid var(--line);}
+.contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:start; margin-top:12px;}
+.contact-form{display:flex; flex-direction:column; gap:14px;}
+.contact-form input, .contact-form textarea{
+width:100%; padding:14px 16px; border:1px solid var(--line-strong); border-radius:3px;
+background:var(--card); font-family:inherit; font-size:14.5px; color:var(--ink);
+}
+.contact-form input:focus, .contact-form textarea:focus{outline:none; border-color:var(--focus-blue);}
+.contact-form textarea{resize:vertical; min-height:96px;}
+.contact-note{font-size:13px; color:var(--ink-soft); margin-top:4px;}
+.contact-side p{font-size:14.5px; color:var(--ink-soft);}
+.contact-side .info-row{display:flex; gap:12px; padding:12px 0; border-top:1px solid var(--line); font-size:14px;}
+.contact-side .info-row .k{font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--ink-soft); width:80px; flex-shrink:0; padding-top:2px;}
+@media (max-width:860px){ .contact-grid{grid-template-columns:1fr; gap:40px;} }
+
+footer{padding:40px 0; border-top:1px solid var(--line);}
+.footer-inner{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; font-size:13px; color:var(--ink-soft);}
+
+[data-reveal]{opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease;}
+[data-reveal].in{opacity:1; transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<header class="nav">
+<div class="nav-inner">
+<a class="logo" href="#top">
+<svg class="logo-mark" viewBox="0 0 30 30" fill="none">
+<circle cx="8" cy="16" r="6.4" stroke="#142136" stroke-width="2"/>
+<circle cx="22" cy="16" r="6.4" stroke="#142136" stroke-width="2"/>
+<path d="M14.4 14.6 C15.5 12.4 16 12.4 15.6 14.6" stroke="#142136" stroke-width="2" fill="none"/>
+<path d="M1.6 15.4 L2.6 10.4" stroke="#142136" stroke-width="2"/>
+<path d="M28.4 15.4 L27.4 10.4" stroke="#142136" stroke-width="2"/>
+</svg>
+<span>FOCAL LAB<small>안경원 전문 마케팅</small></span>
+</a>
+    <nav class="links">
+<a href="#why">왜 포컬랩인가</a>
+<a href="#channels">서비스</a>
+      <a href="/checkup.html">자가진단</a>
+<a href="#process">프로세스</a>
+</nav>
+<div class="nav-cta">
+<a class="btn btn-primary" href="/diagnose.html" style="padding:10px 20px; font-size:14px;">무료 진단하기</a>
 </div>
-</section>
+</div>
+</header>
 
-<section id="place-diagnose" class="diagnose-section">
-  <div class="wrap">
-    <div class="eyebrow">FREE · 30초 진단</div>
-    <h2 class="section-title" data-reveal>우리 매장,<br>마케팅 점수는 몇 점일까요?</h2>
-    <p class="lede">5개 질문에 답만 하면 됩니다. 우리 매장의 온라인 노출 상태를 진단하고, 지금 놓치고 있는 검색 손님이 얼마나 되는지 알려드립니다.</p>
-
-    <div class="quiz" id="quiz" data-reveal>
-      <!-- 진행바 -->
-      <div class="quiz-progress"><div class="quiz-progress-fill" id="quizProgress"></div></div>
-      <div class="quiz-step-label" id="quizStepLabel">질문 1 / 5</div>
-
-      <div class="quiz-q" id="q-1">
-        <h3>이렇게 검색했을 때,<br>우리 매장이 첫 화면에 보이나요?</h3>
-        <!-- 네이버 검색창 느낌의 목업 (실제 로고/이미지 미사용) -->
-        <div class="search-mock" aria-hidden="true">
-          <span class="sm-logo">N</span>
-          <span class="sm-query">우리동네 안경원</span>
-          <span class="sm-btn">🔍</span>
-        </div>
-        <div class="quiz-opts">
-          <button class="quiz-opt" onclick="answer(1,2)">위쪽에 잘 보인다</button>
-          <button class="quiz-opt" onclick="answer(1,1)">한참 내려야 보인다</button>
-          <button class="quiz-opt" onclick="answer(1,0)">아무리 찾아도 안 보인다</button>
-          <button class="quiz-opt" onclick="answer(1,0)">확인해본 적 없다</button>
-        </div>
-      </div>
-
-      <div class="quiz-q" id="q-2" hidden>
-        <h3>최근 3개월 안에<br>새로 올라온 방문자 리뷰가 있나요?</h3>
-        <div class="review-mock" aria-hidden="true">
-          <div class="rv-card">
-            <div class="rv-top"><span class="rv-avatar">김</span><span class="rv-name">김O현</span><span class="rv-stars">★★★★★</span></div>
-            <p class="rv-text">시력검사 꼼꼼하게 봐주시고 안경도 예쁘게 잘 맞춰주셨어요!</p>
-          </div>
-          <div class="rv-card">
-            <div class="rv-top"><span class="rv-avatar">이</span><span class="rv-name">이O수</span><span class="rv-stars">★★★★★</span></div>
-            <p class="rv-text">친절하고 설명도 자세해서 믿음이 갔습니다. 재방문 의사 있어요~</p>
-          </div>
-        </div>
-        <div class="quiz-opts">
-          <button class="quiz-opt" onclick="answer(2,2)">꾸준히 쌓이고 있다</button>
-          <button class="quiz-opt" onclick="answer(2,1)">가끔 한두 개 올라온다</button>
-          <button class="quiz-opt" onclick="answer(2,0)">거의 없다 / 안 쌓인다</button>
-        </div>
-      </div>
-
-      <div class="quiz-q" id="q-3" hidden>
-        <h3>플레이스에 대표사진·소식(이벤트)을<br>정기적으로 올리고 있나요?</h3>
-        <div class="smartplace-mock" aria-hidden="true">
-          <div class="sp-title">스마트 플레이스,<br>안경원 마케팅의 <b>필수 전략!</b></div>
-          <div class="sp-search">
-            <span class="sp-brand">N Place</span>
-            <span class="sp-query">스마트 플레이스 최적화 방법은?</span>
-            <span class="sp-mag">🔍</span>
-          </div>
-          <div class="sp-bottom">
-            <ul class="sp-benefits">
-              <li>플레이스 상위노출</li>
-              <li>잠재고객 신뢰도 상승</li>
-              <li>방문율 증가</li>
-              <li>광고비 절감</li>
-            </ul>
-            <div class="sp-pin"><span class="sp-pin-n">N</span></div>
-          </div>
-        </div>
-        <div class="quiz-opts">
-          <button class="quiz-opt" onclick="answer(3,2)">사진도 많고 소식도 자주 올린다</button>
-          <button class="quiz-opt" onclick="answer(3,1)">사진만 몇 장 있다</button>
-          <button class="quiz-opt" onclick="answer(3,0)">등록만 해두고 방치 중이다</button>
-        </div>
-      </div>
-
-      <div class="quiz-q" id="q-4" hidden>
-        <h3>블로그·인스타·당근 같은 채널로<br>매장을 알리고 있나요?</h3>
-        <div class="channel-mock" aria-hidden="true">
-          <span class="ch-badge blog">Blog</span>
-          <span class="ch-badge insta">insta</span>
-          <span class="ch-badge carrot">당근</span>
-        </div>
-        <div class="quiz-opts">
-          <button class="quiz-opt" onclick="answer(4,2)">2개 이상 꾸준히 운영한다</button>
-          <button class="quiz-opt" onclick="answer(4,1)">1개 정도 가끔 한다</button>
-          <button class="quiz-opt" onclick="answer(4,0)">거의 안 한다</button>
-        </div>
-      </div>
-
-      <div class="quiz-q" id="q-5" hidden>
-        <h3>한 번 온 손님이 다시 오도록<br>사은품·프로모션을 기획하고 있나요?</h3>
-        <div class="promo-mock" aria-hidden="true">
-          <div class="pm-card revisit">
-            <span class="pm-ic"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10 24a14 14 0 0 1 23.5-10.2M38 24a14 14 0 0 1-23.5 10.2" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-              <path d="M34 6v8h-8M14 42v-8h8" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="24" cy="24" r="3.5" fill="currentColor"/>
-            </svg></span>
-            <span class="pm-name">재방문 이벤트</span>
-          </div>
-          <div class="pm-card lens">
-            <span class="pm-ic"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="14" cy="28" r="8" stroke="currentColor" stroke-width="3"/>
-              <circle cx="34" cy="28" r="8" stroke="currentColor" stroke-width="3"/>
-              <path d="M22 27h4M6 25l-2-8M42 25l2-8" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-              <text x="24" y="16" font-size="12" font-weight="800" fill="currentColor" text-anchor="middle" font-family="sans-serif">%</text>
-            </svg></span>
-            <span class="pm-name">렌즈 할인</span>
-          </div>
-          <div class="pm-card oneone">
-            <span class="pm-ic"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="9" y="20" width="30" height="20" rx="2" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
-              <path d="M7 14h34v6H7zM24 14v26" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
-              <path d="M24 14c-4-8-12-6-9 0M24 14c4-8 12-6 9 0" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg></span>
-            <span class="pm-name">1+1 증정</span>
-          </div>
-          <div class="pm-card reserve">
-            <span class="pm-ic"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="8" y="11" width="32" height="30" rx="3" stroke="currentColor" stroke-width="3"/>
-              <path d="M8 19h32M16 7v8M32 7v8" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-              <path d="M17 29l4.5 4.5L31 25" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg></span>
-            <span class="pm-name">예약 이벤트</span>
-          </div>
-          <div class="pm-card birthday">
-            <span class="pm-ic"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9 26c0-2 1.5-3 3.5-3h23c2 0 3.5 1 3.5 3v13H9V26z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
-              <path d="M6 39h36" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-              <path d="M16 23v-6M24 23v-6M32 23v-6" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-              <circle cx="16" cy="11" r="2.5" fill="currentColor"/>
-              <circle cx="24" cy="11" r="2.5" fill="currentColor"/>
-              <circle cx="32" cy="11" r="2.5" fill="currentColor"/>
-            </svg></span>
-            <span class="pm-name">생일 이벤트</span>
-          </div>
-          <div class="pm-card family">
-            <span class="pm-ic"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="15" cy="15" r="5" stroke="currentColor" stroke-width="3"/>
-              <circle cx="33" cy="15" r="5" stroke="currentColor" stroke-width="3"/>
-              <path d="M6 40v-3a9 9 0 0 1 18 0v3M24 40v-3a9 9 0 0 1 18 0v3" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg></span>
-            <span class="pm-name">가족 구매 할인</span>
-          </div>
-        </div>
-        <div class="quiz-opts">
-          <button class="quiz-opt" onclick="answer(5,2)">정기적으로 기획한다</button>
-          <button class="quiz-opt" onclick="answer(5,1)">생각날 때 가끔 한다</button>
-          <button class="quiz-opt" onclick="answer(5,0)">따로 하지 않는다</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 결과 화면 -->
-    <div class="result2" id="result2" hidden>
-      <div class="r2-head">
-        <div class="r2-store" id="r2Store">우리 안경원</div>
-        <div class="r2-label">온라인 마케팅 진단 결과</div>
-        <div class="r2-big-score"><span id="r2Score">0</span><span class="r2-unit">점 / 100</span></div>
-        <div class="r2-sub" id="r2SubMsg">우리 매장 마케팅 점수</div>
-      </div>
-
-      <div class="r2-body">
-        <div class="r2-gauge"><div class="r2-gauge-fill" id="r2Gauge"></div></div>
-        <p class="r2-grade" id="r2Grade"></p>
-
-        <div class="r2-items-head">항목별 진단</div>
-        <div class="r2-items" id="r2Items"></div>
-
-        <div class="r2-coach" id="r2Coach"></div>
-
-        <!-- 놓치는 손님 강조 블록 (상담 버튼 바로 위) -->
-        <div class="r2-miss-box" id="r2MissBox">
-          <div class="r2-miss-label">지금, 관리를 안 해서 놓치고 있는 손님</div>
-          <div class="r2-miss-big"><span id="r2Miss">0</span><span class="r2-miss-unit">명 / 월</span></div>
-          <p class="r2-miss-desc" id="r2MissDesc"></p>
-        </div>
-      </div>
-
-      <div class="r2-note">* 놓치는 손님 수는 안경원 평균 검색 유입을 바탕으로 한 추정치이며, 실제 수치는 상권·매장 규모에 따라 다릅니다. 정확한 분석과 개선 방법은 포컬랩 무료 상담에서 확인하실 수 있습니다.</div>
-
-      <!-- 상담 신청 (진단 요약 + 이름/전화 폼) -->
-      <div class="r2-apply" id="r2Apply">
-        <div class="r2-apply-head">이 결과로 무료 상담받기</div>
-        <div class="r2-summary" id="r2Summary"></div>
-        <p class="r2-apply-guide">위 진단 내용으로 상담을 요청합니다. 아래에 연락처만 남겨주시면 포컬랩이 직접 연락드립니다.</p>
-        <div class="r2-form" id="r2Form">
-          <input type="text" id="applyName" class="r2-input" placeholder="이름" autocomplete="name">
-          <input type="tel" id="applyPhone" class="r2-input" placeholder="휴대폰 번호 (예: 01012345678)" autocomplete="tel" inputmode="numeric">
-          <button class="btn btn-primary" id="applyBtn" onclick="submitApply()">상담 신청하기</button>
-          <p class="r2-form-msg" id="applyMsg"></p>
-        </div>
-        <div class="r2-done" id="r2Done" hidden>
-          <div class="r2-done-ic">✓</div>
-          <div class="r2-done-txt"><b>상담 신청이 접수되었습니다.</b><span>빠른 시일 내에 남겨주신 번호로 연락드리겠습니다.</span></div>
-        </div>
-      </div>
-
-      <div class="r2-cta">
-        <button class="btn btn-ghost" onclick="restartQuiz()">다시 진단하기</button>
-      </div>
-    </div>
-  </div>
+<section class="hero" id="top">
+<div class="wrap hero-grid">
+<div>
+<div class="eyebrow">안경원 전문 마케팅 · 안경사 × 안경마케터 출신</div>
+<h1>
+<span class="blur-in">흐릿한 마케팅을,</span>
+<span class="blur-in d2">선명한 방문으로.</span>
+</h1>
+<p class="lede">안경사 출신과 안경 프랜차이즈·안경 IT기업 마케팅팀 출신이 만든 마케팅 회사입니다. 온라인이든 오프라인이든, 우리 매장에 손님이 오게 만드는 방법이라면 채널을 가리지 않고 맞춤 제안합니다.</p>
+<div class="hero-cta">
+<a class="btn btn-primary" href="/diagnose.html">우리 안경원 순위 확인 →</a>
+<a class="btn btn-ghost" href="#channels">서비스 살펴보기</a>
+</div>
+<p class="hero-trust">FIELD EXPERIENCE — 안경원 현장 운영 경험 · 안경 프랜차이즈 가맹영업 · 안경 IT기업 마케팅 실무</p>
+</div>
+<div class="chart" data-reveal>
+<div class="chart-row"><span class="val">1.5</span><span class="glyph">네이버플레이스</span></div>
+<div class="chart-row"><span class="val">1.0</span><span class="glyph">당근마켓</span></div>
+<div class="chart-row"><span class="val">0.7</span><span class="glyph">인스타그램</span></div>
+<div class="chart-row"><span class="val">0.5</span><span class="glyph">블로그</span></div>
+<div class="chart-row"><span class="val">0.3</span><span class="glyph">오픈이벤트</span></div>
+<div class="chart-row"><span class="val">0.1</span><span class="glyph">사은품기획 · 프로모션</span></div>
+</div>
+</div>
 </section>
 
 <section id="why">
 <div class="wrap">
 <div class="eyebrow">왜 포컬랩인가</div>
+<h2 class="section-title" data-reveal>대행사 용어가 아니라,<br>안경원의 언어로 말합니다.</h2>
+<p class="lede">일반 마케팅 대행사는 안경원을 모릅니다. 저희는 안경원 안에서 일해봤고, 안경 업계 마케팅팀에서 일했습니다. 그 차이가 결과를 만듭니다.</p>
+<div class="why-grid">
+<div class="why-card" data-reveal>
+<div class="why-tag">EXPERIENCE — 현장</div>
+<h3>안경사의 시선으로 봅니다</h3>
+<p>시력검사부터 조제, 손님 응대까지 안경원 현장을 압니다. 손님이 실제로 안경원 문을 여는 이유부터 시작합니다.</p>
+</div>
+<div class="why-card" data-reveal>
+<div class="why-tag">INSIGHT — 업계</div>
+<h3>안경 업계 마케팅 노하우</h3>
+<p>안경 프랜차이즈 가맹영업과 안경 IT기업 마케팅을 직접 담당했습니다. 안경원 매출 구조를 이해하고 제안합니다.</p>
+</div>
+<div class="why-card" data-reveal>
+<div class="why-tag">LANGUAGE — 소통</div>
+<h3>원장님이 이해할 수 있게</h3>
+<p>어려운 용어 대신 표와 숫자로 설명합니다. 무엇을, 왜 하는지 원장님이 직접 판단할 수 있도록 제안합니다.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="channels" style="background:var(--paper-alt); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+<div class="wrap">
+<div class="eyebrow">핵심 상품</div>
+<h2 class="section-title" data-reveal>우리 매장에 손님이 오게<br>만드는 모든 방법</h2>
+<p class="lede">온라인과 오프라인을 나누지 않습니다. 우리 안경원에 맞는 채널을 찾아 맞춤 제안합니다.</p>
+
+<table class="channels-table" data-reveal>
+<thead>
+<tr><th>채널</th><th>무엇을 하나요</th><th>이런 원장님께</th></tr>
+</thead>
+<tbody>
+<tr class="group-row"><td colspan="3">온라인 채널</td></tr>
+<tr><td class="ch-name"><span class="ch-dot" style="background:var(--focus-blue);"></span>네이버 플레이스</td><td>검색 상위 노출, 리뷰·예약 세팅</td><td class="ch-who">검색해도 우리 매장이 안 나온다면</td></tr>
+<tr><td class="ch-name"><span class="ch-dot" style="background:var(--carrot);"></span>당근마켓 · 당근단골</td><td>동네 손님 확보, 단골 관리 세팅</td><td class="ch-who">동네 손님을 놓치고 있다면</td></tr>
+<tr><td class="ch-name"><span class="ch-dot" style="background:var(--gold);"></span>블로그</td><td>검색 유입을 위한 후기·콘텐츠 발행</td><td class="ch-who">후기가 쌓이지 않는다면</td></tr>
+<tr><td class="ch-name"><span class="ch-dot" style="background:var(--focus-blue);"></span>인스타그램</td><td>매장 감성, 신상 프레임 홍보</td><td class="ch-who">젊은 손님을 늘리고 싶다면</td></tr>
+<tr class="group-row"><td colspan="3">현장 · 프로모션</td></tr>
+<tr><td class="ch-name"><span class="ch-dot" style="background:var(--gold);"></span>오픈 이벤트</td><td>오픈 초기 화제성·방문 확보 기획</td><td class="ch-who">곧 오픈 예정이라면</td></tr>
+<tr><td class="ch-name"><span class="ch-dot" style="background:var(--carrot);"></span>시즌 프로모션</td><td>시기별 방문을 유도하는 기획</td><td class="ch-who">방문이 뜸해지는 시기라면</td></tr>
+<tr><td class="ch-name"><span class="ch-dot" style="background:var(--focus-blue);"></span>사은품 기획</td><td>재방문·소개를 부르는 구성 설계</td><td class="ch-who">손님이 한 번만 오고 만다면</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section id="process">
+<div class="wrap">
+<div class="eyebrow">진행 프로세스</div>
+<h2 class="section-title" data-reveal>진단부터 관리까지,<br>하나의 처방으로</h2>
+<p class="lede">채널을 흩뿌리지 않습니다. 진단 결과를 바탕으로 하나의 처방전을 만들고, 그대로 실행·관리합니다.</p>
+
+<div class="process-row">
+<div class="rx-card" data-step="STEP 01" data-reveal>
+<h3>진단</h3>
+<p>네이버·당근·블로그·인스타 등 현재 채널 상태와 매장 현황을 점검합니다.</p>
+<span class="rx-arrow">→</span>
+</div>
+<div class="rx-card" data-step="STEP 02" data-reveal>
+<h3>처방</h3>
+<p>매장에 맞는 채널과 우선순위를 정한 맞춤 마케팅 전략을 설계합니다.</p>
+<span class="rx-arrow">→</span>
+</div>
+<div class="rx-card" data-step="STEP 03" data-reveal>
+<h3>실행</h3>
+<p>콘텐츠 제작, 광고 세팅, 이벤트·사은품 기획을 직접 실행합니다.</p>
+<span class="rx-arrow">→</span>
+</div>
+<div class="rx-card" data-step="STEP 04" data-reveal>
+<h3>관리</h3>
+<p>방문·재방문 데이터를 확인하며 다음 처방을 조정합니다.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section style="background:var(--paper-alt); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+<div class="wrap">
+<div class="eyebrow">도입 효과</div>
+<h2 class="section-title" data-reveal>이렇게 달라집니다</h2>
+<p class="lede">숫자를 부풀리지 않습니다. 안경원 마케팅에서 실제로 달라지는 지점만 말씀드립니다.</p>
+<div class="results-grid">
+<div class="result-card" data-reveal>
+<div class="result-metric">01</div>
+<h4>검색되는 매장</h4>
+<p>네이버 플레이스와 블로그가 정리되면, 손님이 찾아서 오는 매장이 됩니다.</p>
+</div>
+<div class="result-card" data-reveal>
+<div class="result-metric">02</div>
+<h4>이유 있는 재방문</h4>
+<p>사은품·프로모션 기획으로 한 번 온 손님이 다시 올 이유를 만듭니다.</p>
+</div>
+<div class="result-card" data-reveal>
+<div class="result-metric">03</div>
+<h4>흩어지지 않는 관리</h4>
+<p>채널마다 따로 관리하지 않고, 하나의 처방전으로 묶어 운영합니다.</p>
+</div>
+</div>
+</div>
+</section>
+
+<footer>
+<div class="wrap footer-inner">
+<span>© 2026 FOCAL LAB. 안경원 전문 마케팅.</span>
+<span class="mono">안경사 × 안경마케터가 만든 마케팅 회사</span>
+</div>
+</footer>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+// ---------- 자가진단 퀴즈 ----------
+// 질문 5개, 각 0~2점. 총점 10점 만점 → 100점 환산.
+const TOTAL_Q = 5;
+let step = 1;              // 1~5=질문
+const answers = {};        // {1:2, 2:0, ...}
+
+// 각 질문의 항목 정의 (결과 항목별 진단에 사용)
+const ITEMS = {
+1: { label: '네이버 플레이스 상위 노출',  bad: '검색 시 우리 매장이 손님 눈에 안 띕니다.', warn: '노출은 되지만 상위권 진입 여지가 큽니다.', good: '검색 상위에 잘 노출되고 있습니다.' },
+2: { label: '방문자 리뷰 관리',           bad: '리뷰가 안 쌓여 신뢰·순위가 함께 약해집니다.', warn: '리뷰가 간헐적이라 꾸준함이 필요합니다.', good: '리뷰가 꾸준히 쌓이고 있습니다.' },
+3: { label: '대표사진·소식 관리',         bad: '방치된 플레이스는 손님에게 "닫힌 곳"처럼 보입니다.', warn: '사진은 있으나 소식 업데이트가 필요합니다.', good: '사진·소식이 활발히 관리되고 있습니다.' },
+4: { label: '블로그·SNS·당근 채널',       bad: '검색 유입 통로가 플레이스 하나뿐입니다.', warn: '채널이 하나뿐이라 확장 여지가 있습니다.', good: '여러 채널로 매장을 알리고 있습니다.' },
+5: { label: '재방문·프로모션 기획',       bad: '한 번 온 손님이 다시 올 이유가 없습니다.', warn: '프로모션이 비정기적입니다.', good: '재방문 유도가 잘 설계돼 있습니다.' },
+};
+
+function showStep(n){         // n = 1~5 (질문 번호)
+for(let i=1;i<=TOTAL_Q;i++){
+const el = $('q-'+i);
+if(el) el.hidden = (i !== n);
+}
+// 진행바: 현재 질문 기준
+$('quizProgress').style.width = ((n-1) / TOTAL_Q * 100) + '%';
+$('quizStepLabel').textContent = '질문 ' + n + ' / ' + TOTAL_Q;
+}
+
+function answer(qNo, score){  // 선택지 클릭
+answers[qNo] = score;
+if(qNo < TOTAL_Q){
+step = qNo + 1;
+showStep(step);
+} else {
+$('quizProgress').style.width = '100%';
+finish();
+}
+}
+
+function restartQuiz(){
+step = 1;
+for(const k in answers) delete answers[k];
+$('result2').hidden = true;
+$('quiz').hidden = false;
+// miss-box 색 초기화 (이전 결과 잔상 방지)
+const mb = $('r2MissBox');
+mb.style.background = ''; mb.style.borderColor = '';
+// 신청 폼 초기화
+$('applyName').value = ''; $('applyPhone').value = '';
+$('applyBtn').disabled = false; $('applyBtn').textContent = '상담 신청하기';
+$('r2Form').hidden = false; $('r2Done').hidden = true; $('applyMsg').textContent = '';
+showStep(1);
+$('quiz').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function finish(){
+// 총점 계산 (0~10) → 100점 환산
+let raw = 0;
+for(let i=1;i<=TOTAL_Q;i++) raw += (answers[i] ?? 0);
+const score = Math.round(raw / (TOTAL_Q*2) * 100);
+
+// 놓치는 손님 수: 부족할수록 커지되, 관리 안 하는 매장(중간 이하)이 대략 20~30명대로 나오게 조정.
+// deficit 0~10. 기본 15명 + 부족분당 약 1.7명 → 최저 15, 최고 약 32.
+const deficit = (TOTAL_Q*2) - raw;               // 0~10
+let missLow, missHigh;
+if(deficit === 0){
+missLow = 0; missHigh = 0;
+} else {
+missLow  = Math.round(14 + deficit * 1.4);      // 약 15 ~ 28
+missHigh = missLow + 8;                          // +8 폭 → 약 23 ~ 36
+}
+
+// 매장명 입력을 없앴으므로 항상 '우리 안경원'으로 표시
+const store = '우리 안경원';
+$('r2Store').textContent = store;
+
+// 상단 헤더: 점수
+$('r2Score').textContent = score;
+$('r2SubMsg').textContent = '우리 매장 온라인 마케팅 점수';
+
+// 점수 게이지
+const gauge = $('r2Gauge');
+const color = score >= 70 ? 'var(--focus-blue)' : (score >= 40 ? 'var(--gold)' : 'var(--carrot)');
+gauge.style.background = color;
+setTimeout(()=>{ gauge.style.width = score + '%'; }, 80);
+
+// 하단 강조 블록: 놓치는 손님 (상담 버튼 바로 위)
+const missBox = $('r2MissBox');
+if(deficit === 0){
+$('r2Miss').textContent = '거의 0';
+$('r2MissDesc').innerHTML = '지금처럼 꾸준히 관리하면 놓치는 손님이 거의 없습니다. 이 상태를 <b>유지·강화</b>하는 것이 다음 과제입니다.';
+missBox.style.background = 'linear-gradient(180deg,#EAF1F9,#DCE8F5)';
+missBox.style.borderColor = 'rgba(42,93,170,.28)';
+} else {
+$('r2Miss').textContent = '약 ' + missLow + '~' + missHigh;
+$('r2MissDesc').innerHTML = '온라인 관리를 하지 않아, 지금 이 순간에도 검색하던 손님이 경쟁 매장으로 가고 있습니다. 매달 <b>약 ' + missLow + '~' + missHigh + '명</b>의 손님을 놓치고 있는 셈입니다.';
+}
+
+// 등급 한 줄 (코칭형 톤)
+let grade;
+if(score >= 70)      grade = '기본기가 탄탄합니다. 지금의 노출을 유지하고 한 단계 끌어올리는 관리만 더하면 됩니다.';
+else if(score >= 40) grade = '기회가 많이 남아 있습니다. 몇 가지만 손보면 검색 유입이 눈에 띄게 달라질 수 있습니다.';
+else                 grade = '온라인에서 우리 매장을 만나는 손님이 매우 적은 상태입니다. 지금이 시작하기 가장 좋은 시점입니다.';
+$('r2Grade').textContent = grade;
+
+// 항목별 진단
+const box = $('r2Items');
+box.innerHTML = '';
+for(let i=1;i<=TOTAL_Q;i++){
+const s = answers[i] ?? 0;
+const it = ITEMS[i];
+const cls = s === 2 ? 'good' : (s === 1 ? 'warn' : 'bad');
+const icon = s === 2 ? '✓' : (s === 1 ? '!' : '✕');
+const desc = s === 2 ? it.good : (s === 1 ? it.warn : it.bad);
+const div = document.createElement('div');
+div.className = 'r2-item ' + cls;
+div.innerHTML = '<span class="ic">' + icon + '</span>' +
+'<span class="txt"><b>' + it.label + '</b><span>' + desc + '</span></span>';
+box.appendChild(div);
+}
+
+// 코칭 문구: 가장 부족한 항목 위주로
+const weak = [];
+for(let i=1;i<=TOTAL_Q;i++){ if((answers[i] ?? 0) === 0) weak.push(ITEMS[i].label); }
+let coach;
+if(weak.length === 0){
+coach = '<b>' + store + '</b>은(는) 이미 잘 관리되고 있습니다. 포컬랩은 여기서 한 단계 더 나아가, 상위 노출을 <b>유지·강화</b>하는 방법을 제안드립니다.';
+} else {
+const top = weak.slice(0,2).join(', ');
+coach = '<b>' + store + '</b>에서 가장 먼저 손봐야 할 곳은 <b>' + top + '</b>입니다. 포컬랩은 안경원 현장을 아는 팀이 이 부분부터 순서대로 정리해, 검색으로 찾아오는 손님을 늘려드립니다.';
+}
+$('r2Coach').innerHTML = coach;
+
+// 진단 요약 저장 (상담 신청 시 함께 전송)
+const missText = deficit === 0 ? '거의 0명' : ('약 ' + missLow + '~' + missHigh + '명/월');
+const weakText = weak.length ? weak.join(', ') : '없음 (양호)';
+lastDiag = {
+score: score,
+miss: missText,
+weak: weakText,
+};
+
+// 요약 카드 렌더 (신청 폼 위에 보여줄 내용)
+$('r2Summary').innerHTML =
+'<div class="sm-row"><span>마케팅 점수</span><b>' + score + '점 / 100</b></div>' +
+'<div class="sm-row"><span>월 예상 놓치는 손님</span><b>' + missText + '</b></div>' +
+'<div class="sm-row"><span>개선이 필요한 항목</span><b>' + weakText + '</b></div>';
+
+// 신청 폼 초기화 (재진단 대비)
+$('r2Form').hidden = false;
+$('r2Done').hidden = true;
+$('applyMsg').textContent = '';
+
+// 전환
+$('quiz').hidden = true;
+const r = $('result2');
+r.hidden = false;
+r.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+// 진단 결과 저장용
+let lastDiag = { score:0, miss:'', weak:'' };
+
+// 상담 신청 → 구글폼으로 조용히 전송
+const GFORM_ID = '1FAIpQLSeMrkeaO1jyHM0dN2rOv6rlzhTpwQaLUpeQa4u-2c8N1-osdg';
+const GFORM_NAME_ENTRY  = 'entry.231704515';   // 이름
+const GFORM_PHONE_ENTRY = 'entry.567912281';   // 전화번호
+
+function submitApply(){
+const name = $('applyName').value.trim();
+const phone = $('applyPhone').value.trim().replace(/[^0-9]/g,'');
+const msg = $('applyMsg');
+
+if(!name){ msg.textContent = '이름을 입력해주세요.'; $('applyName').focus(); return; }
+if(phone.length < 9){ msg.textContent = '연락 가능한 휴대폰 번호를 입력해주세요.'; $('applyPhone').focus(); return; }
+
+msg.textContent = '';
+$('applyBtn').disabled = true;
+$('applyBtn').textContent = '신청 중…';
+
+// 진단 결과를 이름 뒤에 함께 담아 전송 (구글폼 질문이 이름·전화 2개뿐이라, 이름 칸에 요약을 덧붙임)
+const nameWithDiag = name + ' [진단: ' + lastDiag.score + '점, 놓치는손님 ' + lastDiag.miss + ', 개선필요: ' + lastDiag.weak + ']';
+
+const formUrl = 'https://docs.google.com/forms/d/e/' + GFORM_ID + '/formResponse';
+const params = new URLSearchParams();
+params.append(GFORM_NAME_ENTRY, nameWithDiag);
+params.append(GFORM_PHONE_ENTRY, phone);
+
+// no-cors 로 전송 (구글폼은 응답 본문을 안 주므로 성공/실패를 직접 못 읽음 → 전송 후 완료 처리)
+fetch(formUrl, {
+method: 'POST',
+mode: 'no-cors',
+headers: {'Content-Type':'application/x-www-form-urlencoded'},
+body: params.toString(),
+}).then(()=>{
+$('r2Form').hidden = true;
+$('r2Done').hidden = false;
+}).catch(()=>{
+// no-cors 특성상 대부분 여기로 안 오지만, 혹시 네트워크 오류 시
+msg.textContent = '전송에 실패했습니다. 잠시 후 다시 시도하거나 하단 문의로 연락 주세요.';
+$('applyBtn').disabled = false;
+$('applyBtn').textContent = '상담 신청하기';
+});
+}
+
+// 초기화 (첫 질문부터 시작)
+showStep(1);
+
+const boxes = document.querySelectorAll('.cq');
+const acuity = [1.5,1.0,0.7,0.5,0.3,0.1,0.1];
+const statusMsg = [
+'체크 항목이 없습니다. 지금 시력을 그대로 유지하세요.',
+'약간의 흐림이 시작됩니다. 가벼운 처방으로 충분합니다.',
+'흐림이 눈에 띕니다. 채널별 점검이 필요한 시점입니다.',
+'방문 감소로 이어질 수 있는 흐림입니다.',
+'여러 채널이 동시에 흐려지고 있습니다.',
+'마케팅 시력이 상당히 낮습니다. 처방이 필요합니다.',
+'심각한 흐림입니다. 지금 바로 진단을 받아보세요.'
+];
+const gaugeNum = document.getElementById('gaugeNum');
+const gaugeSample = document.getElementById('gaugeSample');
+const gaugeStatus = document.getElementById('gaugeStatus');
+function updateGauge(){
+const checked = document.querySelectorAll('.cq:checked').length;
+const val = acuity[checked];
+gaugeNum.textContent = val.toFixed(1);
+gaugeSample.style.filter = 'blur(' + ((1.5-val)*9) + 'px)';
+gaugeStatus.textContent = statusMsg[checked];
+}
+boxes.forEach(b => b.addEventListener('change', updateGauge));
+
+const io = new IntersectionObserver((entries)=>{
+entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); } });
+}, {threshold:.14});
+document.querySelectorAll('[data-reveal]').forEach(el=>io.observe(el));
+</script>
+
+</body>
+</html>
