@@ -588,21 +588,40 @@ function drawMap(stores,r){
 }
 
 /* ============ 리드 ============ */
+/* 리드 → 구글폼 저장 (checkup과 동일 폼) */
+const GFORM_ID = '1FAIpQLSeMrkeaO1jyHM0dN2rOv6rlzhTpwQaLUpeQa4u-2c8N1-osdg';
+const GFORM_NAME_ENTRY  = 'entry.231704515';   // 이름 칸
+const GFORM_PHONE_ENTRY = 'entry.567912281';   // 전화번호 칸
+let lastDiag2 = { store:'', rank:'', reviews:'', query:'' };
+
 async function submitLead(e){
   e.preventDefault();
   const btn=document.getElementById('leadBtn');const orig=btn.textContent;
-  btn.disabled=true;btn.textContent='전송 중...';
   const store=document.getElementById('leadStore').value.trim();
-  const phone=document.getElementById('leadPhone').value.trim();
+  const phone=document.getElementById('leadPhone').value.trim().replace(/[^0-9]/g,'');
+  if(!store){ alert('안경원명이 필요합니다. 진단을 먼저 진행해주세요.'); return false; }
+  if(phone.length < 9){ alert('연락 가능한 휴대폰 번호를 입력해주세요.'); document.getElementById('leadPhone').focus(); return false; }
+  btn.disabled=true;btn.textContent='전송 중...';
+  const diagText = '[순위진단' +
+    (lastDiag2.query ? ' · "'+lastDiag2.query+'"' : '') +
+    (lastDiag2.rank ? ' '+lastDiag2.rank+'위' : '') +
+    (lastDiag2.reviews!=='' ? ' · 리뷰 '+lastDiag2.reviews : '') + ']';
+  const nameWithDiag = store + ' ' + diagText;
+  const formUrl = 'https://docs.google.com/forms/d/e/' + GFORM_ID + '/formResponse';
+  const params = new URLSearchParams();
+  params.append(GFORM_NAME_ENTRY, nameWithDiag);
+  params.append(GFORM_PHONE_ENTRY, phone);
   const done=()=>{document.getElementById('leadForm').style.display='none';
     document.getElementById('leadDone').classList.add('on');};
-  if(!SHEET_ENDPOINT){done();return false;}
   try{
-    await fetch(SHEET_ENDPOINT,{method:'POST',mode:'no-cors',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify({source:'focallab-diagnose',storeName:store,phone:phone,timestamp:new Date().toISOString()})});
+    await fetch(formUrl,{method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:params.toString()});
     done();
-  }catch(err){alert('전송에 실패했어요. 잠시 후 다시 시도해주세요.');btn.disabled=false;btn.textContent=orig;}
+  }catch(err){
+    alert('전송에 실패했어요. 잠시 후 다시 시도해주세요.');
+    btn.disabled=false;btn.textContent=orig;
+  }
   return false;
 }
 </script>
