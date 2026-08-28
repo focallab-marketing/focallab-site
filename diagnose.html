@@ -542,7 +542,13 @@ function render(r,cand){
 
   drawMap(stores,r);
 
-  const ls=document.getElementById('leadStore');if(ls)ls.value=me.name||r.myStore||'';
+   const ls=document.getElementById('leadStore');if(ls)ls.value=me.name||r.myStore||'';
+  lastDiag2 = {
+    store: me.name||r.myStore||'',
+    rank: r.myRank||'',
+    reviews: (myReviews!=null?myReviews:''),
+    query: r.query||''
+  };
   document.getElementById('leadForm').style.display='';
   document.getElementById('leadDone').classList.remove('on');
 
