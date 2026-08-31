@@ -170,6 +170,13 @@ h1.h em{font-style:normal;font-weight:700;color:var(--naver)}
 .lead .submit:hover{background:var(--focus-deep);transform:translateY(-1px)}
 .lead .submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .lead .micro{margin-top:10px;font-size:.76rem;color:var(--ink-faint);text-align:center}
+.lead-or{display:flex;align-items:center;gap:12px;margin:16px 0 4px;color:var(--ink-faint);font-size:.78rem;font-weight:600}
+.lead-or::before,.lead-or::after{content:"";flex:1;height:1px;background:var(--line)}
+.kakao-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  border:none;border-radius:11px;padding:14px;background:#FEE500;color:#3c1e1e;
+  font-weight:800;font-size:.98rem;cursor:pointer;text-decoration:none;transition:filter .15s,transform .12s}
+.kakao-btn:hover{filter:brightness(.96);transform:translateY(-1px)}
+.kakao-btn svg{flex:0 0 auto}
 .lead-done{display:none;text-align:center;padding:12px 0}
 .lead-done.on{display:block}
 .lead-done .ic{width:52px;height:52px;margin:0 auto 12px;border-radius:50%;background:var(--good);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:900}
@@ -318,6 +325,11 @@ footer{border-top:1px solid var(--line);padding:26px 0;text-align:center;font-si
           <button class="submit" id="leadBtn" type="submit">상담 신청하기</button>
           <div class="micro">무료 · 영업시간 내 답변 · 원치 않으시면 받지 않으셔도 됩니다</div>
         </form>
+        <div class="lead-or" id="leadOr" style="display:none">또는</div>
+        <a class="kakao-btn" id="kakaoBtn" href="#" target="_blank" rel="noopener" style="display:none">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.9 5.3 4.7 6.7-.2.7-.7 2.6-.8 3-.1.5.2.5.4.4.2-.1 2.6-1.8 3.7-2.5.6.1 1.3.1 2 .1 5.5 0 10-3.6 10-8s-4.5-8-10-8z"/></svg>
+          카카오톡으로 바로 문의
+        </a>
       </div>
       <div class="lead-done" id="leadDone">
         <div class="ic">✓</div>
@@ -349,7 +361,7 @@ footer{border-top:1px solid var(--line);padding:26px 0;text-align:center;font-si
 /* ============ 설정 ============ */
 const API = 'https://api.focallab.co.kr';   // 진단 서버
 const SHEET_ENDPOINT = '';   // (선택) 리드 저장 구글 Apps Script
-const KAKAO_URL = '';        // (선택) 카카오 채널
+const KAKAO_URL = 'http://pf.kakao.com/_SYrxaX/chat';   // 카카오 상담 채널 (바로 채팅)
 
 /* ============ 유틸 ============ */
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
@@ -581,6 +593,10 @@ function render(r,cand){
   };
   document.getElementById('leadForm').style.display='';
   document.getElementById('leadDone').classList.remove('on');
+  // 카카오 상담 버튼 (KAKAO_URL 있을 때만 노출)
+  const kb=document.getElementById('kakaoBtn'),ko=document.getElementById('leadOr');
+  if(KAKAO_URL){kb.href=KAKAO_URL;kb.style.display='';ko.style.display='';}
+  else{kb.style.display='none';ko.style.display='none';}
 
   show('result');
   document.getElementById('storeCard').scrollIntoView({behavior:'smooth',block:'start'});
