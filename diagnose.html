@@ -155,6 +155,19 @@ h1.h em{font-style:normal;font-weight:700;color:var(--naver)}
 .rrow.me .rv b{color:var(--focus-deep)}
 .rrow:not(.me):hover{background:var(--line-soft);border-radius:8px}
 .rank-foot{margin-top:12px;font-size:.76rem;color:var(--ink-faint);line-height:1.55}
+.rrow .rv .rdist{color:var(--ink-faint);font-weight:400;font-family:var(--sans)}
+/* 인근 비교 카드 */
+.cmp-row{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--line-soft)}
+.cmp-row:first-child{border-top:none}
+.cmp-row .cl{flex:0 0 auto;width:104px;font-size:.84rem;font-weight:700;color:var(--ink-soft);line-height:1.35}
+.cmp-row .cv{flex:1;min-width:0;font-size:1rem;font-weight:800;color:var(--ink);display:flex;align-items:center;flex-wrap:wrap;gap:2px}
+.cmp-row .cc{flex:0 0 auto;font-size:.8rem;color:var(--ink-faint);text-align:right;line-height:1.4;max-width:46%}
+.cmp-row .cc b{color:var(--ink-soft);font-weight:700}
+.cmp-badge{font-size:.7rem;font-weight:800;padding:2px 8px;border-radius:100px;margin-left:6px;white-space:nowrap}
+.cmp-badge.win{background:var(--good-wash);color:var(--good)}
+.cmp-badge.lose{background:var(--bad-wash);color:var(--bad)}
+.cmp-badge.warn{background:var(--warn-wash);color:var(--warn)}
+.cmp-foot{margin-top:12px;font-size:.76rem;color:var(--ink-faint);line-height:1.55}
 #map{height:300px;border-radius:14px;margin-top:14px;border:1px solid var(--line);overflow:hidden;background:var(--line-soft)}
 
 .lead{background:linear-gradient(180deg,var(--focus-wash),#fff);border:1px solid var(--focus-line)}
@@ -317,6 +330,15 @@ footer{border-top:1px solid var(--line);padding:26px 0;text-align:center;font-si
       <div id="map"></div>
     </div>
 
+    <div class="card" id="cmpCard" style="display:none">
+      <div class="rank-head">
+        <span class="t" id="cmpTitle">인근 안경원과 비교</span>
+        <span class="n" id="cmpSub"></span>
+      </div>
+      <div id="cmpList"></div>
+      <div class="cmp-foot">인근 노출 매장과 우리 매장의 운영 상태를 비교한 값입니다. 사진·네이버페이·톡톡 등 상세 항목은 심층 진단에서 확인해드립니다.</div>
+    </div>
+
     <div class="card lead" id="leadCard">
       <div id="leadForm">
              <div class="sec-label">전문가 심층 진단 · 무료</div>
@@ -382,6 +404,11 @@ function extractRegion(addr){
   if(m) return m[1];
   const t = addr.split(/\s+/).find(x => /[구군시]$/.test(x));
   return t || '';
+}
+/* 거리(km) → 보기 좋은 문자열. 1km 미만은 m, 이상은 km */
+function fmtDist(d){
+  if(d==null||d<=0) return '';
+  return d<1 ? Math.round(d*1000)+'m' : d.toFixed(1)+'km';
 }
 /* 주소에서 "동" 추출 → 진단 키워드 만들기 */
 function extractDong(address){
@@ -578,9 +605,10 @@ function render(r,cand){
     const mine=(s===me);
     const region=extractRegion(s.address || s.jibunAddress || s.roadAddress || '');
     const url=placeLink(s.place_id);
+    const dist=mine?'':fmtDist(s.dist);
     const inner='<span class="rk">'+s.rank+'</span>'+
       '<span class="nm">'+esc(s.name)+(mine?' (내 매장)':(region?' ('+region+')':''))+'</span>'+
-      '<span class="rv">리뷰 <b>'+(s.reviews||0).toLocaleString()+'</b></span>';
+      '<span class="rv">리뷰 <b>'+(s.reviews||0).toLocaleString()+'</b>'+(dist?' <span class="rdist">· '+dist+'</span>':'')+'</span>';
     const node=document.createElement(url?'a':'div');
     node.className='rrow'+(mine?' me':'');
     if(url){node.href=url;node.target='_blank';node.rel='noopener';}
@@ -588,6 +616,7 @@ function render(r,cand){
   });
 
   drawMap(stores,r,me);
+  renderCompare(stores,me,r);
 
    const ls=document.getElementById('leadStore');if(ls)ls.value=me.name||r.myStore||'';
   lastDiag2 = {
@@ -636,12 +665,58 @@ function drawMap(stores,r,me){
         'border:2px solid '+(mine?'#fff':'#16181d')+';box-shadow:0 1px 4px rgba(0,0,0,.3);'+
         'display:flex;align-items:center;justify-content:center;font-size:'+(mine?13:11)+'px;font-weight:800">'+s.rank+'</div>';
       L.marker([s.lat,s.lng],{icon:L.divIcon({html:html,className:'',iconSize:[28,28],iconAnchor:[14,14]}),zIndexOffset:mine?1000:0})
-        .bindTooltip(s.rank+'위 '+esc(s.name)+' · 리뷰 '+(s.reviews||0).toLocaleString(),{direction:'top'}).addTo(mapObj);
+        .bindTooltip(s.rank+'위 '+esc(s.name)+' · 리뷰 '+(s.reviews||0).toLocaleString()+(s.hasBooking?' · 예약O':'')+((s!==me&&s.dist)?' · '+fmtDist(s.dist):''),{direction:'top'}).addTo(mapObj);
       bounds.extend([s.lat,s.lng]);
     });
     mapObj.fitBounds(bounds,{padding:[32,32],maxZoom:16});
     setTimeout(()=>mapObj.invalidateSize(),200);
   }catch(e){el.style.display='none';}
+}
+
+/* ============ 인근 매장 비교 ============ */
+function renderCompare(stores,me,r){
+  const card=document.getElementById('cmpCard');
+  const nearby=(stores||[]).filter(s=>s!==me);
+  if(!nearby.length){ card.style.display='none'; return; }
+  card.style.display='';
+  const n=nearby.length;
+  document.getElementById('cmpTitle').textContent='인근 안경원 '+n+'곳과 비교';
+  document.getElementById('cmpSub').textContent='"'+esc(r.query||'')+'" 노출 기준';
+
+  // 리뷰: 내 매장 vs 인근 평균
+  const myR=(r.myDetail&&r.myDetail.reviews)||me.reviews||0;
+  const avg=Math.round(nearby.reduce((a,s)=>a+(s.reviews||0),0)/n);
+  const revWin=myR>=avg;
+
+  // 네이버 예약: 인근 몇 곳이 운영 중인지
+  const bookN=nearby.filter(s=>s.hasBooking).length;
+  const myBook=(r.myDetail&&r.myDetail.hasBooking)||me.hasBooking;
+
+  // 가장 가까운 경쟁 매장
+  const nearest=nearby.slice().sort((a,b)=>(a.dist||0)-(b.dist||0))[0];
+
+  const rows=[];
+  rows.push({l:'방문자 리뷰', v:myR.toLocaleString()+'개',
+    c:'인근 평균 <b>'+avg.toLocaleString()+'개</b>',
+    badge: revWin?['win','우위']:['lose','열세']});
+  rows.push({l:'네이버 예약', v:myBook?'운영 중':'미설정',
+    c:'인근 '+n+'곳 중 <b>'+bookN+'곳</b> 운영',
+    badge: myBook?['win','운영']:null});
+  if(nearest && fmtDist(nearest.dist)){
+    rows.push({l:'가장 가까운 경쟁', v:fmtDist(nearest.dist),
+      c:esc(nearest.name)+(nearest.reviews?' · 리뷰 '+nearest.reviews.toLocaleString():''),
+      badge:null});
+  }
+
+  const box=document.getElementById('cmpList'); box.innerHTML='';
+  rows.forEach(row=>{
+    const el=document.createElement('div'); el.className='cmp-row';
+    const badge=row.badge?'<span class="cmp-badge '+row.badge[0]+'">'+row.badge[1]+'</span>':'';
+    el.innerHTML='<span class="cl">'+row.l+'</span>'+
+      '<span class="cv">'+row.v+badge+'</span>'+
+      '<span class="cc">'+row.c+'</span>';
+    box.appendChild(el);
+  });
 }
 
 /* ============ 리드 ============ */
