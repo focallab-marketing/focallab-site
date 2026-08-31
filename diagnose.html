@@ -378,7 +378,10 @@ function extractDong(address){
 }
 function buildQuery(cand){
   const dong=extractDong(cand.address);
-  return dong?(dong+' 안경원'):(cand.name);
+  // 동을 못 뽑으면(도로명주소 등) 매장명으로 검색 — coords로 그 매장 주변이 잡힘
+  // "구"만 뽑히면 너무 넓으니 매장명 우선
+  if(dong && /동$|읍$|면$/.test(dong)) return dong+' 안경원';
+  return cand.name;
 }
 
 /* ============ 로딩 메시지 ============ */
