@@ -42,10 +42,15 @@ const UA_POOL = [
 const pickUA = () => UA_POOL[Math.floor(Math.random() * UA_POOL.length)];
 
 /* ============ 네이버 instant-search API 호출 (순수 HTTPS) ============ */
+/* coords는 필수. 없으면 기본 좌표(서울시청)를 사용 — 매장명 검색은
+   좌표와 무관하게 전국 결과가 나오고, 좌표는 거리 계산 기준일 뿐이다. */
+const DEFAULT_COORDS = '37.5666103,126.9783882';  // 서울시청
+
 function naverInstantSearch(query, coords) {
   return new Promise((resolve, reject) => {
-    let path = '/p/api/search/instant-search?query=' + encodeURIComponent(query);
-    if (coords) path += '&coords=' + encodeURIComponent(coords);
+    const co = coords || DEFAULT_COORDS;
+    let path = '/p/api/search/instant-search?query=' + encodeURIComponent(query) +
+               '&coords=' + encodeURIComponent(co);
     const options = {
       hostname: 'map.naver.com',
       path: path,
