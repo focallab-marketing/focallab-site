@@ -210,6 +210,22 @@ display:block; margin-bottom:16px; letter-spacing:.08em;
 .result-card p{font-size:13.5px; color:var(--ink-soft); margin:0;}
 @media (max-width:800px){ .results-grid{grid-template-columns:1fr;} }
 
+/* ---------- FINAL CTA (diagnose 화면과 통일) ---------- */
+.final-cta{background:#fbfbf9; color:#16181d; text-align:center; border-top:1px solid var(--line);}
+.final-cta .cta-eyebrow{display:inline-flex; align-items:center; gap:7px; font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:#1b5cff; background:#eef2ff; border:1px solid #d9e2ff; padding:6px 14px; border-radius:100px; margin:0 0 22px;}
+.final-cta .cta-eyebrow .dot{width:6px; height:6px; border-radius:50%; background:#03c75a; box-shadow:0 0 0 3px rgba(3,199,90,.18);}
+.final-cta h2{font-family:'Pretendard Variable','Pretendard',sans-serif; font-weight:700; font-size:clamp(30px,4vw,48px); line-height:1.15; margin:0 0 16px; color:#16181d;}
+.final-cta h2 em{font-style:normal; font-weight:800; color:#03c75a;}
+.final-cta p.cta-lede{font-size:16px; color:#4a4f57; max-width:500px; margin:0 auto 32px;}
+.final-search{display:flex; gap:8px; max-width:560px; margin:0 auto; background:#fff; border:1px solid var(--line); border-radius:18px; padding:8px; box-shadow:0 1px 0 rgba(33,29,25,.04), 0 18px 40px -30px rgba(20,24,33,.5);}
+.final-search input{flex:1; border:none; background:transparent; padding:14px 16px; font-size:15.5px; color:#16181d; font-family:inherit;}
+.final-search input::placeholder{color:#868b93;}
+.final-search input:focus{outline:none;}
+.final-search button{border:none; border-radius:12px; padding:14px 22px; background:#16181d; color:#fff; font-weight:800; font-size:15px; cursor:pointer; white-space:nowrap; font-family:inherit; transition:background .15s, transform .12s;}
+.final-search button:hover{background:#000; transform:translateY(-1px);}
+.final-note{font-size:13px; color:#868b93; margin:16px 0 0;}
+@media (max-width:520px){ .final-search{flex-direction:column;} .final-search button{padding:15px;} }
+
 footer{padding:40px 0; border-top:1px solid var(--line);}
 .footer-inner{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; font-size:13px; color:var(--ink-soft);}
 
@@ -378,6 +394,19 @@ footer{padding:40px 0; border-top:1px solid var(--line);}
 </div>
 </section>
 
+<section class="final-cta">
+<div class="wrap">
+<span class="cta-eyebrow" data-reveal><span class="dot"></span>무료 · 실시간 진단</span>
+<h2 data-reveal>우리 안경원은 네이버에서<br><em>몇 위</em>일까요?</h2>
+<p class="cta-lede" data-reveal>여기까지 읽으셨다면, 이제 확인할 차례입니다. 매장명만 입력하면 실제 검색 순위와 리뷰를 인근 매장과 비교해 무료로 알려드립니다.</p>
+<form class="final-search" data-reveal onsubmit="return goDiagnose(event)">
+<input id="ctaQuery" type="text" placeholder="네이버 플레이스 매장명 (예: 아이템안경원)" autocomplete="off">
+<button type="submit">우리 매장 순위 확인 →</button>
+</form>
+<p class="final-note" data-reveal>매장명을 입력하면 실제 순위 진단이 바로 시작돼요</p>
+</div>
+</section>
+
 <footer>
 <div class="wrap footer-inner">
 <span>© 2026 FOCAL LAB. 안경원 전문 마케팅.</span>
@@ -391,6 +420,14 @@ const io = new IntersectionObserver((entries)=>{
   entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); } });
 }, {threshold:.14});
 document.querySelectorAll('[data-reveal]').forEach(el=>io.observe(el));
+
+/* 하단 CTA: 입력한 매장명을 diagnose.html로 넘겨 바로 검색되게 함 */
+function goDiagnose(e){
+  e.preventDefault();
+  var q = document.getElementById('ctaQuery').value.trim();
+  window.location.href = '/diagnose.html' + (q ? ('?q=' + encodeURIComponent(q)) : '');
+  return false;
+}
 </script>
 
 </body>
