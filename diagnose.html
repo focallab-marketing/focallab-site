@@ -359,7 +359,13 @@ function placeLink(id){return id?(isMobile()
   :'https://map.naver.com/p/entry/place/'+id):'';}
 function norm(s){return String(s||'').replace(/\s/g,'');}
 function meMatch(name,mine){return name&&mine&&norm(name).includes(norm(mine));}
-
+function extractRegion(addr){
+  if(!addr) return '';
+  const m = addr.match(/(?:특별시|광역시|특별자치시|자치시|도|자치도)\s+(\S+?[구군시])/);
+  if(m) return m[1];
+  const t = addr.split(/\s+/).find(x => /[구군시]$/.test(x));
+  return t || '';
+}
 /* 주소에서 "동" 추출 → 진단 키워드 만들기 */
 function extractDong(address){
   if(!address)return null;
@@ -534,9 +540,10 @@ function render(r,cand){
   document.getElementById('rankSub').textContent='상위 '+stores.length+'곳 · 총 '+r.totalInArea+'곳';
   const list=document.getElementById('rankList');list.innerHTML='';
   stores.forEach(s=>{
-    const mine=meMatch(s.name,r.myStore);const url=placeLink(s.place_id);
+    const mine = r.myStore && s.place_id && s.place_id === r.myStore.place_id;
+const region = extractRegion(s.jibunAddress || s.roadAddress || s.address || '');
     const inner='<span class="rk">'+s.rank+'</span>'+
-      '<span class="nm">'+esc(s.name)+(mine?' (내 매장)':'')+'</span>'+
+                      '<span class="nm">'+esc(s.name)+(mine?' (내 매장)':(region?' ('+region+')':''))+'</span>'+
       '<span class="rv">리뷰 <b>'+(s.reviews||0).toLocaleString()+'</b></span>';
     const node=document.createElement(url?'a':'div');
     node.className='rrow'+(mine?' me':'');
