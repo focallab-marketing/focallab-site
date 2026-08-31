@@ -681,6 +681,17 @@ async function submitLead(e){
   }
   return false;
 }
+
+/* index.html 등에서 ?q=매장명 으로 들어오면 자동으로 검색 실행 */
+(function(){
+  try{
+    var q = new URLSearchParams(location.search).get('q');
+    if(q){
+      var qi = document.getElementById('q');
+      if(qi){ qi.value = q; doSearch(new Event('submit')); }
+    }
+  }catch(e){}
+})();
 </script>
 </body>
 </html>
