@@ -452,7 +452,7 @@ async function startDiagnose(cand){
   startLoad([''+cand.name+' 진단 시작...','인근 매장 순위 확인 중...','경쟁 매장 리뷰 집계 중...','진단 결과 정리 중...']);
   document.getElementById('loading').scrollIntoView({behavior:'smooth',block:'center'});
   try{
-        const coords=(cand&&cand.lat&&cand.lng)?(cand.lat+','+cand.lng):'';
+    const coords=(cand&&cand.lat&&cand.lng)?(cand.lat+','+cand.lng):'';
     const url=API+'/api/diagnose?query='+encodeURIComponent(query)+'&store='+encodeURIComponent(store)+(coords?('&coords='+encodeURIComponent(coords)):'');
     const res=await fetch(url);
     if(!res.ok)throw new Error('HTTP '+res.status);
