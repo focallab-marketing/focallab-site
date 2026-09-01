@@ -679,19 +679,25 @@ function drawMap(stores,r,me){
         .bindTooltip(s.rank+'위 '+esc(s.name)+' · 리뷰 '+(s.reviews||0).toLocaleString()+(s.hasBooking?' · 예약O':'')+((s!==me&&s.dist)?' · '+fmtDist(s.dist):''),{direction:'top'}).addTo(mapObj);
     });
 
-    if(hasMe){
-      // 내 매장을 중심에 고정하고, 모든 핀 + 1km 원이 다 보이도록 대칭 범위 계산
-      let dLat=0.0095, dLng=0.0120;   // 최소값: 1km 원이 보이게
-      pts.forEach(s=>{
-        dLat=Math.max(dLat,Math.abs(s.lat-me.lat));
-        dLng=Math.max(dLng,Math.abs(s.lng-me.lng));
-      });
-      dLat*=1.18; dLng*=1.18;
-      mapObj.fitBounds([[me.lat-dLat,me.lng-dLng],[me.lat+dLat,me.lng+dLng]],{maxZoom:16});
-    }else{
-      mapObj.fitBounds(L.latLngBounds(pts.map(s=>[s.lat,s.lng])),{padding:[32,32],maxZoom:16});
-    }
-    setTimeout(()=>mapObj.invalidateSize(),200);
+    // 뷰 설정은 컨테이너 크기 확정(invalidateSize) 후에 실행 — 안 그러면 전세계로 줌아웃됨
+    const applyView=()=>{
+      mapObj.invalidateSize();
+      if(hasMe){
+        let dLat=0.0095, dLng=0.0120;   // 최소값: 1km 원이 보이게
+        pts.forEach(s=>{
+          dLat=Math.max(dLat,Math.abs(s.lat-me.lat));
+          dLng=Math.max(dLng,Math.abs(s.lng-me.lng));
+        });
+        dLat*=1.18; dLng*=1.18;
+        mapObj.fitBounds([[me.lat-dLat,me.lng-dLng],[me.lat+dLat,me.lng+dLng]],{maxZoom:16});
+      }else{
+        mapObj.fitBounds(L.latLngBounds(pts.map(s=>[s.lat,s.lng])),{padding:[32,32],maxZoom:16});
+      }
+      // 안전장치: 계산이 어긋나 과도하게 줌아웃되면 내 매장 중심으로 강제 복구
+      if(mapObj.getZoom()<11){ mapObj.setView(center,14); }
+    };
+    mapObj.whenReady(()=>setTimeout(applyView,60));
+    setTimeout(applyView,300);
   }catch(e){el.style.display='none';}
 }
 
