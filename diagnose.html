@@ -658,7 +658,17 @@ function drawMap(stores,r,me){
   try{
     mapObj=L.map(el,{zoomControl:true,scrollWheelZoom:false});
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(mapObj);
-    const bounds=L.latLngBounds([]);
+
+    const hasMe=!!(me&&me.lat&&me.lng);
+    const center=hasMe?[me.lat,me.lng]:[pts[0].lat,pts[0].lng];
+
+    // 반경 1km 투명 원 (내 매장 기준) — 마커보다 먼저 그려 아래 깔림
+    if(hasMe){
+      L.circle(center,{radius:1000,color:'#1b5cff',weight:1.5,opacity:.55,
+        fillColor:'#1b5cff',fillOpacity:.06,interactive:false}).addTo(mapObj);
+    }
+
+    // 매장 핀
     pts.forEach(s=>{
       const mine=(s===me);
       const html='<div style="width:'+(mine?28:22)+'px;height:'+(mine?28:22)+'px;border-radius:50%;'+
@@ -667,9 +677,20 @@ function drawMap(stores,r,me){
         'display:flex;align-items:center;justify-content:center;font-size:'+(mine?13:11)+'px;font-weight:800">'+s.rank+'</div>';
       L.marker([s.lat,s.lng],{icon:L.divIcon({html:html,className:'',iconSize:[28,28],iconAnchor:[14,14]}),zIndexOffset:mine?1000:0})
         .bindTooltip(s.rank+'위 '+esc(s.name)+' · 리뷰 '+(s.reviews||0).toLocaleString()+(s.hasBooking?' · 예약O':'')+((s!==me&&s.dist)?' · '+fmtDist(s.dist):''),{direction:'top'}).addTo(mapObj);
-      bounds.extend([s.lat,s.lng]);
     });
-    mapObj.fitBounds(bounds,{padding:[32,32],maxZoom:16});
+
+    if(hasMe){
+      // 내 매장을 중심에 고정하고, 모든 핀 + 1km 원이 다 보이도록 대칭 범위 계산
+      let dLat=0.0095, dLng=0.0120;   // 최소값: 1km 원이 보이게
+      pts.forEach(s=>{
+        dLat=Math.max(dLat,Math.abs(s.lat-me.lat));
+        dLng=Math.max(dLng,Math.abs(s.lng-me.lng));
+      });
+      dLat*=1.18; dLng*=1.18;
+      mapObj.fitBounds([[me.lat-dLat,me.lng-dLng],[me.lat+dLat,me.lng+dLng]],{maxZoom:16});
+    }else{
+      mapObj.fitBounds(L.latLngBounds(pts.map(s=>[s.lat,s.lng])),{padding:[32,32],maxZoom:16});
+    }
     setTimeout(()=>mapObj.invalidateSize(),200);
   }catch(e){el.style.display='none';}
 }
