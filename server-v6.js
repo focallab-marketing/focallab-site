@@ -27,6 +27,7 @@ const CACHE_TTL_MS = 48 * 60 * 60 * 1000;   // 진단 캐시 48시간
 const SEARCH_TTL_MS = 24 * 60 * 60 * 1000;  // 검색 캐시 24시간
 const TOP_N = 10;
 const RADIUS_KM = 1.0;                      // 경쟁 반경 (1km 고정)
+const MIN_STORES = 5;                       // 1km 내가 적으면 가까운 순으로 최소 이만큼 채움
 
 const cache = new Map();
 const searchCache = new Map();
@@ -208,6 +209,19 @@ async function crawlDiagnose(query, myStore, coords, myPlaceId) {
 
   // 반경 1km 필터 (내 매장은 항상 포함)
   let area = list.filter((s) => (s.dist != null && s.dist <= RADIUS_KM) || (me && s === me));
+
+  // 1km 내가 MIN_STORES 미만이면 → 1km 밖에서 '가장 가까운' 매장으로 채워 최소 개수 확보
+  if (area.length < MIN_STORES) {
+    const extra = list
+      .filter((s) => !area.includes(s))
+      .sort((a, b) => (a.dist ?? 9e9) - (b.dist ?? 9e9));
+    for (const s of extra) {
+      if (area.length >= MIN_STORES) break;
+      area.push(s);
+    }
+  }
+  // 표시 순서 = 네이버 검색 노출 순서 (거리순 아님). 원래 순서 기준 정렬 후 rank 부여
+  area.sort((a, b) => list.indexOf(a) - list.indexOf(b));
 
   // 네이버 노출 순서 유지 = 지역 검색 순위. rank 재부여
   area = area.map((s, i) => ({ ...s, rank: i + 1 }));
