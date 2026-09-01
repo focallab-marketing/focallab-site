@@ -506,7 +506,8 @@ async function startDiagnose(cand){
   document.getElementById('loading').scrollIntoView({behavior:'smooth',block:'center'});
   try{
     const coords=(cand&&cand.lat&&cand.lng)?(cand.lat+','+cand.lng):'';
-    const url=API+'/api/diagnose?query='+encodeURIComponent(query)+'&store='+encodeURIComponent(store)+(coords?('&coords='+encodeURIComponent(coords)):'');
+    const pid=(cand&&cand.place_id)?cand.place_id:'';
+    const url=API+'/api/diagnose?query='+encodeURIComponent(query)+'&store='+encodeURIComponent(store)+(coords?('&coords='+encodeURIComponent(coords)):'')+(pid?('&place_id='+encodeURIComponent(pid)):'');
     const res=await fetch(url);
     if(!res.ok)throw new Error('HTTP '+res.status);
     const data=await res.json();
