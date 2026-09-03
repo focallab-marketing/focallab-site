@@ -232,6 +232,54 @@ footer{padding:40px 0; border-top:1px solid var(--line);}
 
 [data-reveal]{opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease;}
 [data-reveal].in{opacity:1; transform:translateY(0);}
+
+/* ============ 모바일 반응형 (≤640px) ============ */
+@media (max-width:640px){
+  html,body{overflow-x:hidden;}
+  .wrap{padding:0 20px;}
+  section{padding:60px 0;}
+
+  /* 히어로: 넘침 방지 + 줄바꿈 정리 */
+  .hero{padding:48px 0 52px;}
+  .hero .eyebrow{display:block; white-space:normal; line-height:1.6; margin-bottom:14px;}
+  .hero .eyebrow::before{display:none;}
+  .hero h1{font-size:34px; line-height:1.3; word-break:keep-all;}
+  .hero .lede{font-size:15.5px; word-break:keep-all;}
+  .hero-trust{font-size:11.5px; word-break:keep-all; line-height:1.6;}
+  .hero-cta{gap:10px;}
+  .hero-cta .btn{flex:1 1 0; justify-content:center; padding:14px 12px; font-size:14px;}
+
+  /* 히어로 차트(시력표): 폰트 축소로 가로 넘침 방지 */
+  .chart{padding:22px 18px; height:auto;}
+  .chart-row:nth-child(1) .glyph{font-size:33px;}
+  .chart-row:nth-child(2) .glyph{font-size:27px;}
+  .chart-row:nth-child(3) .glyph{font-size:22px;}
+  .chart-row:nth-child(4) .glyph{font-size:18px;}
+  .chart-row:nth-child(5) .glyph{font-size:15px;}
+  .chart-row:nth-child(6) .glyph{font-size:12px;}
+
+  h2.section-title{font-size:26px; word-break:keep-all;}
+  .lede{word-break:keep-all;}
+
+  /* 서비스 표 → 카드형으로 전환 (칸 뭉개짐 해결) */
+  .channels-table thead{display:none;}
+  .channels-table, .channels-table tbody, .channels-table tr, .channels-table td{display:block; width:100%;}
+  .channels-table{margin-top:24px;}
+  .channels-table tr.group-row td{padding:22px 0 8px; border:none; background:transparent;}
+  .channels-table tr:not(.group-row){
+    background:var(--card); border:1px solid var(--line); border-radius:8px;
+    padding:15px 18px; margin-bottom:12px;
+  }
+  .channels-table tr:not(.group-row) td{padding:0; border:none; white-space:normal;}
+  .channels-table td.ch-name{font-size:16px; margin-bottom:10px; white-space:normal;}
+  .channels-table tr:not(.group-row) td:nth-of-type(2),
+  .channels-table tr:not(.group-row) td:nth-of-type(3){
+    font-size:13.5px; color:var(--ink-soft); padding-top:7px; line-height:1.5;
+  }
+  .channels-table tr:not(.group-row) td:nth-of-type(2)::before{content:'하는 일 — '; color:var(--focus-blue-deep); font-weight:700;}
+  .channels-table tr:not(.group-row) td:nth-of-type(3)::before{content:'이런 원장님께 — '; color:var(--gold-deep); font-weight:700;}
+  .channels-table tr:hover td{background:transparent;}
+}
 </style>
 </head>
 <body>
