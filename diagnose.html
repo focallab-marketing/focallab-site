@@ -339,6 +339,15 @@ footer{border-top:1px solid var(--line);padding:26px 0;text-align:center;font-si
       <div class="cmp-foot">인근 노출 매장과 우리 매장의 운영 상태를 비교한 값입니다. 사진·네이버페이·톡톡 등 상세 항목은 심층 진단에서 확인해드립니다.</div>
     </div>
 
+    <div class="card" id="localCard" style="display:none">
+      <div class="rank-head">
+        <span class="t">상권 정보</span>
+        <span class="n">매장 반경 기준</span>
+      </div>
+      <div id="localList"></div>
+      <div class="cmp-foot">아파트 세대수·직장인구 등 상세 상권 분석은 순차적으로 추가될 예정입니다.</div>
+    </div>
+
     <div class="card lead" id="leadCard">
       <div id="leadForm">
              <div class="sec-label">전문가 심층 진단 · 무료</div>
@@ -618,6 +627,7 @@ function render(r,cand){
 
   drawMap(stores,r,me);
   renderCompare(stores,me,r);
+  renderLocal(r);
 
    const ls=document.getElementById('leadStore');if(ls)ls.value=me.name||r.myStore||'';
   lastDiag2 = {
@@ -742,6 +752,27 @@ function renderCompare(stores,me,r){
     const badge=row.badge?'<span class="cmp-badge '+row.badge[0]+'">'+row.badge[1]+'</span>':'';
     el.innerHTML='<span class="cl">'+row.l+'</span>'+
       '<span class="cv">'+row.v+badge+'</span>'+
+      '<span class="cc">'+row.c+'</span>';
+    box.appendChild(el);
+  });
+}
+
+/* ============ 상권 정보 (최근접 역 등) ============ */
+function renderLocal(r){
+  const card=document.getElementById('localCard');
+  const rows=[];
+  const st=r.nearestStation;
+  if(st && st.name){
+    rows.push({l:'최근접 역', v:esc(st.name),
+      c: st.distanceM!=null ? '<b>'+fmtDist(st.distanceM/1000)+'</b>' : ''});
+  }
+  if(!rows.length){ card.style.display='none'; return; }
+  card.style.display='';
+  const box=document.getElementById('localList'); box.innerHTML='';
+  rows.forEach(row=>{
+    const el=document.createElement('div'); el.className='cmp-row';
+    el.innerHTML='<span class="cl">'+row.l+'</span>'+
+      '<span class="cv">'+row.v+'</span>'+
       '<span class="cc">'+row.c+'</span>';
     box.appendChild(el);
   });
