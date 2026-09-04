@@ -28,6 +28,7 @@ const SEARCH_TTL_MS = 24 * 60 * 60 * 1000;  // 검색 캐시 24시간
 const TOP_N = 10;
 const RADIUS_KM = 1.0;                      // 경쟁 반경 (1km 고정)
 const MIN_STORES = 5;                       // 1km 내가 적으면 가까운 순으로 최소 이만큼 채움
+const KAKAO_REST_KEY = process.env.KAKAO_REST_KEY || '';  // 카카오 로컬 API 키 (환경변수)
 
 const cache = new Map();
 const searchCache = new Map();
@@ -84,6 +85,39 @@ function naverInstantSearch(query, coords) {
     });
     req.on('error', reject);
     req.on('timeout', () => { req.destroy(); reject(new Error('요청 시간 초과')); });
+    req.end();
+  });
+}
+
+/* ============ 카카오 로컬: 최근접 지하철역 (공식 API) ============ */
+/* 매장 좌표(lat,lng) 주변에서 가장 가까운 지하철역 1곳을 반환.
+   실패해도 진단은 계속되도록 항상 resolve(null)로 처리. */
+function kakaoNearestStation(lat, lng) {
+  return new Promise((resolve) => {
+    if (!KAKAO_REST_KEY || lat == null || lng == null) return resolve(null);
+    const path = '/v2/local/search/category.json?category_group_code=SW8'
+      + '&x=' + encodeURIComponent(lng)   // x = 경도
+      + '&y=' + encodeURIComponent(lat)   // y = 위도
+      + '&radius=20000&sort=distance&size=1';
+    const options = {
+      hostname: 'dapi.kakao.com', path, method: 'GET',
+      headers: { 'Authorization': 'KakaoAK ' + KAKAO_REST_KEY },
+      timeout: 8000,
+    };
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', (c) => { data += c; });
+      res.on('end', () => {
+        try {
+          const j = JSON.parse(data);
+          const d = j.documents && j.documents[0];
+          if (d) resolve({ name: d.place_name, distanceM: Number(d.distance) || null });
+          else resolve(null);
+        } catch (e) { resolve(null); }
+      });
+    });
+    req.on('error', () => resolve(null));
+    req.on('timeout', () => { req.destroy(); resolve(null); });
     req.end();
   });
 }
@@ -242,6 +276,11 @@ async function crawlDiagnose(query, myStore, coords, myPlaceId) {
   // 표시용 지역 라벨 (내 매장 주소 기준)
   const label = meInArea ? areaLabel(meInArea.address) : areaLabel(query);
 
+  // 상권 정보: 최근접 지하철역 (카카오 로컬 API). 실패해도 null로 진행
+  const stCenterLat = (meInArea && meInArea.lat != null) ? meInArea.lat : centerLat;
+  const stCenterLng = (meInArea && meInArea.lng != null) ? meInArea.lng : centerLng;
+  const nearestStation = await kakaoNearestStation(stCenterLat, stCenterLng);
+
   return {
     query: label,                 // 프론트 표시용: "자곡동" 등
     myStore: (meInArea && meInArea.name) || myStore,
@@ -250,6 +289,7 @@ async function crawlDiagnose(query, myStore, coords, myPlaceId) {
     radiusKm: RADIUS_KM,
     topStores: area.slice(0, TOP_N),
     myDetail,
+    nearestStation,               // { name, distanceM } 또는 null
     collectedAt: new Date().toISOString(),
   };
 }
@@ -320,6 +360,6 @@ app.get('/api/diagnose', async (req, res) => {
 });
 
 app.get('/health', (_req, res) =>
-  res.json({ ok: true, version: 'v7', radiusKm: RADIUS_KM, cacheSize: cache.size, searchCacheSize: searchCache.size }));
+  res.json({ ok: true, version: 'v7', radiusKm: RADIUS_KM, kakao: !!KAKAO_REST_KEY, cacheSize: cache.size, searchCacheSize: searchCache.size }));
 
 app.listen(PORT, () => { console.log('서버 실행 중 (v7 · 좌표기반 1km 경쟁진단) - 포트 ' + PORT); });
