@@ -19,6 +19,8 @@
 const express = require('express');
 const cors = require('cors');
 const https = require('https');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors({ origin: '*' }));
@@ -154,6 +156,29 @@ function haversineKm(lat1, lng1, lat2, lng2){
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+/* ── 아파트 세대수 데이터 (배치로 구축한 apartments.json) ── */
+let APARTMENTS = [];
+try {
+  APARTMENTS = JSON.parse(fs.readFileSync(path.join(__dirname, 'apartments.json'), 'utf8'));
+  console.log('아파트 데이터 로드: ' + APARTMENTS.length + '개 단지');
+} catch (e) {
+  console.log('아파트 데이터 없음 (apartments.json 미존재) — 세대수 표시는 비활성');
+}
+
+/* 매장 좌표 반경 내 아파트 단지 수·세대수 합산.
+   커버 안 된 지역(단지 0개)이면 null 반환 → 화면에 세대수 줄 안 띄움 */
+function aptWithin(lat, lng, radiusKm){
+  if (!APARTMENTS.length || lat == null || lng == null) return null;
+  let count = 0, households = 0;
+  for (const a of APARTMENTS){
+    if (a.lat == null || a.lng == null) continue;
+    const d = haversineKm(lat, lng, a.lat, a.lng);
+    if (d != null && d <= radiusKm){ count++; households += (a.households || 0); }
+  }
+  if (!count) return null;
+  return { count, households, radiusKm };
+}
+
 /* 주소에서 표시용 지역 라벨(동 > 읍/면 > 구/군) 추출 */
 function areaLabel(addr){
   if (!addr) return '인근';
@@ -281,6 +306,9 @@ async function crawlDiagnose(query, myStore, coords, myPlaceId) {
   const stCenterLng = (meInArea && meInArea.lng != null) ? meInArea.lng : centerLng;
   const nearestStation = await kakaoNearestStation(stCenterLat, stCenterLng);
 
+  // 상권 정보: 반경 1km 아파트 단지 수·세대수 (배치 데이터 기반, API 호출 없음)
+  const localApt = aptWithin(stCenterLat, stCenterLng, RADIUS_KM);
+
   return {
     query: label,                 // 프론트 표시용: "자곡동" 등
     myStore: (meInArea && meInArea.name) || myStore,
@@ -290,6 +318,7 @@ async function crawlDiagnose(query, myStore, coords, myPlaceId) {
     topStores: area.slice(0, TOP_N),
     myDetail,
     nearestStation,               // { name, distanceM } 또는 null
+    localApt,                     // { count, households, radiusKm } 또는 null
     collectedAt: new Date().toISOString(),
   };
 }
@@ -360,6 +389,6 @@ app.get('/api/diagnose', async (req, res) => {
 });
 
 app.get('/health', (_req, res) =>
-  res.json({ ok: true, version: 'v7', radiusKm: RADIUS_KM, kakao: !!KAKAO_REST_KEY, cacheSize: cache.size, searchCacheSize: searchCache.size }));
+  res.json({ ok: true, version: 'v7', radiusKm: RADIUS_KM, kakao: !!KAKAO_REST_KEY, apartments: APARTMENTS.length, cacheSize: cache.size, searchCacheSize: searchCache.size }));
 
 app.listen(PORT, () => { console.log('서버 실행 중 (v7 · 좌표기반 1km 경쟁진단) - 포트 ' + PORT); });
