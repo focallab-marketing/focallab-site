@@ -766,6 +766,11 @@ function renderLocal(r){
     rows.push({l:'최근접 역', v:esc(st.name),
       c: st.distanceM!=null ? '<b>'+fmtDist(st.distanceM/1000)+'</b>' : ''});
   }
+  const ap=r.localApt;
+  if(ap && ap.households>0){
+    rows.push({l:'반경 1km 아파트', v:ap.households.toLocaleString()+'세대',
+      c:'<b>'+ap.count+'개</b> 단지'});
+  }
   if(!rows.length){ card.style.display='none'; return; }
   card.style.display='';
   const box=document.getElementById('localList'); box.innerHTML='';
