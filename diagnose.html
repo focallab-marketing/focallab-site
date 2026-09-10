@@ -771,6 +771,14 @@ function renderLocal(r){
     rows.push({l:'반경 1km 아파트', v:ap.households.toLocaleString()+'세대',
       c:'<b>'+ap.count+'개</b> 단지'});
   }
+  const b=r.localBiz;
+  if(b){
+    const n=(x)=> (x>=45?'45+':x)+'곳';
+    if(b.edu!=null)     rows.push({l:'학원·학교',   v:n(b.edu),     c:'학생 밀집도'});
+    if(b.medical!=null) rows.push({l:'병원·약국',   v:n(b.medical), c:'의료 상권'});
+    if(b.food!=null)    rows.push({l:'음식점·카페', v:n(b.food),    c:'상권 활성도'});
+    if(b.conv!=null)    rows.push({l:'편의점·마트', v:n(b.conv),    c:'생활 밀집도'});
+  }
   if(!rows.length){ card.style.display='none'; return; }
   card.style.display='';
   const box=document.getElementById('localList'); box.innerHTML='';
