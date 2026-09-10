@@ -1,29 +1,40 @@
 /* ============================================================================
- * server.js (v7) — 포컬랩 진단 백엔드 (좌표기반 1km 경쟁 진단)
+ * server.js (v8) — 포컬랩 진단 백엔드 (좌표기반 1km 경쟁 진단) + 관리자 API
  *
- *   GET /api/search?query=아이템안경원                          → 후보 매장 목록
- *   GET /api/diagnose?coords=위도,경도&store=매장명&place_id=…  → 진단 (1km 경쟁)
- *   GET /health
+ *   GET  /api/search?query=아이템안경원                          → 후보 매장 목록
+ *   GET  /api/diagnose?coords=위도,경도&store=매장명&place_id=…  → 진단 (1km 경쟁)
+ *   GET  /health
  *
- * v7 핵심 변경 (경쟁 진단 정확도):
- *   - 진단 시 "상호명"이 아니라 "안경원" 일반 키워드 + 매장 좌표로 검색
- *     → 그 좌표 주변의 실제 다른 안경원들이 나온다 (동일상호 다른지점 문제 해결)
- *   - 반경 1km 필터 (RADIUS_KM) → 진짜 경쟁권만 남김
- *   - 내 매장은 place_id로 정확 매칭 (없으면 최근접=중심 매장으로 폴백)
- *   - 네이버 노출 순서 = 지역 검색 순위로 rank 재부여
- *   - 표시용 지역 라벨(동/구)을 주소에서 추출해 result.query로 반환
+ *   ── v8에서 추가된 관리자 기능 (기존 v7 로직은 전혀 건드리지 않음) ──
+ *   POST   /admin/login                 → 로그인 (아이디/비번) → 토큰 발급
+ *   GET    /admin/inquiries             → 문의 신청자 목록 (구글시트 연동)
+ *   GET    /admin/inquiry-status        → 문의별 상태(연락완료 등) 조회
+ *   POST   /admin/inquiry-status        → 문의별 상태 저장
+ *   GET    /admin/admins                → 관리자 계정 목록 (슈퍼관리자 전용)
+ *   POST   /admin/admins                → 관리자 계정 추가 (슈퍼관리자 전용)
+ *   PATCH  /admin/admins/:username      → 역할/비밀번호 변경 (슈퍼관리자 전용)
+ *   DELETE /admin/admins/:username      → 관리자 계정 삭제 (슈퍼관리자 전용)
  *
- * v6 기반 유지:
- *   - Puppeteer(크롬) 없음. 네이버 instant-search를 순수 HTTPS로 호출.
+ *   설계 메모:
+ *   - 새 npm 패키지를 추가하지 않기 위해 비밀번호 해시(scrypt)와 로그인 토큰
+ *     서명(HMAC-SHA256, JWT와 동일 구조)을 Node 내장 crypto 모듈만으로 구현함.
+ *     → 지금까지의 배포 방식(GitHub에 파일 하나 올리고 curl로 받아서 pm2
+ *       restart)을 그대로 유지할 수 있음. npm install 불필요.
+ *   - 관리자 계정은 DB 없이 서버의 admins.json 파일에 저장 (비밀번호는 해시로만 저장).
+ *   - 문의 신청자 원본 데이터는 여전히 구글 스프레드시트에 있음. 서버는 매번
+ *     Google Apps Script 웹앱(JSON API)을 호출해서 가져올 뿐, 서버에 복제 저장하지 않음.
+ *   - "연락완료" 같은 처리 상태만 서버의 inquiry-status.json에 저장 (구글시트는 건드리지 않음).
  * ========================================================================== */
 const express = require('express');
 const cors = require('cors');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors({ origin: '*' }));
+app.use(express.json());
 
 const CACHE_TTL_MS = 48 * 60 * 60 * 1000;   // 진단 캐시 48시간
 const SEARCH_TTL_MS = 24 * 60 * 60 * 1000;  // 검색 캐시 24시간
@@ -436,6 +447,311 @@ app.get('/api/diagnose', async (req, res) => {
 });
 
 app.get('/health', (_req, res) =>
-  res.json({ ok: true, version: 'v7', radiusKm: RADIUS_KM, kakao: !!KAKAO_REST_KEY, apartments: APARTMENTS.length, cacheSize: cache.size, searchCacheSize: searchCache.size }));
+  res.json({ ok: true, version: 'v8', radiusKm: RADIUS_KM, kakao: !!KAKAO_REST_KEY, apartments: APARTMENTS.length, cacheSize: cache.size, searchCacheSize: searchCache.size }));
 
-app.listen(PORT, () => { console.log('서버 실행 중 (v7 · 좌표기반 1km 경쟁진단) - 포트 ' + PORT); });
+
+/* ============================================================================
+ * ▼▼▼ 여기서부터 v8 관리자 기능 추가분 ▼▼▼
+ * ========================================================================== */
+
+/* ---------- 설정 (환경변수) ---------- */
+const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || '';          // 토큰 서명용 비밀키 (필수)
+const ADMIN_INIT_USERNAME = process.env.ADMIN_INIT_USERNAME || '';    // 최초 부팅시 슈퍼관리자 계정 생성용
+const ADMIN_INIT_PASSWORD = process.env.ADMIN_INIT_PASSWORD || '';    // (admins.json이 없을 때만 사용됨)
+const SHEET_API_URL = process.env.SHEET_API_URL || '';                // Apps Script 웹앱 URL
+const SHEET_API_TOKEN = process.env.SHEET_API_TOKEN || '';            // Apps Script 인증 토큰
+const TOKEN_TTL_MS = 12 * 60 * 60 * 1000; // 로그인 토큰 유효시간: 12시간
+
+const ADMINS_FILE = path.join(__dirname, 'admins.json');
+const STATUS_FILE = path.join(__dirname, 'inquiry-status.json');
+
+if (!ADMIN_JWT_SECRET) {
+  console.warn('⚠ ADMIN_JWT_SECRET 환경변수가 없습니다. 관리자 로그인이 동작하지 않습니다.');
+}
+
+/* ---------- 비밀번호 해시 (scrypt, 내장 crypto만 사용) ---------- */
+function hashPassword(password, salt) {
+  salt = salt || crypto.randomBytes(16).toString('hex');
+  const hash = crypto.scryptSync(password, salt, 64).toString('hex');
+  return salt + ':' + hash;
+}
+function verifyPassword(password, stored) {
+  const [salt, hash] = String(stored || '').split(':');
+  if (!salt || !hash) return false;
+  const check = crypto.scryptSync(password, salt, 64).toString('hex');
+  // 타이밍 공격 방지를 위해 길이가 다르면 즉시 false, 같으면 timingSafeEqual
+  const a = Buffer.from(hash, 'hex');
+  const b = Buffer.from(check, 'hex');
+  if (a.length !== b.length) return false;
+  return crypto.timingSafeEqual(a, b);
+}
+
+/* ---------- 로그인 토큰 (JWT와 동일 구조, jsonwebtoken 패키지 없이 구현) ---------- */
+function base64url(input) {
+  return Buffer.from(input).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function base64urlDecode(input) {
+  input = input.replace(/-/g, '+').replace(/_/g, '/');
+  while (input.length % 4) input += '=';
+  return Buffer.from(input, 'base64').toString('utf8');
+}
+function signToken(payload) {
+  const header = { alg: 'HS256', typ: 'JWT' };
+  const body = { ...payload, iat: Date.now(), exp: Date.now() + TOKEN_TTL_MS };
+  const h = base64url(JSON.stringify(header));
+  const p = base64url(JSON.stringify(body));
+  const sig = crypto.createHmac('sha256', ADMIN_JWT_SECRET).update(h + '.' + p).digest('base64')
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  return h + '.' + p + '.' + sig;
+}
+function verifyToken(token) {
+  if (!token) return null;
+  const parts = String(token).split('.');
+  if (parts.length !== 3) return null;
+  const [h, p, sig] = parts;
+  const expectedSig = crypto.createHmac('sha256', ADMIN_JWT_SECRET).update(h + '.' + p).digest('base64')
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const a = Buffer.from(sig);
+  const b = Buffer.from(expectedSig);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
+  let payload;
+  try { payload = JSON.parse(base64urlDecode(p)); } catch (e) { return null; }
+  if (!payload.exp || Date.now() > payload.exp) return null;
+  return payload; // { username, role, iat, exp }
+}
+
+/* ---------- 관리자 계정 저장/로드 (admins.json) ---------- */
+function loadAdmins() {
+  try {
+    return JSON.parse(fs.readFileSync(ADMINS_FILE, 'utf8'));
+  } catch (e) {
+    return [];
+  }
+}
+function saveAdmins(list) {
+  fs.writeFileSync(ADMINS_FILE, JSON.stringify(list, null, 2), 'utf8');
+}
+/* 서버 최초 기동시, admins.json이 없고 초기 계정 환경변수가 있으면
+   슈퍼관리자 1명을 자동 생성. 이후에는 이 환경변수가 있어도 무시됨
+   (admins.json이 이미 있으므로) — 안전을 위해 최초 1회만 동작. */
+(function ensureBootstrapAdmin() {
+  const existing = loadAdmins();
+  if (existing.length > 0) return;
+  if (!ADMIN_INIT_USERNAME || !ADMIN_INIT_PASSWORD) {
+    console.warn('⚠ admins.json이 비어있고 ADMIN_INIT_USERNAME/ADMIN_INIT_PASSWORD도 없어 ' +
+      '관리자 계정이 하나도 없습니다. pm2 restart 시 두 환경변수를 넣어 최초 슈퍼관리자를 생성하세요.');
+    return;
+  }
+  const admin = {
+    username: ADMIN_INIT_USERNAME,
+    passwordHash: hashPassword(ADMIN_INIT_PASSWORD),
+    role: 'super_admin',
+    createdAt: new Date().toISOString(),
+  };
+  saveAdmins([admin]);
+  console.log('✅ 최초 슈퍼관리자 계정 생성 완료: ' + ADMIN_INIT_USERNAME);
+})();
+
+/* ---------- 로그인 시도 제한 (무차별 대입 방지, 메모리 기반) ---------- */
+const loginAttempts = new Map(); // key: ip+username → { count, lockedUntil }
+const MAX_ATTEMPTS = 5;
+const LOCK_MS = 10 * 60 * 1000; // 10분 잠금
+function attemptKey(req, username) { return (req.ip || '') + '::' + username; }
+function isLocked(key) {
+  const a = loginAttempts.get(key);
+  return a && a.lockedUntil && Date.now() < a.lockedUntil;
+}
+function registerFailure(key) {
+  const a = loginAttempts.get(key) || { count: 0 };
+  a.count++;
+  if (a.count >= MAX_ATTEMPTS) a.lockedUntil = Date.now() + LOCK_MS;
+  loginAttempts.set(key, a);
+}
+function clearFailures(key) { loginAttempts.delete(key); }
+
+/* ---------- 인증 미들웨어 ---------- */
+const ROLE_RANK = { admin: 1, super_admin: 2 };
+function requireAuth(minRole) {
+  return (req, res, next) => {
+    const auth = req.headers.authorization || '';
+    const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
+    const payload = verifyToken(token);
+    if (!payload) return res.status(401).json({ success: false, error: '로그인이 필요합니다 (토큰 만료/무효)' });
+    if (minRole && (ROLE_RANK[payload.role] || 0) < ROLE_RANK[minRole]) {
+      return res.status(403).json({ success: false, error: '권한이 없습니다' });
+    }
+    req.admin = payload;
+    next();
+  };
+}
+
+/* ---------- POST /admin/login ---------- */
+app.post('/admin/login', (req, res) => {
+  const { username, password } = req.body || {};
+  if (!username || !password) return res.status(400).json({ success: false, error: '아이디/비밀번호를 입력하세요' });
+
+  const key = attemptKey(req, username);
+  if (isLocked(key)) {
+    return res.status(429).json({ success: false, error: '로그인 시도가 너무 많습니다. 10분 후 다시 시도하세요.' });
+  }
+
+  const admins = loadAdmins();
+  const found = admins.find((a) => a.username === username);
+  if (!found || !verifyPassword(password, found.passwordHash)) {
+    registerFailure(key);
+    return res.status(401).json({ success: false, error: '아이디 또는 비밀번호가 올바르지 않습니다' });
+  }
+  clearFailures(key);
+  const token = signToken({ username: found.username, role: found.role });
+  res.json({ success: true, token, username: found.username, role: found.role });
+});
+
+/* ---------- GET /admin/me (토큰 유효성 확인용) ---------- */
+app.get('/admin/me', requireAuth(), (req, res) => {
+  res.json({ success: true, username: req.admin.username, role: req.admin.role });
+});
+
+/* ---------- 구글시트 문의 목록 가져오기 ---------- */
+function fetchSheetRows() {
+  return new Promise((resolve, reject) => {
+    if (!SHEET_API_URL) return reject(new Error('SHEET_API_URL 환경변수가 설정되지 않았습니다'));
+    const url = SHEET_API_URL + (SHEET_API_URL.includes('?') ? '&' : '?') + 'token=' + encodeURIComponent(SHEET_API_TOKEN);
+    https.get(url, { timeout: 15000 }, (r) => {
+      let data = '';
+      r.on('data', (c) => { data += c; });
+      r.on('end', () => {
+        try {
+          const j = JSON.parse(data);
+          if (!j.success) return reject(new Error(j.error || '시트 응답 오류'));
+          resolve(j.rows || []);
+        } catch (e) { reject(new Error('시트 응답 파싱 실패')); }
+      });
+    }).on('error', reject).on('timeout', function () { this.destroy(); reject(new Error('시트 요청 시간 초과')); });
+  });
+}
+
+/* 폼 "이름" 칸에 진단정보가 함께 저장되는 규칙(인수인계 메모 참고)을 분리:
+   자가진단 → "이름 [진단: NN점, 놓치는손님..., 개선필요:...]"
+   순위진단 → "이름 [순위진단 · "검색어" N위 · 리뷰 NN]"
+   그 외    → 순수 상담 신청 (일반) */
+function parseInquiryName(raw) {
+  const s = String(raw || '').trim();
+  const m = s.match(/^(.*?)\s*\[(.+)\]\s*$/);
+  if (!m) return { name: s, type: '일반상담', detail: '' };
+  const name = m[1].trim();
+  const bracket = m[2].trim();
+  if (bracket.includes('순위진단')) return { name, type: '순위진단', detail: bracket };
+  if (bracket.startsWith('진단')) return { name, type: '자가진단', detail: bracket };
+  return { name, type: '일반상담', detail: bracket };
+}
+
+/* ---------- 문의별 상태(연락완료 등) 저장 ---------- */
+function loadStatus() {
+  try { return JSON.parse(fs.readFileSync(STATUS_FILE, 'utf8')); } catch (e) { return {}; }
+}
+function saveStatus(obj) { fs.writeFileSync(STATUS_FILE, JSON.stringify(obj, null, 2), 'utf8'); }
+function inquiryKey(row) { return row.timestamp + '::' + row.phone; }
+
+/* ---------- GET /admin/inquiries ---------- */
+app.get('/admin/inquiries', requireAuth(), async (req, res) => {
+  try {
+    const rows = await fetchSheetRows();
+    const status = loadStatus();
+    const list = rows.map((r) => {
+      const parsed = parseInquiryName(r.name);
+      const key = inquiryKey(r);
+      return {
+        key,
+        timestamp: r.timestamp,
+        phone: r.phone,
+        name: parsed.name,
+        type: parsed.type,
+        detail: parsed.detail,
+        status: status[key] || '신규',
+      };
+    });
+    // 최신 신청 순
+    list.sort((a, b) => String(b.timestamp).localeCompare(String(a.timestamp)));
+    res.json({ success: true, count: list.length, rows: list });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+/* ---------- GET/POST /admin/inquiry-status ---------- */
+app.get('/admin/inquiry-status', requireAuth(), (req, res) => {
+  res.json({ success: true, status: loadStatus() });
+});
+app.post('/admin/inquiry-status', requireAuth(), (req, res) => {
+  const { key, status } = req.body || {};
+  if (!key || !status) return res.status(400).json({ success: false, error: 'key/status 필요' });
+  const all = loadStatus();
+  all[key] = status;
+  saveStatus(all);
+  res.json({ success: true });
+});
+
+/* ---------- 관리자 계정 관리 (슈퍼관리자 전용) ---------- */
+app.get('/admin/admins', requireAuth('super_admin'), (req, res) => {
+  const admins = loadAdmins().map((a) => ({ username: a.username, role: a.role, createdAt: a.createdAt }));
+  res.json({ success: true, admins });
+});
+
+app.post('/admin/admins', requireAuth('super_admin'), (req, res) => {
+  const { username, password, role } = req.body || {};
+  if (!username || !password || !role) return res.status(400).json({ success: false, error: 'username/password/role 필요' });
+  if (!['admin', 'super_admin'].includes(role)) return res.status(400).json({ success: false, error: 'role은 admin 또는 super_admin' });
+  if (password.length < 8) return res.status(400).json({ success: false, error: '비밀번호는 8자 이상' });
+
+  const admins = loadAdmins();
+  if (admins.find((a) => a.username === username)) {
+    return res.status(409).json({ success: false, error: '이미 존재하는 아이디입니다' });
+  }
+  admins.push({ username, passwordHash: hashPassword(password), role, createdAt: new Date().toISOString() });
+  saveAdmins(admins);
+  res.json({ success: true });
+});
+
+app.patch('/admin/admins/:username', requireAuth('super_admin'), (req, res) => {
+  const { username } = req.params;
+  const { password, role } = req.body || {};
+  const admins = loadAdmins();
+  const found = admins.find((a) => a.username === username);
+  if (!found) return res.status(404).json({ success: false, error: '계정을 찾을 수 없습니다' });
+
+  if (role) {
+    if (!['admin', 'super_admin'].includes(role)) return res.status(400).json({ success: false, error: 'role은 admin 또는 super_admin' });
+    // 마지막 슈퍼관리자를 강등하는 것 방지
+    if (found.role === 'super_admin' && role !== 'super_admin') {
+      const superCount = admins.filter((a) => a.role === 'super_admin').length;
+      if (superCount <= 1) return res.status(400).json({ success: false, error: '마지막 슈퍼관리자는 강등할 수 없습니다' });
+    }
+    found.role = role;
+  }
+  if (password) {
+    if (password.length < 8) return res.status(400).json({ success: false, error: '비밀번호는 8자 이상' });
+    found.passwordHash = hashPassword(password);
+  }
+  saveAdmins(admins);
+  res.json({ success: true });
+});
+
+app.delete('/admin/admins/:username', requireAuth('super_admin'), (req, res) => {
+  const { username } = req.params;
+  const admins = loadAdmins();
+  const found = admins.find((a) => a.username === username);
+  if (!found) return res.status(404).json({ success: false, error: '계정을 찾을 수 없습니다' });
+  if (username === req.admin.username) return res.status(400).json({ success: false, error: '자기 자신은 삭제할 수 없습니다' });
+  if (found.role === 'super_admin') {
+    const superCount = admins.filter((a) => a.role === 'super_admin').length;
+    if (superCount <= 1) return res.status(400).json({ success: false, error: '마지막 슈퍼관리자는 삭제할 수 없습니다' });
+  }
+  saveAdmins(admins.filter((a) => a.username !== username));
+  res.json({ success: true });
+});
+
+/* ============================================================================
+ * ▲▲▲ v8 관리자 기능 추가분 끝 ▲▲▲
+ * ========================================================================== */
+
+app.listen(PORT, () => { console.log('서버 실행 중 (v8 · 좌표기반 1km 경쟁진단 + 관리자 API) - 포트 ' + PORT); });
