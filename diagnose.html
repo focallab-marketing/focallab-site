@@ -168,6 +168,20 @@ h1.h em{font-style:normal;font-weight:700;color:var(--naver)}
 .cmp-badge.lose{background:var(--bad-wash);color:var(--bad)}
 .cmp-badge.warn{background:var(--warn-wash);color:var(--warn)}
 .cmp-foot{margin-top:12px;font-size:.76rem;color:var(--ink-faint);line-height:1.55}
+/* 상권 밀집도 (막대+숫자+레벨) */
+.den-row{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--line-soft)}
+.den-row .cl{flex:0 0 auto;width:88px;font-size:.84rem;font-weight:700;color:var(--ink-soft)}
+.den-mid{flex:1;min-width:0;display:block}
+.den-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+.den-top .num{font-size:.98rem;font-weight:800;color:var(--ink)}
+.den-top .lvl{font-size:.76rem;font-weight:800}
+.den-bar{display:block;height:7px;background:var(--line-soft);border-radius:100px;overflow:hidden}
+.den-bar>i{display:block;height:100%;border-radius:100px;width:0;transition:width .8s cubic-bezier(.2,1,.4,1)}
+.den-cc{flex:0 0 auto;width:60px;text-align:right;font-size:.74rem;color:var(--ink-faint);line-height:1.3}
+.lv4 .lvl{color:#3b82c4} .lv4 .den-bar>i{background:#a9cdf0}
+.lv3 .lvl{color:#3fa88a} .lv3 .den-bar>i{background:#a9e5d3}
+.lv2 .lvl{color:#c99a3f} .lv2 .den-bar>i{background:#f3dfa9}
+.lv1 .lvl{color:#9aa0a8} .lv1 .den-bar>i{background:#dcdcdc}
 #map{height:300px;border-radius:14px;margin-top:14px;border:1px solid var(--line);overflow:hidden;background:var(--line-soft)}
 
 .lead{background:linear-gradient(180deg,var(--focus-wash),#fff);border:1px solid var(--focus-line)}
@@ -758,36 +772,64 @@ function renderCompare(stores,me,r){
 }
 
 /* ============ 상권 정보 (최근접 역 등) ============ */
+/* 업종별 밀집도 레벨 기준 (안경원 상권 감각) → [레벨1~4, 채움%, 라벨] */
+function denLevel(kind, n){
+  // thresholds: [보통, 높음, 매우높음]
+  const T={edu:[6,15,30], medical:[6,15,30], food:[8,20,40], conv:[4,10,20]}[kind]||[6,15,30];
+  let lv, label;
+  if(n>=T[2]){lv=4;label='매우 높음';}
+  else if(n>=T[1]){lv=3;label='높음';}
+  else if(n>=T[0]){lv=2;label='보통';}
+  else{lv=1;label='낮음';}
+  const pct=Math.max(6,Math.min(100,Math.round(n/T[2]*100)));  // 매우높음 기준을 100%로
+  return {lv,label,pct};
+}
+
 function renderLocal(r){
   const card=document.getElementById('localCard');
-  const rows=[];
+  const box=document.getElementById('localList');
+  const plain=[], dens=[];
+
   const st=r.nearestStation;
-  if(st && st.name){
-    rows.push({l:'최근접 역', v:esc(st.name),
-      c: st.distanceM!=null ? '<b>'+fmtDist(st.distanceM/1000)+'</b>' : ''});
-  }
+  if(st && st.name) plain.push({l:'최근접 역', v:esc(st.name),
+    c: st.distanceM!=null ? '<b>'+fmtDist(st.distanceM/1000)+'</b>' : ''});
   const ap=r.localApt;
-  if(ap && ap.households>0){
-    rows.push({l:'반경 1km 아파트', v:ap.households.toLocaleString()+'세대',
-      c:'<b>'+ap.count+'개</b> 단지'});
-  }
+  if(ap && ap.households>0) plain.push({l:'아파트', v:ap.households.toLocaleString()+'세대',
+    c:'<b>'+ap.count+'개</b> 단지'});
+
   const b=r.localBiz;
   if(b){
-    const n=(x)=> (x>=45?'45+':x)+'곳';
-    if(b.edu!=null)     rows.push({l:'학원·학교',   v:n(b.edu),     c:'학생 밀집도'});
-    if(b.medical!=null) rows.push({l:'병원·약국',   v:n(b.medical), c:'의료 상권'});
-    if(b.food!=null)    rows.push({l:'음식점·카페', v:n(b.food),    c:'상권 활성도'});
-    if(b.conv!=null)    rows.push({l:'편의점·마트', v:n(b.conv),    c:'생활 밀집도'});
+    const num=(x)=> (x>=45?'45+':x)+'곳';
+    const add=(kind,label,cc)=>{ if(b[kind]!=null){ const d=denLevel(kind,b[kind]);
+      dens.push({l:label, num:num(b[kind]), lvl:d.label, lv:d.lv, pct:d.pct, cc:cc}); } };
+    add('edu','학원·학교','학생 상권');
+    add('medical','병원·약국','의료 상권');
+    add('food','음식점·카페','활발');
+    add('conv','편의점·마트','생활 밀집');
   }
-  if(!rows.length){ card.style.display='none'; return; }
+
+  if(!plain.length && !dens.length){ card.style.display='none'; return; }
   card.style.display='';
-  const box=document.getElementById('localList'); box.innerHTML='';
-  rows.forEach(row=>{
+  box.innerHTML='';
+
+  plain.forEach(row=>{
     const el=document.createElement('div'); el.className='cmp-row';
     el.innerHTML='<span class="cl">'+row.l+'</span>'+
       '<span class="cv">'+row.v+'</span>'+
       '<span class="cc">'+row.c+'</span>';
     box.appendChild(el);
+  });
+  dens.forEach(row=>{
+    const el=document.createElement('div'); el.className='den-row lv'+row.lv;
+    el.innerHTML='<span class="cl">'+row.l+'</span>'+
+      '<span class="den-mid"><span class="den-top"><span class="num">'+row.num+'</span>'+
+      '<span class="lvl">'+row.lvl+'</span></span>'+
+      '<span class="den-bar"><i></i></span></span>'+
+      '<span class="den-cc">'+row.cc+'</span>';
+    box.appendChild(el);
+    // 막대 애니메이션
+    const bar=el.querySelector('.den-bar>i');
+    setTimeout(()=>{ bar.style.width=row.pct+'%'; }, 80);
   });
 }
 
