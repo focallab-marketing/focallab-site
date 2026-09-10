@@ -124,7 +124,50 @@ function kakaoNearestStation(lat, lng) {
   });
 }
 
-/* instant-search 응답의 place 항목 → 표준 형태로 변환 */
+/* 카카오 카테고리 장소 개수 (좌표 반경 내). meta.total_count 사용.
+   실패해도 0으로 처리해 진단은 계속된다. */
+function kakaoCategoryCount(lat, lng, code, radiusM) {
+  return new Promise((resolve) => {
+    if (!KAKAO_REST_KEY || lat == null || lng == null) return resolve(0);
+    const path = '/v2/local/search/category.json?category_group_code=' + code
+      + '&x=' + encodeURIComponent(lng) + '&y=' + encodeURIComponent(lat)
+      + '&radius=' + radiusM + '&size=1';
+    const options = {
+      hostname: 'dapi.kakao.com', path, method: 'GET',
+      headers: { 'Authorization': 'KakaoAK ' + KAKAO_REST_KEY }, timeout: 8000,
+    };
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', (c) => { data += c; });
+      res.on('end', () => {
+        try { const j = JSON.parse(data); resolve((j.meta && j.meta.total_count) || 0); }
+        catch (e) { resolve(0); }
+      });
+    });
+    req.on('error', () => resolve(0));
+    req.on('timeout', () => { req.destroy(); resolve(0); });
+    req.end();
+  });
+}
+
+/* 여러 카테고리 코드를 합산 (예: 학원+학교) */
+async function kakaoCategoryGroup(lat, lng, codes, radiusM) {
+  let sum = 0;
+  for (const c of codes) sum += await kakaoCategoryCount(lat, lng, c, radiusM);
+  return sum;
+}
+
+/* 매장 반경 내 상권 지표 (학원·병원·음식점·편의점 등) */
+async function localBusiness(lat, lng, radiusM) {
+  if (!KAKAO_REST_KEY || lat == null || lng == null) return null;
+  const [edu, medical, food, conv] = await Promise.all([
+    kakaoCategoryGroup(lat, lng, ['AC5', 'SC4'], radiusM),  // 학원·학교
+    kakaoCategoryGroup(lat, lng, ['HP8', 'PM9'], radiusM),  // 병원·약국
+    kakaoCategoryGroup(lat, lng, ['FD6', 'CE7'], radiusM),  // 음식점·카페
+    kakaoCategoryGroup(lat, lng, ['CS2', 'MT1'], radiusM),  // 편의점·마트
+  ]);
+  return { edu, medical, food, conv };
+}
 function normalize(p, rank) {
   return {
     rank,
@@ -309,6 +352,9 @@ async function crawlDiagnose(query, myStore, coords, myPlaceId) {
   // 상권 정보: 반경 1km 아파트 단지 수·세대수 (배치 데이터 기반, API 호출 없음)
   const localApt = aptWithin(stCenterLat, stCenterLng, RADIUS_KM);
 
+  // 상권 지표: 반경 1km 학원·병원·음식점·편의점 개수 (카카오 카테고리)
+  const localBiz = await localBusiness(stCenterLat, stCenterLng, RADIUS_KM * 1000);
+
   return {
     query: label,                 // 프론트 표시용: "자곡동" 등
     myStore: (meInArea && meInArea.name) || myStore,
@@ -319,6 +365,7 @@ async function crawlDiagnose(query, myStore, coords, myPlaceId) {
     myDetail,
     nearestStation,               // { name, distanceM } 또는 null
     localApt,                     // { count, households, radiusKm } 또는 null
+    localBiz,                     // { edu, medical, food, conv } 또는 null
     collectedAt: new Date().toISOString(),
   };
 }
