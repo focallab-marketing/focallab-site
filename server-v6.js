@@ -627,21 +627,42 @@ app.get('/admin/me', requireAuth(), (req, res) => {
 });
 
 /* ---------- 구글시트 문의 목록 가져오기 ---------- */
-function fetchSheetRows() {
+/* Google Apps Script 웹앱(/exec) URL은 실제 응답을 script.googleusercontent.com 쪽
+   URL로 302 리다이렉트하는 경우가 대부분이라, 리다이렉트를 따라가지 않으면
+   JSON 대신 리다이렉트 안내 HTML을 받아 "JSON 파싱 실패"가 난다. 최대 5번까지 따라간다. */
+function httpsGetFollow(url, maxRedirects) {
   return new Promise((resolve, reject) => {
-    if (!SHEET_API_URL) return reject(new Error('SHEET_API_URL 환경변수가 설정되지 않았습니다'));
-    const url = SHEET_API_URL + (SHEET_API_URL.includes('?') ? '&' : '?') + 'token=' + encodeURIComponent(SHEET_API_TOKEN);
+    if (maxRedirects == null) maxRedirects = 5;
     https.get(url, { timeout: 15000 }, (r) => {
+      if (r.statusCode >= 300 && r.statusCode < 400 && r.headers.location) {
+        r.resume(); // 응답 바디 버리고 리다이렉트 따라가기
+        if (maxRedirects <= 0) return reject(new Error('리다이렉트가 너무 많습니다'));
+        const next = new URL(r.headers.location, url).toString();
+        return resolve(httpsGetFollow(next, maxRedirects - 1));
+      }
       let data = '';
       r.on('data', (c) => { data += c; });
-      r.on('end', () => {
-        try {
-          const j = JSON.parse(data);
-          if (!j.success) return reject(new Error(j.error || '시트 응답 오류'));
-          resolve(j.rows || []);
-        } catch (e) { reject(new Error('시트 응답 파싱 실패')); }
-      });
-    }).on('error', reject).on('timeout', function () { this.destroy(); reject(new Error('시트 요청 시간 초과')); });
+      r.on('end', () => resolve({ statusCode: r.statusCode, body: data }));
+    }).on('error', reject).on('timeout', function () { this.destroy(); reject(new Error('요청 시간 초과')); });
+  });
+}
+
+function fetchSheetRows() {
+  return new Promise((resolve, reject) => {
+    if (!SHEET_API_URL) return reject(new Error('SHEET_API_URL이 설정되지 않았습니다 (환경변수 또는 admin-config.json 확인)'));
+    const url = SHEET_API_URL + (SHEET_API_URL.includes('?') ? '&' : '?') + 'token=' + encodeURIComponent(SHEET_API_TOKEN);
+    httpsGetFollow(url)
+      .then(({ body }) => {
+        let j;
+        try { j = JSON.parse(body); }
+        catch (e) {
+          const preview = String(body || '').slice(0, 200).replace(/\s+/g, ' ');
+          return reject(new Error('시트 응답 파싱 실패 (JSON이 아닌 응답을 받음: ' + preview + ')'));
+        }
+        if (!j.success) return reject(new Error(j.error || '시트 응답 오류'));
+        resolve(j.rows || []);
+      })
+      .catch((e) => reject(e instanceof Error ? e : new Error('시트 요청 시간 초과')));
   });
 }
 
