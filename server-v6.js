@@ -454,19 +454,33 @@ app.get('/health', (_req, res) =>
  * ▼▼▼ 여기서부터 v8 관리자 기능 추가분 ▼▼▼
  * ========================================================================== */
 
-/* ---------- 설정 (환경변수) ---------- */
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || '';          // 토큰 서명용 비밀키 (필수)
-const ADMIN_INIT_USERNAME = process.env.ADMIN_INIT_USERNAME || '';    // 최초 부팅시 슈퍼관리자 계정 생성용
-const ADMIN_INIT_PASSWORD = process.env.ADMIN_INIT_PASSWORD || '';    // (admins.json이 없을 때만 사용됨)
-const SHEET_API_URL = process.env.SHEET_API_URL || '';                // Apps Script 웹앱 URL
-const SHEET_API_TOKEN = process.env.SHEET_API_TOKEN || '';            // Apps Script 인증 토큰
+/* ---------- 설정 (환경변수, 안 되면 admin-config.json 파일로 대체) ----------
+ * pm2 환경에 따라 "VAR=값 pm2 restart --update-env" 방식이 새 환경변수를
+ * 못 받아들이는 경우가 있어(기존에 pm2 start로 등록된 변수만 갱신되고
+ * 새 변수는 무시되는 pm2 자체의 알려진 동작), 환경변수가 비어있으면
+ * 같은 폴더의 admin-config.json 파일에서 값을 읽어오도록 이중 안전장치를 둠.
+ * → 환경변수 설정이 자꾸 안 먹히면, admin-config.json 파일만 만들어도 됨. */
+function loadAdminConfigFile() {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(__dirname, 'admin-config.json'), 'utf8'));
+  } catch (e) {
+    return {};
+  }
+}
+const _fileConfig = loadAdminConfigFile();
+
+const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || _fileConfig.ADMIN_JWT_SECRET || '';          // 토큰 서명용 비밀키 (필수)
+const ADMIN_INIT_USERNAME = process.env.ADMIN_INIT_USERNAME || _fileConfig.ADMIN_INIT_USERNAME || ''; // 최초 부팅시 슈퍼관리자 계정 생성용
+const ADMIN_INIT_PASSWORD = process.env.ADMIN_INIT_PASSWORD || _fileConfig.ADMIN_INIT_PASSWORD || ''; // (admins.json이 없을 때만 사용됨)
+const SHEET_API_URL = process.env.SHEET_API_URL || _fileConfig.SHEET_API_URL || '';                   // Apps Script 웹앱 URL
+const SHEET_API_TOKEN = process.env.SHEET_API_TOKEN || _fileConfig.SHEET_API_TOKEN || '';             // Apps Script 인증 토큰
 const TOKEN_TTL_MS = 12 * 60 * 60 * 1000; // 로그인 토큰 유효시간: 12시간
 
 const ADMINS_FILE = path.join(__dirname, 'admins.json');
 const STATUS_FILE = path.join(__dirname, 'inquiry-status.json');
 
 if (!ADMIN_JWT_SECRET) {
-  console.warn('⚠ ADMIN_JWT_SECRET 환경변수가 없습니다. 관리자 로그인이 동작하지 않습니다.');
+  console.warn('⚠ ADMIN_JWT_SECRET이 없습니다 (환경변수·admin-config.json 둘 다 확인). 관리자 로그인이 동작하지 않습니다.');
 }
 
 /* ---------- 비밀번호 해시 (scrypt, 내장 crypto만 사용) ---------- */
@@ -539,7 +553,8 @@ function saveAdmins(list) {
   if (existing.length > 0) return;
   if (!ADMIN_INIT_USERNAME || !ADMIN_INIT_PASSWORD) {
     console.warn('⚠ admins.json이 비어있고 ADMIN_INIT_USERNAME/ADMIN_INIT_PASSWORD도 없어 ' +
-      '관리자 계정이 하나도 없습니다. pm2 restart 시 두 환경변수를 넣어 최초 슈퍼관리자를 생성하세요.');
+      '관리자 계정이 하나도 없습니다. 환경변수 또는 admin-config.json 파일에 값을 넣고 재시작해 ' +
+      '최초 슈퍼관리자를 생성하세요.');
     return;
   }
   const admin = {
